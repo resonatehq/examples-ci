@@ -1,24 +1,40 @@
 {
   "schema_version": "1",
   "run_date": "2026-05-19",
-  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26109455632",
+  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26122098981",
   "versions": {
     "ts": "0.10.2",
     "py": "0.6.7",
     "rs": "0.4.0"
   },
   "totals": {
-    "total": 3,
-    "passing": 3,
-    "failing": 0
+    "total": 10,
+    "passing": 5,
+    "failing": 5
   },
   "results": [
+    {
+      "repo": "example-batch-processor-ts",
+      "sdk": "ts",
+      "sdk_version": "0.10.2",
+      "status": "timeout_unhealthy",
+      "duration_s": 30,
+      "stderr_tail": "$ bun run src/index.ts"
+    },
+    {
+      "repo": "example-fan-out-fan-in-ts",
+      "sdk": "ts",
+      "sdk_version": "0.10.2",
+      "status": "timeout_unhealthy",
+      "duration_s": 30,
+      "stderr_tail": "$ bun run src/index.ts"
+    },
     {
       "repo": "example-hello-world-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 9,
+      "duration_s": 11,
       "stderr_tail": ""
     },
     {
@@ -35,7 +51,47 @@
       "sdk_version": "0.6.7",
       "status": "passing",
       "duration_s": 9,
-      "stderr_tail": "[2026-05-19 16:06:15] [ERROR] [transfer-002] [transfer-002.2] RuntimeError. Function credit_target('transfer-002-credit', 'bob', 75.0, fail=True) failed with TransferRejected(\"target account 'bob' rejected the credit\")"
+      "stderr_tail": "[2026-05-19 20:05:22] [ERROR] [transfer-002] [transfer-002.2] RuntimeError. Function credit_target('transfer-002-credit', 'bob', 75.0, fail=True) failed with TransferRejected(\"target account 'bob' rejected the credit\")"
+    },
+    {
+      "repo": "example-money-transfer-rs",
+      "sdk": "rs",
+      "sdk_version": "0.4.0",
+      "status": "passing",
+      "duration_s": 98,
+      "stderr_tail": "\u001b[1m\u001b[92m    Finished\u001b[0m `release` profile [optimized] target(s) in 0.10s\n\u001b[1m\u001b[92m     Running\u001b[0m `target/release/money-transfer`"
+    },
+    {
+      "repo": "example-saga-booking-ts",
+      "sdk": "ts",
+      "sdk_version": "0.10.2",
+      "status": "timeout_unhealthy",
+      "duration_s": 31,
+      "stderr_tail": "$ bun run src/index.ts"
+    },
+    {
+      "repo": "example-state-machine-ts",
+      "sdk": "ts",
+      "sdk_version": "0.10.2",
+      "status": "timeout_unhealthy",
+      "duration_s": 31,
+      "stderr_tail": "$ bun run src/index.ts"
+    },
+    {
+      "repo": "example-webhook-handler-py",
+      "sdk": "py",
+      "sdk_version": "0.6.7",
+      "status": "passing",
+      "duration_s": 12,
+      "stderr_tail": ""
+    },
+    {
+      "repo": "example-webhook-handler-ts",
+      "sdk": "ts",
+      "sdk_version": "0.10.2",
+      "status": "timeout_unhealthy",
+      "duration_s": 30,
+      "stderr_tail": "$ bun run src/index.ts"
     }
   ]
 }
