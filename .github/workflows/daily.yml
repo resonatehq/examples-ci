@@ -138,16 +138,25 @@ jobs:
           keep_files: false
       - name: Notify Echo
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        continue-on-error: true
         env:
           ECHO_API_URL: ${{ vars.ECHO_API_URL }}
           ECHO_API_KEY: ${{ secrets.ECHO_API_KEY }}
         run: |
+          # No silent failures — Echo missing the daily report is a real
+          # operational issue and the workflow should go red so on-call sees it.
+          # The only "skip" is when Echo isn't configured at all (initial deploy);
+          # any post-config failure surfaces.
           if [ -z "$ECHO_API_URL" ] || [ -z "$ECHO_API_KEY" ]; then
-            echo "Echo notification skipped (no ECHO_API_URL/ECHO_API_KEY set)"
+            echo "Echo notification skipped (ECHO_API_URL/ECHO_API_KEY unset — first deploy?)"
             exit 0
           fi
-          curl -sf -X POST "$ECHO_API_URL/api/examples-ci/report" \
-            -H "Authorization: Bearer $ECHO_API_KEY" \
+          curl -sSf \
+            --retry 5 \
+            --retry-all-errors \
+            --retry-delay 30 \
+            --max-time 60 \
+            -X POST "$ECHO_API_URL/api/examples-ci/report" \
+            -H "X-Echo-Key: $ECHO_API_KEY" \
             -H "Content-Type: application/json" \
             -d @summary.json
+          echo "Echo notification succeeded"

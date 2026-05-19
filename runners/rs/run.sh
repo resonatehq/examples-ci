@@ -45,7 +45,13 @@ cd "$EXAMPLE_DIR"
 # cargo update pulls the latest main commit, which IS "latest" by definition. Skip the pin.
 if grep -E '^[[:space:]]*resonate[[:space:]]*=.*git[[:space:]]*=' Cargo.toml >/dev/null 2>&1; then
   echo "resonate dep is git-sourced; pulling latest main via cargo update" >> install.err
-  cargo update -p resonate-sdk 2>>install.err || true
+  # The actual package id in the lockfile may differ across SDK versions and from
+  # the [dependencies] alias. Try the known-good name first, fall back to a broad
+  # update, fall back to a no-op (cargo build will use the current lockfile).
+  cargo update -p resonate-sdk 2>>install.err \
+    || cargo update -p resonate 2>>install.err \
+    || cargo update 2>>install.err \
+    || true
 else
   # Crate is published as `resonate-sdk`; examples typically alias it locally as `resonate`.
   cargo add --rename resonate "resonate-sdk@${SDK_VERSION}" 2>>install.err || true

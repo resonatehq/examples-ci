@@ -36,7 +36,7 @@ manifests/SCHEMA.md          field semantics + .resonate-ci.json override
 
 ## Adding an example
 
-Add a row to [manifests/examples.yaml](manifests/examples.yaml). If the example needs overrides (custom entry command, worker-mode regex, longer timeout), drop a `.resonate-ci.json` in the example repo — the runner prefers per-repo config over central manifest defaults.
+Add a row to [manifests/examples.yaml](manifests/examples.yaml). Override per-example via the manifest fields (`entry`, `kind`, `timeout_s`, `healthy_after_s`, `health_regex`) — see [manifests/SCHEMA.md](manifests/SCHEMA.md). Per-repo `.resonate-ci.json` overrides were scoped for Phase 1.5 but are not yet read by the runner.
 
 ## Running locally
 

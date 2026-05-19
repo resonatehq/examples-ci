@@ -15,6 +15,18 @@ const ARTIFACT_DIR = "artifacts";
 const OUT_DIR = "public";
 const STATUS_DIR = join(OUT_DIR, "status");
 
+// Fail loud on missing env. Without these, Echo gets a brief with empty
+// sdk_version strings and the dashboard shows the wrong "as-of" date.
+// Reviewer flagged: ?? "" was masking the upstream resolve step silently
+// not emitting the version outputs.
+const REQUIRED_ENV = ["RUN_DATE", "RUN_URL", "TS_VERSION", "PY_VERSION", "RS_VERSION"];
+for (const name of REQUIRED_ENV) {
+  if (!process.env[name]) {
+    console.error(`aggregate: required env var ${name} is empty; refusing to emit a malformed summary`);
+    process.exit(1);
+  }
+}
+
 mkdirSync(STATUS_DIR, { recursive: true });
 
 const results: Result[] = [];

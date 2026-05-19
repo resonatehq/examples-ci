@@ -17,19 +17,6 @@ Each entry:
 | `health_regex` | string | `registered\|ready\|listening` | `worker` only. Regex matched against stdout+stderr; must match for the worker to be considered passing. |
 | `skip` | bool | `false` | Skip this example. Used for Phase 3 examples requiring external services. |
 
-## Per-example `.resonate-ci.json` (optional override)
+## Future: per-repo overrides
 
-An example repo may carry a `.resonate-ci.json` at its root with the same shape as a manifest entry (minus `repo`):
-
-```json
-{
-  "kind": "worker",
-  "entry": "bun run dev",
-  "healthy_after_s": 20,
-  "health_regex": "stripe.webhook.ready"
-}
-```
-
-The matrix runner prefers per-repo `.resonate-ci.json` over the central manifest entry. Use it when an example's defaults are insufficient — typically workers with non-standard ready-line patterns.
-
-**Phase 1 policy**: don't open the 96-repo PR sweep for `.resonate-ci.json` files. Add them only when a specific example needs the override.
+Per-repo `.resonate-ci.json` overrides were scoped during Phase 1 design but not implemented — neither `scripts/build-matrix.ts` nor the runners read such a file. If you need an override today, edit the example's row in `manifests/examples.yaml` directly. The per-repo file pattern is a candidate for Phase 1.5 once a non-trivial number of examples need overrides; until then central config is sufficient.
