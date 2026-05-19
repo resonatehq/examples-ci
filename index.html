@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Resonate examples-ci</title>
+<style>
+  body { font: 14px/1.5 system-ui, sans-serif; margin: 2rem; max-width: 980px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 6px 10px; text-align: left; border-bottom: 1px solid #eee; }
+  th { background: #fafafa; font-weight: 600; }
+  .meta { color: #666; margin: 1rem 0 2rem; }
+  .filters { margin-bottom: 1rem; }
+  .filters button { margin-right: 6px; padding: 4px 10px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 4px; }
+  .filters button.active { background: #eef; }
+  code { background: #f6f6f6; padding: 1px 4px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<h1>Resonate examples-ci</h1>
+<p class="meta">
+  Run date: <strong>2026-05-19</strong> ·
+  0/0 passing ·
+  SDK: ts <code></code>, py <code></code>, rs <code></code> ·
+  <a href="https://github.com/resonatehq/examples-ci/actions/runs/26107627701">workflow run</a>
+</p>
+<div class="filters">
+  Filter:
+  <button class="active" data-filter="all">All</button>
+  <button data-filter="ts">TS</button>
+  <button data-filter="py">Py</button>
+  <button data-filter="rs">Rs</button>
+  <button data-filter="failing">Failing only</button>
+</div>
+<table>
+<thead><tr><th></th><th>Repo</th><th>SDK</th><th>SDK ver</th><th>Status</th><th>Duration</th></tr></thead>
+<tbody></tbody>
+</table>
+<script>
+  document.querySelectorAll('.filters button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filters button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      document.querySelectorAll('tbody tr').forEach(tr => {
+        if (f === 'all') { tr.style.display = ''; return; }
+        if (f === 'failing') { tr.style.display = tr.dataset.status === 'passing' ? 'none' : ''; return; }
+        tr.style.display = tr.dataset.sdk === f ? '' : 'none';
+      });
+    });
+  });
+</script>
+</body>
+</html>
