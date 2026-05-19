@@ -1,0 +1,17 @@
+{
+  "name": "examples-ci",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build-matrix": "bun run scripts/build-matrix.ts",
+    "aggregate": "bun run scripts/aggregate.ts"
+  },
+  "dependencies": {
+    "yaml": "^2.5.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0",
+    "typescript": "^5.6.0"
+  }
+}

@@ -1,0 +1,59 @@
+# examples-ci
+
+Daily compatibility check for [resonatehq-examples](https://github.com/resonatehq-examples). Every example is run against the latest published Resonate SDK; results land as a JSON summary (consumed by Echo) and per-example shields.io endpoints (consumed by example READMEs).
+
+## What it does
+
+1. **07:00 UTC daily.** Resolve latest published versions of `@resonatehq/sdk` (npm), `resonate-sdk` (PyPI), `resonate` (crates.io). Pin once; every matrix shard uses the same resolved trio so "the X.Y.Z release broke N examples" is provable.
+2. **Matrix run.** One job per example in [manifests/examples.yaml](manifests/examples.yaml). Each shard clones the example, installs the latest SDK on top of the example's pinned deps, runs the entry command, captures status + stderr tail.
+3. **Aggregate.** Per-shard `result.json` artifacts merge into:
+   - `summary.json` — array of per-example results, posted to Echo at `POST /api/examples-ci/report`.
+   - `public/status/<repo>.json` — shields.io endpoint payloads, published to `gh-pages` for README badges.
+   - `public/index.html` — dashboard at `https://resonatehq.github.io/examples-ci/`.
+
+## Status taxonomy
+
+| Status | Meaning |
+|---|---|
+| `passing` | One-shot example exited 0, or worker passed liveness probe within `healthy_after_seconds`. |
+| `install_failed` | Package install (npm/pip/cargo) errored before the example ran. |
+| `compile_failed` | Rust only: `cargo build` failed. |
+| `runtime_failed` | Non-zero exit during run. |
+| `worker_died` | Worker process exited before liveness probe. |
+| `worker_unhealthy` | Worker stayed alive but didn't match `health_regex`. |
+| `timeout_unhealthy` | One-shot example hit timeout without exiting. |
+
+## Layout
+
+```
+.github/workflows/daily.yml  cron orchestrator (resolve → run → aggregate)
+runners/{ts,py,rs}/run.sh    per-SDK install + run + capture
+scripts/build-matrix.ts      manifests/examples.yaml → GH Actions matrix JSON
+scripts/aggregate.ts         per-shard result.json → summary + status/*.json + dashboard
+manifests/examples.yaml      source of truth: which examples to run
+manifests/SCHEMA.md          field semantics + .resonate-ci.json override
+```
+
+## Adding an example
+
+Add a row to [manifests/examples.yaml](manifests/examples.yaml). If the example needs overrides (custom entry command, worker-mode regex, longer timeout), drop a `.resonate-ci.json` in the example repo — the runner prefers per-repo config over central manifest defaults.
+
+## Running locally
+
+```bash
+EXAMPLE_DIR=../example-async-rpc-ts \
+EXAMPLE_NAME=example-async-rpc-ts \
+SDK_VERSION=0.10.4 \
+KIND=worker \
+ENTRY="bun run start" \
+runners/ts/run.sh
+cat result.json
+```
+
+## Manual full run
+
+```bash
+gh workflow run daily.yml --repo resonatehq/examples-ci
+# subset:
+gh workflow run daily.yml --repo resonatehq/examples-ci -f examples=example-async-rpc-ts,example-money-transfer-py
+```

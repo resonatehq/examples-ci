@@ -1,0 +1,35 @@
+# Source of truth for which examples the daily CI runs.
+# Add a row to enroll. See SCHEMA.md for field semantics.
+#
+# Phase 1 seed (2026-05-19): three known single-process examples that work
+# against the SDK's local-store fallback — no external Resonate server needed.
+# money-transfer-py was dry-run locally on 2026-05-19 and passed.
+# Expand by adding rows after the first green run.
+#
+# Examples explicitly EXCLUDED from Phase 1 seed and why:
+#   - example-async-rpc-ts          multi-process (gateway + 9 services)
+#   - example-durable-sleep-rs      multi-bin (worker + client) + git-sourced SDK
+#   - example-recursive-factorial-rs same pattern
+#   - example-fan-out-fan-in-py     docstring says requires running server
+#   - example-hello-world-rs        README run-instructions assume a server
+# These return once we add: (a) multi-process manifest schema, and
+# (b) optional `requires_server: true` that spawns `resonate serve` in CI.
+
+examples:
+  - repo: example-hello-world-py
+    sdk: py
+    kind: script
+    entry: python main.py
+    timeout_s: 30
+
+  - repo: example-hello-world-ts
+    sdk: ts
+    kind: script
+    entry: bun run index.ts
+    timeout_s: 30
+
+  - repo: example-money-transfer-py
+    sdk: py
+    kind: script
+    entry: python main.py
+    timeout_s: 60

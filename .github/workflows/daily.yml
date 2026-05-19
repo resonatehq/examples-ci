@@ -1,0 +1,153 @@
+name: daily
+
+on:
+  schedule:
+    - cron: "0 7 * * *"
+  workflow_dispatch:
+    inputs:
+      examples:
+        description: "Comma-separated example names (default: all)"
+        required: false
+        default: ""
+
+concurrency:
+  group: daily
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.value }}
+      ts_version: ${{ steps.versions.outputs.ts }}
+      py_version: ${{ steps.versions.outputs.py }}
+      rs_version: ${{ steps.versions.outputs.rs }}
+      run_date: ${{ steps.date.outputs.value }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install
+      - id: date
+        run: echo "value=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+      - id: versions
+        run: |
+          TS=$(npm view @resonatehq/sdk version)
+          PY=$(curl -sf https://pypi.org/pypi/resonate-sdk/json | jq -r '.info.version')
+          RS=$(curl -sf https://crates.io/api/v1/crates/resonate | jq -r '.crate.max_stable_version')
+          [ -z "$TS" ] && { echo "ts version resolution failed"; exit 1; }
+          [ -z "$PY" ] && { echo "py version resolution failed"; exit 1; }
+          [ -z "$RS" ] && { echo "rs version resolution failed"; exit 1; }
+          echo "ts=$TS" >> "$GITHUB_OUTPUT"
+          echo "py=$PY" >> "$GITHUB_OUTPUT"
+          echo "rs=$RS" >> "$GITHUB_OUTPUT"
+          echo "Resolved: ts=$TS py=$PY rs=$RS"
+      - id: matrix
+        env:
+          TS_VERSION: ${{ steps.versions.outputs.ts }}
+          PY_VERSION: ${{ steps.versions.outputs.py }}
+          RS_VERSION: ${{ steps.versions.outputs.rs }}
+        run: |
+          MATRIX=$(bun run scripts/build-matrix.ts "${{ inputs.examples }}")
+          echo "Matrix size: $(echo "$MATRIX" | jq 'length')"
+          echo "value=$MATRIX" >> "$GITHUB_OUTPUT"
+
+  run:
+    needs: resolve
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        include: ${{ fromJson(needs.resolve.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: resonatehq-examples/${{ matrix.repo }}
+          path: example
+      - uses: actions/checkout@v4
+        with:
+          path: ci
+      - if: matrix.sdk == 'ts'
+        uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - if: matrix.sdk == 'ts'
+        uses: oven-sh/setup-bun@v1
+      - if: matrix.sdk == 'py'
+        uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - if: matrix.sdk == 'rs'
+        uses: dtolnay/rust-toolchain@stable
+      - if: matrix.sdk == 'rs'
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: example
+      - name: Run example
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+          EXAMPLE_DIR: ${{ github.workspace }}/example
+          EXAMPLE_NAME: ${{ matrix.repo }}
+          SDK_VERSION: ${{ matrix.sdk_version }}
+          KIND: ${{ matrix.kind }}
+          ENTRY: ${{ matrix.entry }}
+          TIMEOUT_S: ${{ matrix.timeout_s }}
+          HEALTHY_AFTER_S: ${{ matrix.healthy_after_s }}
+          HEALTH_REGEX: ${{ matrix.health_regex }}
+        run: ci/runners/${{ matrix.sdk }}/run.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: result-${{ matrix.repo }}
+          path: result.json
+
+  aggregate:
+    needs: [resolve, run]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Aggregate
+        env:
+          RUN_DATE: ${{ needs.resolve.outputs.run_date }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          TS_VERSION: ${{ needs.resolve.outputs.ts_version }}
+          PY_VERSION: ${{ needs.resolve.outputs.py_version }}
+          RS_VERSION: ${{ needs.resolve.outputs.rs_version }}
+        run: bun run scripts/aggregate.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: summary
+          path: |
+            summary.json
+            public/
+      - name: Publish to gh-pages
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          keep_files: false
+      - name: Notify Echo
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        continue-on-error: true
+        env:
+          ECHO_API_URL: ${{ vars.ECHO_API_URL }}
+          ECHO_API_KEY: ${{ secrets.ECHO_API_KEY }}
+        run: |
+          if [ -z "$ECHO_API_URL" ] || [ -z "$ECHO_API_KEY" ]; then
+            echo "Echo notification skipped (no ECHO_API_URL/ECHO_API_KEY set)"
+            exit 0
+          fi
+          curl -sf -X POST "$ECHO_API_URL/api/examples-ci/report" \
+            -H "Authorization: Bearer $ECHO_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d @summary.json
