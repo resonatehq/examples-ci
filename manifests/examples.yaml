@@ -4,14 +4,32 @@
 # Phase 1 seed (2026-05-19): three known single-process examples that work
 # against the SDK's local-store fallback — no external Resonate server needed.
 # money-transfer-py was dry-run locally on 2026-05-19 and passed.
-# Expand by adding rows after the first green run.
+#
+# Expanded to 10 examples (2026-05-19): added 7 more single-process examples
+# vetted via README inspection — each one either runs in embedded mode
+# (`Resonate.local()` / no server URL) or wraps an in-process Express/FastAPI
+# server it spawns + tears down itself. Mix: 3 py + 6 ts + 1 rs.
 #
 # Examples explicitly EXCLUDED from Phase 1 seed and why:
 #   - example-async-rpc-ts          multi-process (gateway + 9 services)
 #   - example-durable-sleep-rs      multi-bin (worker + client) + git-sourced SDK
-#   - example-recursive-factorial-rs same pattern
-#   - example-fan-out-fan-in-py     docstring says requires running server
+#   - example-durable-sleep-py      multi-process (worker.py + client.py) + server
+#   - example-durable-sleep-ts      multi-process (worker.ts + client.ts) + server
+#   - example-recursive-factorial-rs multi-bin (worker + client)
+#   - example-recursive-factorial-py multi-worker + server-required
+#   - example-fan-out-fan-in-py     README says requires legacy server (uses ctx.rfi)
+#   - example-fan-out-fan-in-rs     multi-process worker + invoke-from-CLI
 #   - example-hello-world-rs        README run-instructions assume a server
+#   - example-quickstart-py/-ts     Resonate.remote() + `resonate dev` + invoke CLI
+#   - example-countdown-py/-ts      server-required, also depends on ntfy.sh
+#   - example-money-transfer-application-ts  Express webserver, needs external curl
+#   - example-tigerbeetle-account-creation-ts  needs TigerBeetle + Resonate binaries
+#   - example-durable-chatbot-ts    needs ANTHROPIC_API_KEY + interactive prompt
+#   - example-infinite-workflow-ts  designed to run indefinitely; needs worker kind
+#   - example-async-http-api-rs     multi-process gateway + worker, server-required
+#   - example-schedule-rs           two bins (schedule + worker), server-required
+#   - example-mcp-tools-rs          MCP server + Resonate worker, server-required
+#   - example-human-in-the-loop-rs  gateway + worker, server-required
 # These return once we add: (a) multi-process manifest schema, and
 # (b) optional `requires_server: true` that spawns `resonate serve` in CI.
 
@@ -33,3 +51,45 @@ examples:
     kind: script
     entry: python main.py
     timeout_s: 60
+
+  - repo: example-webhook-handler-py
+    sdk: py
+    kind: script
+    entry: python main.py
+    timeout_s: 60
+
+  - repo: example-saga-booking-ts
+    sdk: ts
+    kind: script
+    entry: bun start
+    timeout_s: 30
+
+  - repo: example-webhook-handler-ts
+    sdk: ts
+    kind: script
+    entry: bun start
+    timeout_s: 30
+
+  - repo: example-fan-out-fan-in-ts
+    sdk: ts
+    kind: script
+    entry: bun start
+    timeout_s: 30
+
+  - repo: example-batch-processor-ts
+    sdk: ts
+    kind: script
+    entry: bun start
+    timeout_s: 30
+
+  - repo: example-state-machine-ts
+    sdk: ts
+    kind: script
+    entry: bun start
+    timeout_s: 30
+
+  - repo: example-money-transfer-rs
+    sdk: rs
+    kind: script
+    entry: cargo run --release
+    timeout_s: 180
