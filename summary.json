@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "run_date": "2026-05-19",
-  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26107748377",
+  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26109455632",
   "versions": {
     "ts": "0.10.2",
     "py": "0.6.7",
@@ -18,7 +18,7 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 11,
+      "duration_s": 9,
       "stderr_tail": ""
     },
     {
@@ -26,7 +26,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 3,
+      "duration_s": 4,
       "stderr_tail": ""
     },
     {
@@ -34,8 +34,8 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 11,
-      "stderr_tail": "[2026-05-19 15:36:12] [ERROR] [transfer-002] [transfer-002.2] RuntimeError. Function credit_target('transfer-002-credit', 'bob', 75.0, fail=True) failed with TransferRejected(\"target account 'bob' rejected the credit\")"
+      "duration_s": 9,
+      "stderr_tail": "[2026-05-19 16:06:15] [ERROR] [transfer-002] [transfer-002.2] RuntimeError. Function credit_target('transfer-002-credit', 'bob', 75.0, fail=True) failed with TransferRejected(\"target account 'bob' rejected the credit\")"
     }
   ]
 }
