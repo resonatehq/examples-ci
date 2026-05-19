@@ -47,9 +47,8 @@ if grep -E '^[[:space:]]*resonate[[:space:]]*=.*git[[:space:]]*=' Cargo.toml >/d
   echo "resonate dep is git-sourced; pulling latest main via cargo update" >> install.err
   cargo update -p resonate-sdk 2>>install.err || true
 else
-  cargo add "resonate@${SDK_VERSION}" 2>>install.err || {
-    sed -i.bak -E "s/^(resonate[[:space:]]*=[[:space:]]*).*$/\\1\"${SDK_VERSION}\"/" Cargo.toml 2>>install.err || true
-  }
+  # Crate is published as `resonate-sdk`; examples typically alias it locally as `resonate`.
+  cargo add --rename resonate "resonate-sdk@${SDK_VERSION}" 2>>install.err || true
 fi
 
 STATUS="compile_failed"

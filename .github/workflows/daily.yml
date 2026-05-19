@@ -36,7 +36,7 @@ jobs:
         run: |
           TS=$(npm view @resonatehq/sdk version)
           PY=$(curl -sf https://pypi.org/pypi/resonate-sdk/json | jq -r '.info.version')
-          RS=$(curl -sf https://crates.io/api/v1/crates/resonate | jq -r '.crate.max_stable_version')
+          RS=$(curl -sf -A "examples-ci (resonatehq)" https://crates.io/api/v1/crates/resonate-sdk | jq -r '.crate.max_stable_version')
           [ -z "$TS" ] && { echo "ts version resolution failed"; exit 1; }
           [ -z "$PY" ] && { echo "py version resolution failed"; exit 1; }
           [ -z "$RS" ] && { echo "rs version resolution failed"; exit 1; }
