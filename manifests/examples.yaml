@@ -17,6 +17,7 @@
 #   - example-durable-sleep-ts      multi-process (worker.ts + client.ts) + server
 #   - example-recursive-factorial-rs multi-bin (worker + client)
 #   - example-recursive-factorial-py multi-worker + server-required
+#   - example-recursive-factorial-ts server-required (`resonate dev`)
 #   - example-fan-out-fan-in-py     README says requires legacy server (uses ctx.rfi)
 #   - example-fan-out-fan-in-rs     multi-process worker + invoke-from-CLI
 #   - example-hello-world-rs        README run-instructions assume a server
@@ -27,11 +28,30 @@
 #   - example-durable-chatbot-ts    needs ANTHROPIC_API_KEY + interactive prompt
 #   - example-infinite-workflow-ts  designed to run indefinitely; needs worker kind
 #   - example-async-http-api-rs     multi-process gateway + worker, server-required
-#   - example-schedule-rs           two bins (schedule + worker), server-required
+#   - example-async-http-api-py     server-required (`resonate serve`)
+#   - example-async-http-api-ts     server-required (`resonate dev`)
+#   - example-schedule-rs/-py       server-required (cron triggered by server)
 #   - example-mcp-tools-rs          MCP server + Resonate worker, server-required
-#   - example-human-in-the-loop-rs  gateway + worker, server-required
+#   - example-human-in-the-loop-rs/-py/-ts  gateway + worker, server-required
+#   - example-load-balancing-rs/-py/-ts     server-required (server is the broker)
+#   - example-dao-proposal-scorer-ts        server-required (`resonate dev`)
+#   - example-node-drain-orchestrator-ts    server-required + Kind/Kubernetes
+#   - example-token-auth-ts         server-required (JWT-auth Resonate server)
+#   - example-distributed-calculator-py     server-required (`resonate serve`)
+#   - example-function-as-a-service-py      server-required
+#   - example-lambda-workers-py     server-required (legacy server)
+#   - example-multi-agent-orchestration-ts  needs ANTHROPIC_API_KEY
+#   - example-multi-agent-orchestration-py  needs OPENAI_API_KEY + server
+#   - example-schedule-reminder-agent-py    needs OPENAI_API_KEY
+#   - example-async-tools-mcp-server-py     server-required
+#   - example-webservers-py         meta-repo (django/fastapi/flask sub-projects)
 # These return once we add: (a) multi-process manifest schema, and
 # (b) optional `requires_server: true` that spawns `resonate serve` in CI.
+# Phase 1 expansion (2026-05-20): added 8 more embedded-mode TS examples.
+# All vetted locally with `gtimeout 35 bun start` + SDK pinned to 0.10.2 — each
+# exited RC=0 with expected output. No code fixes required; the SDK no longer
+# keeps the event loop alive after `resonate.run()` resolves in these patterns
+# (only the previously-fixed 5 needed `resonate.stop()`).
 
 examples:
   - repo: example-hello-world-py
@@ -93,3 +113,51 @@ examples:
     kind: script
     entry: cargo run --release
     timeout_s: 180
+
+  - repo: example-distributed-mutex-ts
+    sdk: ts
+    kind: script
+    entry: bun start
+    timeout_s: 30
+
+  - repo: example-durable-entity-ts
+    sdk: ts
+    kind: script
+    entry: bun start
+    timeout_s: 30
+
+  - repo: example-encryption-ts
+    sdk: ts
+    kind: script
+    entry: bun start
+    timeout_s: 30
+
+  - repo: example-event-sourcing-ts
+    sdk: ts
+    kind: script
+    entry: bun start
+    timeout_s: 30
+
+  - repo: example-priority-queue-ts
+    sdk: ts
+    kind: script
+    entry: bun start
+    timeout_s: 30
+
+  - repo: example-rate-limiter-ts
+    sdk: ts
+    kind: script
+    entry: bun start
+    timeout_s: 30
+
+  - repo: example-food-delivery-ts
+    sdk: ts
+    kind: script
+    entry: bun start
+    timeout_s: 30
+
+  - repo: example-express-integration-ts
+    sdk: ts
+    kind: script
+    entry: bun start
+    timeout_s: 30
