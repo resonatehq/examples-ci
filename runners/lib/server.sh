@@ -29,16 +29,25 @@ start_resonate_server() {
   RESONATE_SERVER_PID=$!
   export RESONATE_SERVER_PID
 
+  # Detect readiness by the server's own "Server listening" log line — emitted
+  # after socket.bind()+listen() succeeds. More robust than HTTP probing
+  # (GET / returns 405 which trips curl -f) and decoupled from any future
+  # health-route changes.
   local i
-  for i in $(seq 1 30); do
-    if curl -sf http://localhost:8001/ >/dev/null 2>&1; then
+  for i in $(seq 1 60); do
+    if grep -q "Server listening" /tmp/resonate.log 2>/dev/null; then
       echo "resonate server ready (tag=$tag pid=$RESONATE_SERVER_PID)" >&2
       return 0
     fi
-    sleep 0.5
+    if ! kill -0 "$RESONATE_SERVER_PID" 2>/dev/null; then
+      echo "resonate server exited before listening" >&2
+      cat /tmp/resonate.log >&2 2>/dev/null || true
+      return 1
+    fi
+    sleep 0.25
   done
 
-  echo "resonate server did not become healthy within 15s" >&2
+  echo "resonate server did not log 'Server listening' within 15s" >&2
   echo "--- /tmp/resonate.log ---" >&2
   cat /tmp/resonate.log >&2 2>/dev/null || true
   return 1
