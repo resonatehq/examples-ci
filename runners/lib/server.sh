@@ -42,15 +42,30 @@ start_resonate_server() {
       ;;
   esac
 
-  tag=$(curl -sf "https://api.github.com/repos/${repo}/releases/latest" | jq -r .tag_name)
+  # Retry the release-tag lookup — single curl was flaky on ~25% of runs
+  # with TLS / connection timeouts under concurrent matrix load.
+  local attempt
+  for attempt in 1 2 3; do
+    tag=$(curl -sf --retry 2 --retry-delay 1 \
+      "https://api.github.com/repos/${repo}/releases/latest" | jq -r .tag_name 2>/dev/null)
+    if [ -n "$tag" ] && [ "$tag" != "null" ]; then break; fi
+    [ "$attempt" -lt 3 ] && sleep 2
+  done
   if [ -z "$tag" ] || [ "$tag" = "null" ]; then
-    echo "${repo} latest-release lookup failed" >&2
+    echo "${repo} latest-release lookup failed after 3 attempts" >&2
     return 1
   fi
 
   url="https://github.com/${repo}/releases/download/${tag}/resonate_${os}_${arch}.tar.gz"
-  if ! curl -sLf "$url" | tar xz -C /tmp resonate 2>/dev/null; then
-    echo "resonate binary download failed: $url" >&2
+  for attempt in 1 2 3; do
+    if curl -sLf --retry 2 --retry-delay 1 "$url" | tar xz -C /tmp resonate 2>/dev/null; then
+      break
+    fi
+    rm -f /tmp/resonate
+    [ "$attempt" -lt 3 ] && sleep 2
+  done
+  if [ ! -f /tmp/resonate ]; then
+    echo "resonate binary download failed after 3 attempts: $url" >&2
     return 1
   fi
   chmod +x /tmp/resonate
