@@ -1,16 +1,16 @@
 {
   "schema_version": "1",
   "run_date": "2026-05-22",
-  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26305021246",
+  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26305880202",
   "versions": {
     "ts": "0.10.2",
     "py": "0.6.7",
     "rs": "0.4.0"
   },
   "totals": {
-    "total": 39,
-    "passing": 38,
-    "failing": 1
+    "total": 40,
+    "passing": 40,
+    "failing": 0
   },
   "results": [
     {
@@ -18,7 +18,7 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 26,
+      "duration_s": 23,
       "stderr_tail": ""
     },
     {
@@ -26,7 +26,7 @@
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 17,
+      "duration_s": 12,
       "stderr_tail": ""
     },
     {
@@ -50,7 +50,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 14,
+      "duration_s": 16,
       "stderr_tail": ""
     },
     {
@@ -66,7 +66,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 2,
+      "duration_s": 3,
       "stderr_tail": "$ bun run src/index.ts"
     },
     {
@@ -74,7 +74,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 3,
+      "duration_s": 2,
       "stderr_tail": "$ bun run src/index.ts"
     },
     {
@@ -82,7 +82,7 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 22,
+      "duration_s": 23,
       "stderr_tail": ""
     },
     {
@@ -90,7 +90,7 @@
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 17,
+      "duration_s": 13,
       "stderr_tail": ""
     },
     {
@@ -98,7 +98,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 19,
+      "duration_s": 21,
       "stderr_tail": ""
     },
     {
@@ -106,7 +106,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 2,
+      "duration_s": 1,
       "stderr_tail": "$ bun run src/index.ts"
     },
     {
@@ -122,7 +122,15 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 5,
+      "duration_s": 6,
+      "stderr_tail": ""
+    },
+    {
+      "repo": "example-fan-out-fan-in-py",
+      "sdk": "py",
+      "sdk_version": "0.6.7",
+      "status": "passing",
+      "duration_s": 10,
       "stderr_tail": ""
     },
     {
@@ -130,7 +138,7 @@
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 31,
+      "duration_s": 17,
       "stderr_tail": ""
     },
     {
@@ -138,7 +146,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 2,
+      "duration_s": 1,
       "stderr_tail": "$ bun run src/index.ts"
     },
     {
@@ -154,7 +162,7 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 10,
+      "duration_s": 12,
       "stderr_tail": ""
     },
     {
@@ -162,7 +170,7 @@
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 8,
+      "duration_s": 26,
       "stderr_tail": ""
     },
     {
@@ -178,7 +186,7 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 17,
+      "duration_s": 16,
       "stderr_tail": ""
     },
     {
@@ -186,7 +194,7 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 14,
+      "duration_s": 21,
       "stderr_tail": ""
     },
     {
@@ -194,7 +202,7 @@
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 9,
+      "duration_s": 10,
       "stderr_tail": ""
     },
     {
@@ -210,8 +218,8 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 10,
-      "stderr_tail": "[2026-05-22 18:27:26] [ERROR] [transfer-002] [transfer-002.2] RuntimeError. Function credit_target('transfer-002-credit', 'bob', 75.0, fail=True) failed with TransferRejected(\"target account 'bob' rejected the credit\")"
+      "duration_s": 11,
+      "stderr_tail": "[2026-05-22 18:47:30] [ERROR] [transfer-002] [transfer-002.2] RuntimeError. Function credit_target('transfer-002-credit', 'bob', 75.0, fail=True) failed with TransferRejected(\"target account 'bob' rejected the credit\")"
     },
     {
       "repo": "example-money-transfer-rs",
@@ -242,7 +250,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 14,
+      "duration_s": 18,
       "stderr_tail": ""
     },
     {
@@ -258,7 +266,7 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 14,
+      "duration_s": 13,
       "stderr_tail": ""
     },
     {
@@ -274,7 +282,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 8,
+      "duration_s": 9,
       "stderr_tail": ""
     },
     {
@@ -290,16 +298,16 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 24,
+      "duration_s": 21,
       "stderr_tail": ""
     },
     {
       "repo": "example-schedule-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
-      "status": "server_failed",
-      "duration_s": 3,
-      "stderr_tail": "resonate server failed to start (see job log)"
+      "status": "passing",
+      "duration_s": 38,
+      "stderr_tail": ""
     },
     {
       "repo": "example-state-machine-ts",
@@ -314,7 +322,7 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 14,
+      "duration_s": 13,
       "stderr_tail": ""
     },
     {
@@ -322,7 +330,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 2,
+      "duration_s": 4,
       "stderr_tail": "$ bun run src/index.ts"
     }
   ]
