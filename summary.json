@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "run_date": "2026-05-22",
-  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26303467003",
+  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26303717677",
   "versions": {
     "ts": "0.10.2",
     "py": "0.6.7",
@@ -17,16 +17,16 @@
       "repo": "example-human-in-the-loop-rs",
       "sdk": "rs",
       "sdk_version": "0.4.0",
-      "status": "compile_failed",
-      "duration_s": 24,
-      "stderr_tail": "\u001b[1m\u001b[92m Downloading\u001b[0m crates ...\n\u001b[1m\u001b[92m  Downloaded\u001b[0m hashbrown v0.17.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m serde_path_to_error v0.1.20\n\u001b[1m\u001b[92m  Downloaded\u001b[0m matchit v0.7.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m idna_adapter v1.2.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m httpdate v1.0.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m cc v1.2.61\n\u001b[1m\u001b[92m  Downloaded\u001b[0m dashmap v6.1.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m zerofrom v0.1.7\n\u001b[1m\u001b[92m  Downloaded\u001b[0m serde_json v1.0.149\n\u001b[1m\u001b[92m  Downloaded\u001b[0m tower-http v0.6.8\n\u001b[1m\u001b[92m  Downloaded\u001b[0m winnow v1.0.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m axum v0.7.9\n\u001b[1m\u001b[92m  Downloaded\u001b[0m iri-string v0.7.12\n\u001b[1m\u001b[92m  Downloaded\u001b[0m openssl-sys v0.9.114\n\u001b[1m\u001b[92m  Downloaded\u001b[0m axum-core v0.4.5\n\u001b[1m\u001b[92m  Downloaded\u001b[0m rustls v0.23.39\n\u001b[1m\u001b[92m  Downloaded\u001b[0m openssl v0.10.78\n\u001b[1m\u001b[92m  Downloaded\u001b[0m h2 v0.4.13\n\u001b[1m\u001b[92m  Downloaded\u001b[0m tokio v1.52.1\n\u001b[1m\u001b[92m   Compiling\u001b[0m httpdate v1.0.3\n\u001b[1m\u001b[92m   Compiling\u001b[0m iri-string v0.7.12\n\u001b[1m\u001b[92m   Compiling\u001b[0m axum-core v0.4.5\n\u001b[1m\u001b[92m   Compiling\u001b[0m serde_path_to_error v0.1.20\n\u001b[1m\u001b[92m   Compiling\u001b[0m hyper v1.9.0\n\u001b[1m\u001b[92m   Compiling\u001b[0m tower-http v0.6.8\n\u001b[1m\u001b[92m   Compiling\u001b[0m matchit v0.7.3\n\u001b[1m\u001b[92m   Compiling\u001b[0m hyper-util v0.1.20\n\u001b[1m\u001b[92m   Compiling\u001b[0m hyper-tls v0.6.0\n\u001b[1m\u001b[92m   Compiling\u001b[0m axum v0.7.9\n\u001b[1m\u001b[92m   Compiling\u001b[0m reqwest v0.12.28\n\u001b[1m\u001b[92m   Compiling\u001b[0m resonate-sdk v0.4.0 (https://github.com/resonatehq/resonate-sdk-rs?branch=main#ecb4e267)\n\u001b[1m\u001b[92m   Compiling\u001b[0m example-human-in-the-loop-rs v0.1.0 (/home/runner/work/examples-ci/examples-ci/example)\n\u001b[1m\u001b[91merror[E0308]\u001b[0m\u001b[1m: mismatched types\u001b[0m\n   \u001b[1m\u001b[94m--> \u001b[0msrc/bin/gateway.rs:79:31\n    \u001b[1m\u001b[94m|\u001b[0m\n\u001b[1m\u001b[94m 79\u001b[0m \u001b[1m\u001b[94m|\u001b[0m         .resolve(&promise_id, json!(true))\n    \u001b[1m\u001b[94m|\u001b[0m          \u001b[1m\u001b[94m-------\u001b[0m              \u001b[1m\u001b[91m^^^^^^^^^^^\u001b[0m \u001b[1m\u001b[91mexpected `resonate_sdk::types::Value`, found `serde_json::Value`\u001b[0m\n    \u001b[1m\u001b[94m|\u001b[0m          \u001b[1m\u001b[94m|\u001b[0m\n    \u001b[1m\u001b[94m|\u001b[0m          \u001b[1m\u001b[94marguments to this method are incorrect\u001b[0m\n    \u001b[1m\u001b[94m|\u001b[0m\n    \u001b[1m\u001b[94m= \u001b[0m\u001b[1mnote\u001b[0m: `serde_json::Value` and `resonate_sdk::types::Value` have similar names, but are actually distinct types\n\u001b[1m\u001b[92mnote\u001b[0m: `serde_json::Value` is defined in crate `serde_json`\n   \u001b[1m\u001b[94m--> \u001b[0m/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.149/src/value/mod.rs:116:1\n    \u001b[1m\u001b[94m|\u001b[0m\n\u001b[1m\u001b[94m116\u001b[0m \u001b[1m\u001b[94m|\u001b[0m pub enum Value {\n    \u001b[1m\u001b[94m|\u001b[0m \u001b[1m\u001b[92m^^^^^^^^^^^^^^\u001b[0m\n\u001b[1m\u001b[92mnote\u001b[0m: `resonate_sdk::types::Value` is defined in crate `resonate_sdk`\n   \u001b[1m\u001b[94m--> \u001b[0m/home/runner/.cargo/git/checkouts/resonate-sdk-rs-1ca82a9b9c15f9d6/ecb4e26/resonate/src/types.rs:19:1\n    \u001b[1m\u001b[94m|\u001b[0m\n\u001b[1m\u001b[94m 19\u001b[0m \u001b[1m\u001b[94m|\u001b[0m pub struct Value {\n    \u001b[1m\u001b[94m|\u001b[0m \u001b[1m\u001b[92m^^^^^^^^^^^^^^^^\u001b[0m\n\u001b[1m\u001b[92mnote\u001b[0m: method defined here\n   \u001b[1m\u001b[94m--> \u001b[0m/home/runner/.cargo/git/checkouts/resonate-sdk-rs-1ca82a9b9c15f9d6/ecb4e26/resonate/src/promises.rs:63:18\n    \u001b[1m\u001b[94m|\u001b[0m\n\u001b[1m\u001b[94m 63\u001b[0m \u001b[1m\u001b[94m|\u001b[0m     pub async fn resolve(&self, id: &str, value: Value) -> Result<PromiseRecord> {\n    \u001b[1m\u001b[94m|\u001b[0m                  \u001b[1m\u001b[92m^^^^^^^\u001b[0m\n\n\u001b[1mFor more information about this error, try `rustc --explain E0308`.\u001b[0m\n\u001b[1m\u001b[91merror\u001b[0m: could not compile `example-human-in-the-loop-rs` (bin \"gateway\") due to 1 previous error\n\u001b[1m\u001b[33mwarning\u001b[0m: build failed, waiting for other jobs to finish..."
+      "status": "driver_then_failed",
+      "duration_s": 16,
+      "stderr_tail": "driver-then: curl: (52) Empty reply from server"
     },
     {
       "repo": "example-human-in-the-loop-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "driver_then_failed",
-      "duration_s": 10,
+      "duration_s": 9,
       "stderr_tail": "driver-then: curl: (22) The requested URL returned error: 500"
     }
   ]
