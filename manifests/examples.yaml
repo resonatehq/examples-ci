@@ -420,3 +420,56 @@ examples:
         entry: "python worker.py"
         ready_regex: "Report for user"
         healthy_after_s: 75
+
+  # ---- Phase 1.5 wave 4 (durable-sleep + fan-out-fan-in-rs) ----
+
+  - repo: example-durable-sleep-py
+    sdk: py
+    requires_server: true
+    server_kind: legacy_go
+    processes:
+      - name: worker
+        entry: "python worker.py"
+        ready_regex: "worker is running"
+        healthy_after_s: 8
+    client:
+      entry: "python client.py"
+      timeout_s: 30
+
+  - repo: example-durable-sleep-ts
+    sdk: ts
+    requires_server: true
+    processes:
+      - name: worker
+        # worker.ts is silent: new Resonate(...) starts a poller that keeps the
+        # process alive; nothing logs at startup.
+        entry: "bun run worker.ts"
+        ready_regex: ""
+        healthy_after_s: 8
+    client:
+      entry: "bun run client.ts"
+      timeout_s: 30
+
+  - repo: example-durable-sleep-rs
+    sdk: rs
+    requires_server: true
+    processes:
+      - name: worker
+        entry: "cargo run --release --bin worker"
+        ready_regex: "Worker started"
+        healthy_after_s: 30
+    client:
+      entry: "cargo run --release --bin client"
+      timeout_s: 60
+
+  - repo: example-fan-out-fan-in-rs
+    sdk: rs
+    requires_server: true
+    processes:
+      - name: worker
+        entry: "cargo run --release"
+        ready_regex: "Worker started"
+        healthy_after_s: 30
+    client:
+      entry: "/tmp/resonate invoke fanout-1 --func fan_out_fan_in --arg '[{\"id\":1,\"data\":\"alpha\"},{\"id\":2,\"data\":\"beta\"},{\"id\":3,\"data\":\"gamma\"}]'"
+      timeout_s: 60
