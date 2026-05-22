@@ -561,20 +561,12 @@ examples:
   # ---- Phase 1.5 wave 7 (sibling enrollments) ----
   # schedule-rs DEFERRED (skip=true, 2026-05-22): the Rust SDK's high-level
   # `.schedule(name, cron, func, args)` wrapper calls Schedules.create()
-  # with promise_tags=HashMap::new() — empty. The fired promise inherits
-  # those empty tags (plus auto-added resonate:schedule). Without
-  # resonate:invoke, the server has no dispatch target and the promise
-  # times out unprocessed. Confirmed in CI: schedule fires correctly
-  # (resonate.log "Schedule fired daily_report"), but no worker ever
-  # picks it up.
+  # with promise_tags=HashMap::new(). The fired promise inherits those
+  # empty tags (plus auto-added resonate:schedule). Without resonate:invoke,
+  # the server has no dispatch target and the promise sits pending forever.
   #
-  # Fix is upstream in resonate-sdk-rs:
-  # ResScheduleTask::into_future (resonate/src/resonate.rs:~1013) should
-  # derive a target from the Resonate instance's group and pass it as
-  # promise_tags["resonate:invoke"]; Schedules.create() also needs a
-  # tags arg. Larger SDK change than the one-line migrations this
-  # iteration handled. Re-enable by removing skip once the SDK ships
-  # the fix.
+  # Tracked upstream: https://github.com/resonatehq/resonate-sdk-rs/issues/25
+  # Re-enable by removing skip once the SDK ships the fix.
   - repo: example-schedule-rs
     sdk: rs
     requires_server: true
