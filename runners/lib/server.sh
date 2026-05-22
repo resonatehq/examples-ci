@@ -1,10 +1,21 @@
 #!/usr/bin/env bash
 # Sourced by per-SDK runner scripts when REQUIRES_SERVER=true.
-# Downloads + spawns `resonate dev` (in-memory mode, port 8001) on the runner.
-# Examples connect via their hardcoded http://localhost:8001 — no URL injection.
+# Downloads + spawns the appropriate Resonate server binary, in-memory mode.
+#
+# SERVER_KIND selects which server:
+#   rust       (default) — resonatehq/resonate (current). Unified port 8001.
+#                          TS/RS SDKs and updated Py SDKs speak this protocol.
+#   legacy_go             — resonatehq/resonate-legacy-server. Two ports:
+#                          API on 8001 + poll on 8002. Python SDK 0.6.7
+#                          targets this protocol — the new SDK migration
+#                          hasn't shipped yet.
+#
+# Both binaries name themselves `resonate` and accept `resonate dev` to start
+# in development mode. Asset naming is identical
+# (`resonate_${os}_${arch}.tar.gz`) so the install path is shared.
 
 start_resonate_server() {
-  local arch os tag url
+  local arch os tag url server_kind ready_regex repo
   case "$(uname -m)" in
     x86_64|amd64) arch="x86_64" ;;
     aarch64|arm64) arch="aarch64" ;;
@@ -12,13 +23,32 @@ start_resonate_server() {
   esac
   os="$(uname -s | tr '[:upper:]' '[:lower:]')"
 
-  tag=$(curl -sf https://api.github.com/repos/resonatehq/resonate/releases/latest | jq -r .tag_name)
+  server_kind="${SERVER_KIND:-rust}"
+  case "$server_kind" in
+    rust)
+      repo="resonatehq/resonate"
+      # The Rust server logs `Server listening bind=... port=8001` after bind+listen.
+      ready_regex="Server listening"
+      ;;
+    legacy_go|legacy)
+      repo="resonatehq/resonate-legacy-server"
+      # The Go server logs `starting http server` AND `starting poll server` —
+      # http is the last critical service to come up before workers can connect.
+      ready_regex="starting http server"
+      ;;
+    *)
+      echo "unknown SERVER_KIND: $server_kind (want rust or legacy_go)" >&2
+      return 1
+      ;;
+  esac
+
+  tag=$(curl -sf "https://api.github.com/repos/${repo}/releases/latest" | jq -r .tag_name)
   if [ -z "$tag" ] || [ "$tag" = "null" ]; then
-    echo "resonate latest-release lookup failed" >&2
+    echo "${repo} latest-release lookup failed" >&2
     return 1
   fi
 
-  url="https://github.com/resonatehq/resonate/releases/download/${tag}/resonate_${os}_${arch}.tar.gz"
+  url="https://github.com/${repo}/releases/download/${tag}/resonate_${os}_${arch}.tar.gz"
   if ! curl -sLf "$url" | tar xz -C /tmp resonate 2>/dev/null; then
     echo "resonate binary download failed: $url" >&2
     return 1
@@ -29,31 +59,23 @@ start_resonate_server() {
   RESONATE_SERVER_PID=$!
   export RESONATE_SERVER_PID
 
-  # Python SDK defaults RESONATE_PORT_MESSAGE_SOURCE to 8002, but the unified
-  # Rust server listens on 8001 only. Without this override, Py examples fail
-  # with "Cannot connect to http://localhost:8002" on the poller side.
-  # TS/RS SDKs use a single URL and aren't affected.
-  export RESONATE_PORT_MESSAGE_SOURCE=8001
-
-  # Detect readiness by the server's own "Server listening" log line — emitted
-  # after socket.bind()+listen() succeeds. More robust than HTTP probing
-  # (GET / returns 405 which trips curl -f) and decoupled from any future
-  # health-route changes.
+  # Detect readiness via the server's own log line — robust against HTTP-route
+  # changes and works identically for both server kinds.
   local i
   for i in $(seq 1 60); do
-    if grep -q "Server listening" /tmp/resonate.log 2>/dev/null; then
-      echo "resonate server ready (tag=$tag pid=$RESONATE_SERVER_PID)" >&2
+    if grep -q "$ready_regex" /tmp/resonate.log 2>/dev/null; then
+      echo "resonate server ready (kind=$server_kind tag=$tag pid=$RESONATE_SERVER_PID)" >&2
       return 0
     fi
     if ! kill -0 "$RESONATE_SERVER_PID" 2>/dev/null; then
-      echo "resonate server exited before listening" >&2
+      echo "resonate server exited before logging '$ready_regex'" >&2
       cat /tmp/resonate.log >&2 2>/dev/null || true
       return 1
     fi
     sleep 0.25
   done
 
-  echo "resonate server did not log 'Server listening' within 15s" >&2
+  echo "resonate server did not log '$ready_regex' within 15s (kind=$server_kind)" >&2
   echo "--- /tmp/resonate.log ---" >&2
   cat /tmp/resonate.log >&2 2>/dev/null || true
   return 1

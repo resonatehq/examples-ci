@@ -25,6 +25,7 @@ type Entry = {
   healthy_after_s?: number;
   health_regex?: string;
   requires_server?: boolean;
+  server_kind?: "rust" | "legacy_go";
   setup?: string[];
   processes?: ProcessEntry[];
   client?: ClientEntry;
@@ -67,6 +68,7 @@ const matrix = yaml.examples
       healthy_after_s: e.healthy_after_s ?? defaults.healthy_after_s,
       health_regex: e.health_regex ?? "registered|ready|listening",
       requires_server: e.requires_server ?? false,
+      server_kind: e.server_kind ?? "rust",
       multi_config:
         e.processes || e.setup || e.client
           ? JSON.stringify({

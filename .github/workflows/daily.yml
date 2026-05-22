@@ -97,6 +97,7 @@ jobs:
           HEALTHY_AFTER_S: ${{ matrix.healthy_after_s }}
           HEALTH_REGEX: ${{ matrix.health_regex }}
           REQUIRES_SERVER: ${{ matrix.requires_server }}
+          SERVER_KIND: ${{ matrix.server_kind }}
           MULTI_CONFIG: ${{ matrix.multi_config }}
         run: ci/runners/${{ matrix.sdk }}/run.sh
       - uses: actions/upload-artifact@v4
