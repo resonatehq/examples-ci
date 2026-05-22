@@ -44,6 +44,8 @@ on_exit() {
   stop_resonate_server 2>/dev/null || true
   emit_result
 }
+# shellcheck source=../lib/util.sh
+. "$(dirname "$0")/../lib/util.sh"
 # shellcheck source=../lib/server.sh
 . "$(dirname "$0")/../lib/server.sh"
 # shellcheck source=../lib/multi.sh
@@ -96,7 +98,7 @@ elif [ "$KIND" = "worker" ]; then
 
   if ! kill -0 "$RUN_PID" 2>/dev/null; then
     STATUS="worker_died"
-    STDERR_TAIL=$(tail -c 4096 run.err 2>/dev/null || true)
+    STDERR_TAIL=$(tail_meaningful run.err)
     exit 0
   fi
 
@@ -109,7 +111,7 @@ elif [ "$KIND" = "worker" ]; then
   kill -TERM "$RUN_PID" 2>/dev/null || true
   sleep 1
   kill -KILL "$RUN_PID" 2>/dev/null || true
-  STDERR_TAIL=$(tail -c 4096 run.err 2>/dev/null || true)
+  STDERR_TAIL=$(tail_meaningful run.err)
 else
   if [ -z "$TIMEOUT_BIN" ]; then
     STATUS="runner_error"
@@ -125,6 +127,6 @@ else
         STATUS="runtime_failed"
       fi
     fi
-    STDERR_TAIL=$(tail -c 4096 run.err 2>/dev/null || true)
+    STDERR_TAIL=$(tail_meaningful run.err)
   fi
 fi

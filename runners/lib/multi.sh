@@ -14,6 +14,9 @@
 #
 # Requires: jq, $TIMEOUT_BIN already detected by caller.
 
+# shellcheck source=./util.sh
+. "$(dirname "${BASH_SOURCE[0]}")/util.sh"
+
 MULTI_PIDS=()
 MULTI_NAMES=()
 
@@ -40,7 +43,7 @@ run_multi_process() {
     echo "multi: setup[$i] $cmd" >&2
     if ! bash -c "$cmd" > "multi-setup-$i.out" 2> "multi-setup-$i.err"; then
       MULTI_STATUS="setup_failed"
-      MULTI_STDERR="setup[$i] failed: $(tail -c 4096 multi-setup-$i.err 2>/dev/null || true)"
+      MULTI_STDERR="setup[$i] failed: $(tail_meaningful "multi-setup-$i.err")"
       return 1
     fi
   done
@@ -68,7 +71,7 @@ run_multi_process() {
       while [ "$(date -u +%s)" -lt "$deadline" ]; do
         if ! kill -0 "$pid" 2>/dev/null; then
           MULTI_STATUS="process_died"
-          MULTI_STDERR="[$name] died before healthy_after_s: $(tail -c 4096 multi-$name.err 2>/dev/null || true)"
+          MULTI_STDERR="[$name] died before healthy_after_s: $(tail_meaningful "multi-$name.err")"
           multi_kill_all
           return 1
         fi
@@ -79,7 +82,7 @@ run_multi_process() {
       while [ "$(date -u +%s)" -lt "$deadline" ]; do
         if ! kill -0 "$pid" 2>/dev/null; then
           MULTI_STATUS="process_died"
-          MULTI_STDERR="[$name] died before ready: $(tail -c 4096 multi-$name.err 2>/dev/null || true)"
+          MULTI_STDERR="[$name] died before ready: $(tail_meaningful "multi-$name.err")"
           multi_kill_all
           return 1
         fi
@@ -91,7 +94,7 @@ run_multi_process() {
       done
       if ! grep -qE "$ready_regex" "multi-$name.out" "multi-$name.err" 2>/dev/null; then
         MULTI_STATUS="process_unhealthy"
-        MULTI_STDERR="[$name] never matched ready_regex within ${healthy_after_s}s: $(tail -c 4096 multi-$name.err 2>/dev/null || true)"
+        MULTI_STDERR="[$name] never matched ready_regex within ${healthy_after_s}s: $(tail_meaningful "multi-$name.err")"
         multi_kill_all
         return 1
       fi
@@ -134,7 +137,7 @@ run_multi_process() {
         # bg died before producing a match — gateway is broken or
         # workflow short-circuited. Surface as a distinct status.
         MULTI_STATUS="driver_bg_failed"
-        MULTI_STDERR="driver-bg: exited before '$driver_pattern' appeared in '$driver_file': $(tail -c 4096 multi-driver-bg.err 2>/dev/null || true)"
+        MULTI_STDERR="driver-bg: exited before '$driver_pattern' appeared in '$driver_file': $(tail_meaningful multi-driver-bg.err)"
         multi_kill_all
         return 1
       fi
@@ -159,7 +162,7 @@ run_multi_process() {
     export "$driver_capture=$captured"
     if ! bash -c "$driver_then" > multi-driver-then.out 2> multi-driver-then.err; then
       MULTI_STATUS="driver_then_failed"
-      MULTI_STDERR="driver-then: $(tail -c 4096 multi-driver-then.err 2>/dev/null || true)"
+      MULTI_STDERR="driver-then: $(tail_meaningful multi-driver-then.err)"
       multi_kill_all
       return 1
     fi
@@ -168,7 +171,7 @@ run_multi_process() {
     while kill -0 "$driver_bg_pid" 2>/dev/null; do
       if [ "$(date -u +%s)" -ge "$poll_deadline" ]; then
         MULTI_STATUS="driver_bg_timeout"
-        MULTI_STDERR="driver-bg: did not exit within ${driver_timeout}s after then-entry succeeded: $(tail -c 4096 multi-driver-bg.err 2>/dev/null || true)"
+        MULTI_STDERR="driver-bg: did not exit within ${driver_timeout}s after then-entry succeeded: $(tail_meaningful multi-driver-bg.err)"
         multi_kill_all
         return 1
       fi
@@ -178,7 +181,7 @@ run_multi_process() {
     local bg_rc=$?
     if [ "$bg_rc" != "0" ]; then
       MULTI_STATUS="driver_bg_failed"
-      MULTI_STDERR="driver-bg: exited $bg_rc; $(tail -c 4096 multi-driver-bg.err 2>/dev/null || true)"
+      MULTI_STDERR="driver-bg: exited $bg_rc; $(tail_meaningful multi-driver-bg.err)"
       multi_kill_all
       return 1
     fi
@@ -196,7 +199,7 @@ run_multi_process() {
       else
         MULTI_STATUS="client_failed"
       fi
-      MULTI_STDERR="client: $(tail -c 4096 multi-client.err 2>/dev/null || true)"
+      MULTI_STDERR="client: $(tail_meaningful multi-client.err)"
       multi_kill_all
       return 1
     fi
