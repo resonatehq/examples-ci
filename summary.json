@@ -1,33 +1,41 @@
 {
   "schema_version": "1",
   "run_date": "2026-05-22",
-  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26303742175",
+  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26303952217",
   "versions": {
     "ts": "0.10.2",
     "py": "0.6.7",
     "rs": "0.4.0"
   },
   "totals": {
-    "total": 2,
-    "passing": 1,
-    "failing": 1
+    "total": 3,
+    "passing": 0,
+    "failing": 3
   },
   "results": [
     {
       "repo": "example-async-rpc-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
-      "status": "client_failed",
-      "duration_s": 21,
-      "stderr_tail": "client: curl: (22) The requested URL returned error: 500"
+      "status": "server_failed",
+      "duration_s": 11,
+      "stderr_tail": "resonate server failed to start (see job log)"
     },
     {
-      "repo": "example-async-rpc-ts",
+      "repo": "example-human-in-the-loop-rs",
+      "sdk": "rs",
+      "sdk_version": "0.4.0",
+      "status": "driver_then_failed",
+      "duration_s": 13,
+      "stderr_tail": "driver-then: curl: (52) Empty reply from server"
+    },
+    {
+      "repo": "example-human-in-the-loop-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
-      "status": "passing",
-      "duration_s": 14,
-      "stderr_tail": ""
+      "status": "driver_then_failed",
+      "duration_s": 10,
+      "stderr_tail": "driver-then: curl: (22) The requested URL returned error: 500"
     }
   ]
 }
