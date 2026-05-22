@@ -404,3 +404,19 @@ examples:
     client:
       entry: "curl -sSf -X POST 'http://127.0.0.1:8000/begin?id=ci-task-001' -H 'Content-Type: application/json' -d '{}'"
       timeout_s: 30
+
+  # example-schedule-py: schedule.py rewritten upstream 2026-05-22 to use the
+  # new schedules.create() API (top-level .schedule() was removed in
+  # resonate-sdk 0.6.7). One observation of the cron tick is the test;
+  # healthy_after_s budget covers up-to-60s tick latency plus margin.
+  - repo: example-schedule-py
+    sdk: py
+    requires_server: true
+    server_kind: legacy_go
+    setup:
+      - "python schedule.py"
+    processes:
+      - name: worker
+        entry: "python worker.py"
+        ready_regex: "Report for user"
+        healthy_after_s: 75
