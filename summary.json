@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "run_date": "2026-05-22",
-  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26304516992",
+  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26304552671",
   "versions": {
     "ts": "0.10.2",
     "py": "0.6.7",
@@ -9,17 +9,17 @@
   },
   "totals": {
     "total": 1,
-    "passing": 0,
-    "failing": 1
+    "passing": 1,
+    "failing": 0
   },
   "results": [
     {
-      "repo": "example-human-in-the-loop-rs",
-      "sdk": "rs",
-      "sdk_version": "0.4.0",
-      "status": "driver_then_failed",
-      "duration_s": 17,
-      "stderr_tail": "driver-then: curl: (52) Empty reply from server"
+      "repo": "example-async-rpc-py",
+      "sdk": "py",
+      "sdk_version": "0.6.7",
+      "status": "passing",
+      "duration_s": 16,
+      "stderr_tail": ""
     }
   ]
 }
