@@ -18,9 +18,13 @@ Each entry:
 | `requires_server` | bool | `false` | If `true`, the runner downloads the latest `resonate` release binary and starts `resonate dev` in the background before running the example. The server is torn down on exit. Examples connect via their hardcoded `http://localhost:8001`; no URL is injected. Use this for examples whose README calls for `resonate dev` / `resonate serve`. |
 | `server_kind` | `rust` / `legacy_go` | `rust` | Which Resonate server to spawn. `rust` (default) downloads from `resonatehq/resonate` — single port 8001, current protocol. `legacy_go` downloads from `resonatehq/resonate-legacy-server` — two ports (API on 8001, poll on 8002), older protocol. Use `legacy_go` for examples whose SDK still speaks the older protocol (e.g. Python SDK 0.6.x: long-poll URL is `host:port/{group}/{id}`, not `/poll/{group}/{id}`). Only meaningful when `requires_server: true`. |
 | `setup` | string[] | `[]` | Multi-process mode. Sequential pre-steps that must each exit 0 before processes start (e.g., `python schedule.py` to register a cron with the server). Runs after SDK install but after the server is up. |
-| `processes` | object[] | `[]` | Multi-process mode. Background processes started in order, each waited for `ready_regex` to appear in stdout/stderr within `healthy_after_s`. Per-entry fields: `name` (label), `entry` (command), `ready_regex` (default `registered\|ready\|listening`), `healthy_after_s` (default `5`). If a process exits before ready, the run fails with `process_died`. |
+| `processes` | object[] | `[]` | Multi-process mode. Background processes started in order, each waited for `ready_regex` to appear in stdout/stderr within `healthy_after_s`. Per-entry fields: `name` (label), `entry` (command), `ready_regex` (default `registered\|ready\|listening`; set to empty string `""` to opt out — see below), `healthy_after_s` (default `5`). If a process exits before ready, the run fails with `process_died`. |
 | `client` | object | — | Multi-process mode. Final foreground test after all `processes` are healthy. Fields: `entry` (command), `timeout_s` (default `30`). Pass = client exits 0. If `client` is absent and `processes` is non-empty, pass = all-processes-healthy. |
 | `skip` | bool | `false` | Skip this example. Used for Phase 3 examples requiring external services. |
+
+### `ready_regex: ""` — silent-worker opt-out
+
+Some workers register a function with the Resonate server and then block silently with no startup log line (e.g. the quickstart variants). For these, set `ready_regex: ""` explicitly. The orchestrator skips the regex check and the pass condition for that process becomes: **process is still alive when `healthy_after_s` elapses**. The `process_died` early-exit check is still applied. Pick `healthy_after_s` large enough that the worker has registered with the server before the client phase begins.
 
 ## Single-process vs multi-process modes
 

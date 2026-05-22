@@ -51,6 +51,8 @@ run_multi_process() {
   for ((i=0; i<n; i++)); do
     name=$(printf '%s' "$config"     | jq -r ".processes[$i].name // \"proc-$i\"")
     entry=$(printf '%s' "$config"    | jq -r ".processes[$i].entry")
+    # Use raw extraction so an explicit "" stays empty (opt-out signal).
+    # // only fires on absent/null, so a missing field still gets the default.
     ready_regex=$(printf '%s' "$config" | jq -r ".processes[$i].ready_regex // \"registered|ready|listening\"")
     healthy_after_s=$(printf '%s' "$config" | jq -r ".processes[$i].healthy_after_s // 5")
 
@@ -61,24 +63,38 @@ run_multi_process() {
     MULTI_NAMES+=("$name")
 
     deadline=$(( $(date -u +%s) + healthy_after_s ))
-    while [ "$(date -u +%s)" -lt "$deadline" ]; do
-      if ! kill -0 "$pid" 2>/dev/null; then
-        MULTI_STATUS="process_died"
-        MULTI_STDERR="[$name] died before ready: $(tail -c 4096 multi-$name.err 2>/dev/null || true)"
+    if [ -z "$ready_regex" ]; then
+      # Opt-out: silent worker. Pass = still alive after healthy_after_s.
+      while [ "$(date -u +%s)" -lt "$deadline" ]; do
+        if ! kill -0 "$pid" 2>/dev/null; then
+          MULTI_STATUS="process_died"
+          MULTI_STDERR="[$name] died before healthy_after_s: $(tail -c 4096 multi-$name.err 2>/dev/null || true)"
+          multi_kill_all
+          return 1
+        fi
+        sleep 0.5
+      done
+      echo "multi: [$name] alive after ${healthy_after_s}s (no ready_regex)" >&2
+    else
+      while [ "$(date -u +%s)" -lt "$deadline" ]; do
+        if ! kill -0 "$pid" 2>/dev/null; then
+          MULTI_STATUS="process_died"
+          MULTI_STDERR="[$name] died before ready: $(tail -c 4096 multi-$name.err 2>/dev/null || true)"
+          multi_kill_all
+          return 1
+        fi
+        if grep -qE "$ready_regex" "multi-$name.out" "multi-$name.err" 2>/dev/null; then
+          echo "multi: [$name] ready" >&2
+          break
+        fi
+        sleep 0.5
+      done
+      if ! grep -qE "$ready_regex" "multi-$name.out" "multi-$name.err" 2>/dev/null; then
+        MULTI_STATUS="process_unhealthy"
+        MULTI_STDERR="[$name] never matched ready_regex within ${healthy_after_s}s: $(tail -c 4096 multi-$name.err 2>/dev/null || true)"
         multi_kill_all
         return 1
       fi
-      if grep -qE "$ready_regex" "multi-$name.out" "multi-$name.err" 2>/dev/null; then
-        echo "multi: [$name] ready" >&2
-        break
-      fi
-      sleep 0.5
-    done
-    if ! grep -qE "$ready_regex" "multi-$name.out" "multi-$name.err" 2>/dev/null; then
-      MULTI_STATUS="process_unhealthy"
-      MULTI_STDERR="[$name] never matched ready_regex within ${healthy_after_s}s: $(tail -c 4096 multi-$name.err 2>/dev/null || true)"
-      multi_kill_all
-      return 1
     fi
   done
 
