@@ -105,6 +105,17 @@ jobs:
         with:
           name: result-${{ matrix.repo }}
           path: result.json
+      # Multi-process / driver logs aren't part of result.json's stderr_tail;
+      # upload them as a separate artifact so gateway crashes / driver
+      # mismatches can be debugged after the fact.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: multi-logs-${{ matrix.repo }}
+          path: |
+            example/multi-*.out
+            example/multi-*.err
+          if-no-files-found: ignore
 
   aggregate:
     needs: [resolve, run]
