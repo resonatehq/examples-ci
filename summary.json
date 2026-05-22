@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "run_date": "2026-05-22",
-  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26294730563",
+  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26294909143",
   "versions": {
     "ts": "0.10.2",
     "py": "0.6.7",
@@ -9,41 +9,41 @@
   },
   "totals": {
     "total": 4,
-    "passing": 0,
-    "failing": 4
+    "passing": 4,
+    "failing": 0
   },
   "results": [
     {
       "repo": "example-async-http-api-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
-      "status": "server_failed",
-      "duration_s": 23,
-      "stderr_tail": "resonate server failed to start (see job log)"
+      "status": "passing",
+      "duration_s": 9,
+      "stderr_tail": ""
     },
     {
       "repo": "example-load-balancing-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
-      "status": "server_failed",
-      "duration_s": 22,
-      "stderr_tail": "resonate server failed to start (see job log)"
+      "status": "passing",
+      "duration_s": 8,
+      "stderr_tail": ""
     },
     {
       "repo": "example-recursive-factorial-rs",
       "sdk": "rs",
       "sdk_version": "0.4.0",
-      "status": "server_failed",
-      "duration_s": 51,
-      "stderr_tail": "resonate server failed to start (see job log)"
+      "status": "passing",
+      "duration_s": 10,
+      "stderr_tail": ""
     },
     {
       "repo": "example-schedule-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
-      "status": "server_failed",
-      "duration_s": 20,
-      "stderr_tail": "resonate server failed to start (see job log)"
+      "status": "passing",
+      "duration_s": 57,
+      "stderr_tail": ""
     }
   ]
 }
