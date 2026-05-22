@@ -73,7 +73,7 @@ jobs:
           path: ci
       - if: matrix.sdk == 'ts'
         uses: actions/setup-node@v4
-        with: { node-version: "20" }
+        with: { node-version: "22" }
       - if: matrix.sdk == 'ts'
         uses: oven-sh/setup-bun@v1
       - if: matrix.sdk == 'py'

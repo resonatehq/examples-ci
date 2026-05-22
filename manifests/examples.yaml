@@ -171,11 +171,6 @@ examples:
   - repo: example-express-integration-ts
     sdk: ts
     kind: script
-    # Override `npm start` (= `tsx src/index.ts`) — runs under Node, and Node 20
-    # on the CI runner lacks `Promise.withResolvers` which the SDK uses. Running
-    # under Bun's runtime sidesteps that. Repo ships package-lock.json (not
-    # bun.lock), so the runner does `npm ci` first, then this entry runs under bun.
-    entry: bun run src/index.ts
     timeout_s: 30
 
   # ---- Phase 1.5 first wave (multi-process + requires_server) ----
