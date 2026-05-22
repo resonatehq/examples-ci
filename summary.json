@@ -1,49 +1,25 @@
 {
   "schema_version": "1",
   "run_date": "2026-05-22",
-  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26303118606",
+  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26303221956",
   "versions": {
     "ts": "0.10.2",
     "py": "0.6.7",
     "rs": "0.4.0"
   },
   "totals": {
-    "total": 4,
-    "passing": 3,
-    "failing": 1
+    "total": 1,
+    "passing": 1,
+    "failing": 0
   },
   "results": [
-    {
-      "repo": "example-durable-sleep-py",
-      "sdk": "py",
-      "sdk_version": "0.6.7",
-      "status": "passing",
-      "duration_s": 19,
-      "stderr_tail": ""
-    },
-    {
-      "repo": "example-durable-sleep-rs",
-      "sdk": "rs",
-      "sdk_version": "0.4.0",
-      "status": "passing",
-      "duration_s": 17,
-      "stderr_tail": ""
-    },
-    {
-      "repo": "example-durable-sleep-ts",
-      "sdk": "ts",
-      "sdk_version": "0.10.2",
-      "status": "passing",
-      "duration_s": 20,
-      "stderr_tail": ""
-    },
     {
       "repo": "example-fan-out-fan-in-rs",
       "sdk": "rs",
       "sdk_version": "0.4.0",
-      "status": "compile_failed",
-      "duration_s": 1,
-      "stderr_tail": "\u001b[1m\u001b[92m    Updating\u001b[0m git repository `https://github.com/resonatehq/resonate-sdk-rs`\n\u001b[1m\u001b[92m    Updating\u001b[0m crates.io index\n\u001b[1m\u001b[91merror\u001b[0m: no matching package named `resonate` found\nlocation searched: Git repository https://github.com/resonatehq/resonate-sdk-rs?branch=main\nrequired by package `example-fan-out-fan-in-rs v0.1.0 (/home/runner/work/examples-ci/examples-ci/example)`"
+      "status": "passing",
+      "duration_s": 8,
+      "stderr_tail": ""
     }
   ]
 }
