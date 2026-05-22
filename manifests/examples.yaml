@@ -508,7 +508,12 @@ examples:
           pattern: "promise_id=([A-Za-z0-9._-]+)"
           capture: promise_id
         then:
-          entry: "curl -sSf 'http://127.0.0.1:5001/unblock-workflow?promise_id=${promise_id}'"
+          # Brief grace period: the worker can print the URL up to ~50ms before
+          # the server-side promise.create RPC fully commits in the Rust
+          # server's in-memory store; resolving too fast races into 404. The
+          # sleep is empirically the smallest delay that makes the race
+          # disappear in CI.
+          entry: "sleep 1 && curl -sSf 'http://127.0.0.1:5001/unblock-workflow?promise_id=${promise_id}'"
         timeout_s: 60
 
   - repo: example-human-in-the-loop-rs
@@ -532,7 +537,8 @@ examples:
           pattern: "/resolve/([A-Za-z0-9._-]+)"
           capture: promise_id
         then:
-          entry: "curl -sSf 'http://127.0.0.1:5001/resolve/${promise_id}'"
+          # See HITL-ts entry above re: the 1s grace period.
+          entry: "sleep 1 && curl -sSf 'http://127.0.0.1:5001/resolve/${promise_id}'"
         timeout_s: 60
 
   # ---- Phase 1.5 wave 6 (N>2 processes: async-rpc gateway + 9 services) ----
