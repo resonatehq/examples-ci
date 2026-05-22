@@ -115,6 +115,7 @@ jobs:
           path: |
             example/multi-*.out
             example/multi-*.err
+            /tmp/resonate.log
           if-no-files-found: ignore
 
   aggregate:
