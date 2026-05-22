@@ -563,6 +563,34 @@ examples:
           entry: "sleep 1 && curl -sSf 'http://127.0.0.1:5001/resolve/${promise_id}'"
         timeout_s: 60
 
+  # ---- Phase 1.5 wave 7 (sibling enrollments) ----
+  # schedule-rs: mirror of schedule-py but uses Rust SDK's still-extant
+  # high-level `.schedule(name, cron, func, args)` API (Py SDK 0.6.7 removed
+  # the top-level wrapper; Rust kept it). Multi-bin: schedule binary
+  # registers the cron and exits, worker binary processes ticks.
+  - repo: example-schedule-rs
+    sdk: rs
+    requires_server: true
+    setup:
+      - "cargo run --release --bin schedule"
+    processes:
+      - name: worker
+        entry: "cargo run --release --bin worker"
+        ready_regex: "Report for user"
+        healthy_after_s: 75
+
+  # fan-out-fan-in-py: single-process script that registers workflow +
+  # channels, starts the SDK, submits a workflow with workflow.run(),
+  # waits for fan-in, prints results, exits. Needs legacy server because
+  # the workflow uses ctx.rfi() which speaks the older protocol.
+  - repo: example-fan-out-fan-in-py
+    sdk: py
+    kind: script
+    requires_server: true
+    server_kind: legacy_go
+    entry: "python main.py"
+    timeout_s: 60
+
   # ---- Phase 1.5 wave 6 (N>2 processes: async-rpc gateway + 9 services) ----
   # Service ordering: services first (a..i), gateway last. The gateway depends
   # on services being registered to poll://*; starting it last ensures it can
