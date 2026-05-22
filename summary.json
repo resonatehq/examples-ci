@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
-  "run_date": "2026-05-21",
-  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26213977624",
+  "run_date": "2026-05-22",
+  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26276223708",
   "versions": {
     "ts": "0.10.2",
     "py": "0.6.7",
@@ -34,7 +34,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 1,
+      "duration_s": 2,
       "stderr_tail": "$ bun run src/index.ts"
     },
     {
@@ -58,7 +58,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 4,
+      "duration_s": 3,
       "stderr_tail": ""
     },
     {
@@ -82,7 +82,7 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 6,
+      "duration_s": 8,
       "stderr_tail": ""
     },
     {
@@ -90,7 +90,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 5,
+      "duration_s": 4,
       "stderr_tail": ""
     },
     {
@@ -98,23 +98,23 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 7,
-      "stderr_tail": "[2026-05-21 08:13:30] [ERROR] [transfer-002] [transfer-002.2] RuntimeError. Function credit_target('transfer-002-credit', 'bob', 75.0, fail=True) failed with TransferRejected(\"target account 'bob' rejected the credit\")"
+      "duration_s": 11,
+      "stderr_tail": "[2026-05-22 08:07:56] [ERROR] [transfer-002] [transfer-002.2] RuntimeError. Function credit_target('transfer-002-credit', 'bob', 75.0, fail=True) failed with TransferRejected(\"target account 'bob' rejected the credit\")"
     },
     {
       "repo": "example-money-transfer-rs",
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 6,
-      "stderr_tail": "\u001b[1m\u001b[92m    Finished\u001b[0m `release` profile [optimized] target(s) in 0.09s\n\u001b[1m\u001b[92m     Running\u001b[0m `target/release/money-transfer`"
+      "duration_s": 24,
+      "stderr_tail": "\u001b[1m\u001b[92m    Finished\u001b[0m `release` profile [optimized] target(s) in 0.08s\n\u001b[1m\u001b[92m     Running\u001b[0m `target/release/money-transfer`"
     },
     {
       "repo": "example-priority-queue-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 1,
+      "duration_s": 2,
       "stderr_tail": "$ bun run src/index.ts"
     },
     {
@@ -122,7 +122,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 10,
+      "duration_s": 9,
       "stderr_tail": "$ bun run src/index.ts"
     },
     {
@@ -130,7 +130,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 1,
+      "duration_s": 2,
       "stderr_tail": "$ bun run src/index.ts"
     },
     {
@@ -138,7 +138,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 0,
+      "duration_s": 1,
       "stderr_tail": "$ bun run src/index.ts"
     },
     {
@@ -146,7 +146,7 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 13,
+      "duration_s": 16,
       "stderr_tail": ""
     },
     {
@@ -154,7 +154,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 1,
+      "duration_s": 2,
       "stderr_tail": "$ bun run src/index.ts"
     }
   ]
