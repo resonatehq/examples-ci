@@ -29,6 +29,12 @@ start_resonate_server() {
   RESONATE_SERVER_PID=$!
   export RESONATE_SERVER_PID
 
+  # Python SDK defaults RESONATE_PORT_MESSAGE_SOURCE to 8002, but the unified
+  # Rust server listens on 8001 only. Without this override, Py examples fail
+  # with "Cannot connect to http://localhost:8002" on the poller side.
+  # TS/RS SDKs use a single URL and aren't affected.
+  export RESONATE_PORT_MESSAGE_SOURCE=8001
+
   # Detect readiness by the server's own "Server listening" log line — emitted
   # after socket.bind()+listen() succeeds. More robust than HTTP probing
   # (GET / returns 405 which trips curl -f) and decoupled from any future
