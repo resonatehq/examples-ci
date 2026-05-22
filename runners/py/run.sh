@@ -52,6 +52,12 @@ trap on_exit EXIT
 
 cd "$EXAMPLE_DIR"
 
+# Python stdout is block-buffered when redirected to a file (as multi.sh does
+# for `processes` entries). Workers that print "ready" then block on
+# Event().wait() never flush — multi.sh's ready_regex never matches.
+# Unbuffered mode makes prints flush per-line. Cheap globally; required here.
+export PYTHONUNBUFFERED=1
+
 python -m venv .venv 2>>install.err || exit 0
 . .venv/bin/activate
 
