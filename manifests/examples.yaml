@@ -694,8 +694,8 @@ examples:
   # SDK pin is a pseudo-version (`v0.0.0-<date>-<hash>`) — Go modules handle
   # those natively; switch the resolve step to read a real tag when one ships.
   # recursive-factorial-go is deferred — README references cmd/{worker,client}/
-  # but the actual repo only ships factorial/factorial.go (the README is ahead
-  # of the code; example doesn't run end-to-end without those entry points).
+  # but the actual repo only ships factorial/factorial.go. Tracked at:
+  # https://github.com/resonatehq-examples/example-recursive-factorial-go/issues/1
 
   - repo: example-hello-world-go
     sdk: go
@@ -722,9 +722,13 @@ examples:
   # ---- Phase 1.5 wave 9 (more Go: localnet-by-default examples) ----
   # These 6 examples default to the in-process `localnet` transport — no
   # external Resonate server needed. Bare `go run .` works for all six.
-  # Closes most of resonatehq/examples-ci#1 (load-balancing-go remains
-  # deferred there; recursive-factorial-go deferred separately because its
-  # README references cmd/{worker,client} that don't exist in the repo).
+  # Closes the bulk of resonatehq/examples-ci#1. The two remaining Go
+  # repos in the org:
+  #  - load-balancing-go is enrolled below this block (single Go binary
+  #    with internal worker goroutines; no multi-process schema needed).
+  #  - recursive-factorial-go is still deferred — README references
+  #    cmd/{worker,client} that don't exist. Tracked at:
+  #    https://github.com/resonatehq-examples/example-recursive-factorial-go/issues/1
 
   - repo: example-durable-sleep-go
     sdk: go
