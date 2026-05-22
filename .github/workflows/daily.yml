@@ -26,6 +26,7 @@ jobs:
       ts_version: ${{ steps.versions.outputs.ts }}
       py_version: ${{ steps.versions.outputs.py }}
       rs_version: ${{ steps.versions.outputs.rs }}
+      go_version: ${{ steps.versions.outputs.go }}
       run_date: ${{ steps.date.outputs.value }}
     steps:
       - uses: actions/checkout@v4
@@ -38,18 +39,25 @@ jobs:
           TS=$(npm view @resonatehq/sdk version)
           PY=$(curl -sf https://pypi.org/pypi/resonate-sdk/json | jq -r '.info.version')
           RS=$(curl -sf -A "examples-ci (resonatehq)" https://crates.io/api/v1/crates/resonate-sdk | jq -r '.crate.max_stable_version')
+          # Go SDK is on pseudo-versions only (v0.0.0-<date>-<hash>); pull from
+          # the module proxy and use it verbatim with `go get`. When a real
+          # tag ships, this still works — proxy reports the latest tag.
+          GO=$(curl -sf https://proxy.golang.org/github.com/resonatehq/resonate-sdk-go/@latest | jq -r '.Version')
           [ -z "$TS" ] && { echo "ts version resolution failed"; exit 1; }
           [ -z "$PY" ] && { echo "py version resolution failed"; exit 1; }
           [ -z "$RS" ] && { echo "rs version resolution failed"; exit 1; }
+          [ -z "$GO" ] && { echo "go version resolution failed"; exit 1; }
           echo "ts=$TS" >> "$GITHUB_OUTPUT"
           echo "py=$PY" >> "$GITHUB_OUTPUT"
           echo "rs=$RS" >> "$GITHUB_OUTPUT"
-          echo "Resolved: ts=$TS py=$PY rs=$RS"
+          echo "go=$GO" >> "$GITHUB_OUTPUT"
+          echo "Resolved: ts=$TS py=$PY rs=$RS go=$GO"
       - id: matrix
         env:
           TS_VERSION: ${{ steps.versions.outputs.ts }}
           PY_VERSION: ${{ steps.versions.outputs.py }}
           RS_VERSION: ${{ steps.versions.outputs.rs }}
+          GO_VERSION: ${{ steps.versions.outputs.go }}
         run: |
           MATRIX=$(bun run scripts/build-matrix.ts "${{ inputs.examples }}")
           echo "Matrix size: $(echo "$MATRIX" | jq 'length')"
@@ -86,6 +94,10 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: example
+      - if: matrix.sdk == 'go'
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
       - name: Run example
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}
@@ -156,6 +168,7 @@ jobs:
           TS_VERSION: ${{ needs.resolve.outputs.ts_version }}
           PY_VERSION: ${{ needs.resolve.outputs.py_version }}
           RS_VERSION: ${{ needs.resolve.outputs.rs_version }}
+          GO_VERSION: ${{ needs.resolve.outputs.go_version }}
         run: bun run scripts/aggregate.ts
       - uses: actions/upload-artifact@v4
         with:

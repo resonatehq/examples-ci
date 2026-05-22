@@ -4,7 +4,7 @@ import { join } from "node:path";
 
 type Result = {
   repo: string;
-  sdk: "ts" | "py" | "rs";
+  sdk: "ts" | "py" | "rs" | "go";
   sdk_version: string;
   status: string;
   duration_s: number;
@@ -20,7 +20,7 @@ const STATUS_DIR = join(OUT_DIR, "status");
 // sdk_version strings and the dashboard shows the wrong "as-of" date.
 // Reviewer flagged: ?? "" was masking the upstream resolve step silently
 // not emitting the version outputs.
-const REQUIRED_ENV = ["RUN_DATE", "RUN_URL", "TS_VERSION", "PY_VERSION", "RS_VERSION"];
+const REQUIRED_ENV = ["RUN_DATE", "RUN_URL", "TS_VERSION", "PY_VERSION", "RS_VERSION", "GO_VERSION"];
 for (const name of REQUIRED_ENV) {
   if (!process.env[name]) {
     console.error(`aggregate: required env var ${name} is empty; refusing to emit a malformed summary`);
@@ -54,6 +54,7 @@ const summary = {
     ts: process.env.TS_VERSION ?? "",
     py: process.env.PY_VERSION ?? "",
     rs: process.env.RS_VERSION ?? "",
+    go: process.env.GO_VERSION ?? "",
   },
   totals: {
     total: results.length,
@@ -124,7 +125,7 @@ const html = `<!doctype html>
 <p class="meta">
   Run date: <strong>${summary.run_date}</strong> ·
   ${summary.totals.passing}/${summary.totals.total} passing ·
-  SDK: ts <code>${summary.versions.ts}</code>, py <code>${summary.versions.py}</code>, rs <code>${summary.versions.rs}</code> ·
+  SDK: ts <code>${summary.versions.ts}</code>, py <code>${summary.versions.py}</code>, rs <code>${summary.versions.rs}</code>, go <code>${summary.versions.go}</code> ·
   <a href="${summary.run_url}">workflow run</a>
 </p>
 <div class="filters">
@@ -133,6 +134,7 @@ const html = `<!doctype html>
   <button data-filter="ts">TS</button>
   <button data-filter="py">Py</button>
   <button data-filter="rs">Rs</button>
+  <button data-filter="go">Go</button>
   <button data-filter="failing">Failing only</button>
 </div>
 <table>

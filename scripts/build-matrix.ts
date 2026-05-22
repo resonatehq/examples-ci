@@ -2,7 +2,7 @@
 import { parse as parseYaml } from "yaml";
 import { readFileSync } from "node:fs";
 
-type Sdk = "ts" | "py" | "rs";
+type Sdk = "ts" | "py" | "rs" | "go";
 
 type ProcessEntry = {
   name?: string;
@@ -46,12 +46,14 @@ const SDK_DEFAULTS: Record<Sdk, { entry: string; timeout_s: number; healthy_afte
   ts: { entry: "npm start", timeout_s: 60, healthy_after_s: 15 },
   py: { entry: "python main.py", timeout_s: 60, healthy_after_s: 15 },
   rs: { entry: "cargo run --release", timeout_s: 120, healthy_after_s: 20 },
+  go: { entry: "go run .", timeout_s: 60, healthy_after_s: 15 },
 };
 
 const versions: Record<Sdk, string> = {
   ts: process.env.TS_VERSION ?? "",
   py: process.env.PY_VERSION ?? "",
   rs: process.env.RS_VERSION ?? "",
+  go: process.env.GO_VERSION ?? "",
 };
 
 const filterArg = process.argv[2] ?? "";

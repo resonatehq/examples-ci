@@ -37,7 +37,7 @@ Daily compatibility check for [resonatehq-examples](https://github.com/resonateh
 
 ```
 .github/workflows/daily.yml  cron orchestrator (resolve → run → aggregate)
-runners/{ts,py,rs}/run.sh    per-SDK install + run + capture
+runners/{ts,py,rs,go}/run.sh per-SDK install + run + capture
 scripts/build-matrix.ts      manifests/examples.yaml → GH Actions matrix JSON
 scripts/aggregate.ts         per-shard result.json → summary + status/*.json + dashboard
 manifests/examples.yaml      source of truth: which examples to run

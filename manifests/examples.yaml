@@ -687,3 +687,34 @@ examples:
     client:
       entry: "curl -sSf -X POST http://127.0.0.1:5000/await-chain"
       timeout_s: 60
+
+  # ---- Phase 1.5 wave 8 (Go SDK first wave) ----
+  # All Go examples need requires_server: true — the Go SDK doesn't have an
+  # in-process / local fallback (yet); every example targets http://localhost:8001.
+  # SDK pin is a pseudo-version (`v0.0.0-<date>-<hash>`) — Go modules handle
+  # those natively; switch the resolve step to read a real tag when one ships.
+  # recursive-factorial-go is deferred — README references cmd/{worker,client}/
+  # but the actual repo only ships factorial/factorial.go (the README is ahead
+  # of the code; example doesn't run end-to-end without those entry points).
+
+  - repo: example-hello-world-go
+    sdk: go
+    kind: script
+    requires_server: true
+    entry: "go run ."
+    timeout_s: 60
+
+  - repo: example-countdown-go
+    sdk: go
+    kind: script
+    requires_server: true
+    # default `go run .` picks up main.go with -start=3 -step=1 -url="" defaults.
+    entry: "go run ."
+    timeout_s: 60
+
+  - repo: example-fan-out-fan-in-go
+    sdk: go
+    kind: script
+    requires_server: true
+    entry: "go run ."
+    timeout_s: 60
