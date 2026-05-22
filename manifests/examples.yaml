@@ -718,3 +718,48 @@ examples:
     requires_server: true
     entry: "go run ."
     timeout_s: 60
+
+  # ---- Phase 1.5 wave 9 (more Go: localnet-by-default examples) ----
+  # These 6 examples default to the in-process `localnet` transport — no
+  # external Resonate server needed. Bare `go run .` works for all six.
+  # Closes most of resonatehq/examples-ci#1 (load-balancing-go remains
+  # deferred there; recursive-factorial-go deferred separately because its
+  # README references cmd/{worker,client} that don't exist in the repo).
+
+  - repo: example-durable-sleep-go
+    sdk: go
+    kind: script
+    entry: "go run ."
+    timeout_s: 30
+
+  - repo: example-quickstart-go
+    sdk: go
+    kind: script
+    entry: "go run ."
+    timeout_s: 30
+
+  - repo: example-async-rpc-go
+    sdk: go
+    kind: script
+    # default -mode=all runs chain + detached + fanout sequentially
+    entry: "go run ."
+    timeout_s: 60
+
+  - repo: example-human-in-the-loop-go
+    sdk: go
+    kind: script
+    entry: "go run ."
+    timeout_s: 30
+
+  - repo: example-webhook-handler-go
+    sdk: go
+    kind: script
+    entry: "go run ."
+    timeout_s: 30
+
+  - repo: example-infinite-workflow-go
+    sdk: go
+    kind: script
+    # defaults -iterations=5 -interval-secs=1 → ~5s total
+    entry: "go run ."
+    timeout_s: 60
