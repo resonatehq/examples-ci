@@ -534,3 +534,108 @@ examples:
         then:
           entry: "curl -sSf 'http://127.0.0.1:5001/resolve/${promise_id}'"
         timeout_s: 60
+
+  # ---- Phase 1.5 wave 6 (N>2 processes: async-rpc gateway + 9 services) ----
+  # Service ordering: services first (a..i), gateway last. The gateway depends
+  # on services being registered to poll://*; starting it last ensures it can
+  # immediately dispatch beginRpc when curl hits /await-chain. The client
+  # exercises the chain pattern (a -> b -> c), which is enough to confirm the
+  # multi-service routing works end-to-end. Detached + fan-out chains are
+  # also wired up but not exercised by the test driver.
+
+  - repo: example-async-rpc-ts
+    sdk: ts
+    requires_server: true
+    processes:
+      - name: service-a
+        entry: "bun run src/service_a.ts"
+        ready_regex: " running"
+        healthy_after_s: 10
+      - name: service-b
+        entry: "bun run src/service_b.ts"
+        ready_regex: " running"
+        healthy_after_s: 10
+      - name: service-c
+        entry: "bun run src/service_c.ts"
+        ready_regex: " running"
+        healthy_after_s: 10
+      - name: service-d
+        entry: "bun run src/service_d.ts"
+        ready_regex: " running"
+        healthy_after_s: 10
+      - name: service-e
+        entry: "bun run src/service_e.ts"
+        ready_regex: " running"
+        healthy_after_s: 10
+      - name: service-f
+        entry: "bun run src/service_f.ts"
+        ready_regex: " running"
+        healthy_after_s: 10
+      - name: service-g
+        entry: "bun run src/service_g.ts"
+        ready_regex: " running"
+        healthy_after_s: 10
+      - name: service-h
+        entry: "bun run src/service_h.ts"
+        ready_regex: " running"
+        healthy_after_s: 10
+      - name: service-i
+        entry: "bun run src/service_i.ts"
+        ready_regex: " running"
+        healthy_after_s: 10
+      - name: gateway
+        entry: "bun run src/gateway.ts"
+        ready_regex: " running on"
+        healthy_after_s: 15
+    client:
+      entry: "curl -sSf -X POST http://127.0.0.1:5000/await-chain"
+      timeout_s: 60
+
+  - repo: example-async-rpc-py
+    sdk: py
+    requires_server: true
+    server_kind: legacy_go
+    processes:
+      - name: service-a
+        entry: "a"
+        ready_regex: " running"
+        healthy_after_s: 8
+      - name: service-b
+        entry: "b"
+        ready_regex: " running"
+        healthy_after_s: 8
+      - name: service-c
+        entry: "c"
+        ready_regex: " running"
+        healthy_after_s: 8
+      - name: service-d
+        entry: "d"
+        ready_regex: " running"
+        healthy_after_s: 8
+      - name: service-e
+        entry: "e"
+        ready_regex: " running"
+        healthy_after_s: 8
+      - name: service-f
+        entry: "f"
+        ready_regex: " running"
+        healthy_after_s: 8
+      - name: service-g
+        entry: "g"
+        ready_regex: " running"
+        healthy_after_s: 8
+      - name: service-h
+        entry: "h"
+        ready_regex: " running"
+        healthy_after_s: 8
+      - name: service-i
+        entry: "i"
+        ready_regex: " running"
+        healthy_after_s: 8
+      - name: gateway
+        entry: "gateway"
+        ready_regex: " running"
+        healthy_after_s: 15
+    client:
+      entry: "curl -sSf -X POST http://127.0.0.1:5000/await-chain"
+      timeout_s: 60
