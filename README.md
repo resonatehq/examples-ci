@@ -18,10 +18,16 @@ Daily compatibility check for [resonatehq-examples](https://github.com/resonateh
 | `passing` | One-shot example exited 0, or worker passed liveness probe within `healthy_after_seconds`. |
 | `install_failed` | Package install (npm/pip/cargo) errored before the example ran. |
 | `compile_failed` | Rust only: `cargo build` failed. |
+| `server_failed` | `requires_server: true` example — Resonate server binary download or startup failed. |
 | `runtime_failed` | Non-zero exit during run. |
 | `worker_died` | Worker process exited before liveness probe. |
 | `worker_unhealthy` | Worker stayed alive but didn't match `health_regex`. |
 | `timeout_unhealthy` | One-shot example hit timeout without exiting. |
+| `setup_failed` | Multi-process example — a `setup:` command exited non-zero. |
+| `process_died` | Multi-process example — a `processes:` entry exited before its `ready_regex` matched. |
+| `process_unhealthy` | Multi-process example — a `processes:` entry stayed alive but didn't match `ready_regex` within `healthy_after_s`. |
+| `client_failed` | Multi-process example — `client.entry` exited non-zero. |
+| `client_timeout` | Multi-process example — `client.entry` hit `client.timeout_s`. |
 
 ## Layout
 

@@ -9,6 +9,8 @@ ENTRY="${ENTRY:-npm start}"
 TIMEOUT_S="${TIMEOUT_S:-60}"
 HEALTHY_AFTER_S="${HEALTHY_AFTER_S:-15}"
 HEALTH_REGEX="${HEALTH_REGEX:-registered|ready|listening}"
+REQUIRES_SERVER="${REQUIRES_SERVER:-false}"
+MULTI_CONFIG="${MULTI_CONFIG:-}"
 
 # Detect timeout binary (GNU `timeout` on Linux CI, `gtimeout` from coreutils on macOS).
 TIMEOUT_BIN=""
@@ -37,7 +39,17 @@ emit_result() {
     '{repo: $repo, sdk: $sdk, sdk_version: $sdk_version, status: $status, duration_s: $duration, stderr_tail: $stderr_tail}' \
     > "$WORKSPACE/result.json"
 }
-trap emit_result EXIT
+
+on_exit() {
+  multi_kill_all 2>/dev/null || true
+  stop_resonate_server 2>/dev/null || true
+  emit_result
+}
+# shellcheck source=../lib/server.sh
+. "$(dirname "$0")/../lib/server.sh"
+# shellcheck source=../lib/multi.sh
+. "$(dirname "$0")/../lib/multi.sh"
+trap on_exit EXIT
 
 cd "$EXAMPLE_DIR"
 
@@ -49,9 +61,24 @@ else
   npm install --save-exact "@resonatehq/sdk@${SDK_VERSION}" 2>>install.err || exit 0
 fi
 
+if [ "$REQUIRES_SERVER" = "true" ]; then
+  STATUS="server_failed"
+  if ! start_resonate_server; then
+    STDERR_TAIL="resonate server failed to start (see job log)"
+    exit 0
+  fi
+fi
+
 STATUS="runtime_failed"
 
-if [ "$KIND" = "worker" ]; then
+if [ -n "$MULTI_CONFIG" ]; then
+  if run_multi_process "$MULTI_CONFIG"; then
+    STATUS="$MULTI_STATUS"
+  else
+    STATUS="$MULTI_STATUS"
+    STDERR_TAIL="$MULTI_STDERR"
+  fi
+elif [ "$KIND" = "worker" ]; then
   bash -c "$ENTRY" > run.out 2> run.err &
   RUN_PID=$!
   sleep "$HEALTHY_AFTER_S"

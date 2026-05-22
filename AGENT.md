@@ -7,6 +7,8 @@ Daily CI matrix that runs every Resonate example against latest published SDKs. 
 - `manifests/examples.yaml` — single source of truth for enrolled examples. Schema in `manifests/SCHEMA.md`.
 - `.github/workflows/daily.yml` — three-stage cron: `resolve` (npm/pip/cargo version detection, baked into matrix), `run` (one shard per example), `aggregate` (collect → summary + gh-pages publish + Echo notify).
 - `runners/<sdk>/run.sh` — install-latest-SDK-on-top → run → emit `result.json`. Worker mode uses background spawn + liveness probe (process alive AND stderr matches `health_regex` at `healthy_after_seconds`).
+- `runners/lib/server.sh` — sourced by each per-SDK runner. When `REQUIRES_SERVER=true`, downloads latest `resonate` release binary and spawns `resonate dev` in the background (in-memory mode, port 8001); torn down on exit via the same trap that emits `result.json`. Examples connect via their hardcoded `http://localhost:8001` — no URL injection.
+- `runners/lib/multi.sh` — sourced by each per-SDK runner. When `MULTI_CONFIG` is a non-empty JSON object (setup / processes / client), orchestrates: sequential `setup` exits → background `processes` started + waited for `ready_regex` → foreground `client` runs with timeout. All processes torn down on exit. Examples with worker+client, gateway+worker, or multi-bin Rust crates go through here.
 - `scripts/build-matrix.ts` — reads `manifests/examples.yaml`, applies SDK defaults + resolved versions from env, emits matrix JSON for GH Actions.
 - `scripts/aggregate.ts` — output contract for two downstream consumers: Echo (`summary.json`) and shields.io (`public/status/<repo>.json`). Schema-versioned (`schema_version: "1"`); bump in lock-step with Echo's parser.
 
@@ -24,7 +26,8 @@ Daily CI matrix that runs every Resonate example against latest published SDKs. 
 
 ## Phasing
 
-- **Phase 1** (current): instant + short-running examples, no external services. Seed manifest has 6 examples; expand to ~78.
+- **Phase 1** (live): single-process examples, no Resonate server required (18 enrolled).
+- **Phase 1.5** (active): server-required + multi-process examples. `requires_server: true` spawns `resonate dev`; `setup` / `processes` / `client` schema fields orchestrate multi-step demos (worker + client/invoke, gateway + worker, multi-bin Rust). Unlocks load-balancing, recursive-factorial, schedule, async-http-api, human-in-the-loop, durable-sleep, async-rpc, quickstart variants.
 - **Phase 2**: AI agent examples with mocked LLM calls (~7 examples).
 - **Phase 3**: docker-compose runner for Kafka examples; separate creds-gated job for Lambda/Databricks (~8 examples).
 

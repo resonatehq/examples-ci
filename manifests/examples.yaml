@@ -52,6 +52,16 @@
 # exited RC=0 with expected output. No code fixes required; the SDK no longer
 # keeps the event loop alive after `resonate.run()` resolves in these patterns
 # (only the previously-fixed 5 needed `resonate.stop()`).
+#
+# Phase 1.5 first wave (2026-05-22): multi-process schema introduced (`setup`,
+# `processes`, `client`) + `requires_server: true`. Four examples enrolled,
+# each representative of one pattern:
+#   - load-balancing-ts        — worker (background) + client (foreground)
+#   - schedule-ts              — setup (register cron) + worker; no client
+#   - async-http-api-ts        — gateway + worker (both background) + curl driver
+#   - recursive-factorial-rs   — multi-bin Rust (worker bin + client bin)
+# Quickstart-{py,ts} deferred: workers emit no startup log, so ready_regex
+# can't match cleanly without first pushing a log line to the example repos.
 
 examples:
   - repo: example-hello-world-py
@@ -165,3 +175,66 @@ examples:
     # bun.lock), so the runner does `npm ci` first, then this entry runs under bun.
     entry: bun run src/index.ts
     timeout_s: 30
+
+  # ---- Phase 1.5 first wave (multi-process + requires_server) ----
+
+  - repo: example-load-balancing-ts
+    sdk: ts
+    requires_server: true
+    processes:
+      - name: worker
+        entry: "bun run worker.ts"
+        ready_regex: "worker is running"
+        healthy_after_s: 10
+    client:
+      entry: "bun run client.ts"
+      timeout_s: 30
+
+  - repo: example-schedule-ts
+    sdk: ts
+    requires_server: true
+    # schedule.ts registers the "* * * * *" cron and exits. Re-runnable: the
+    # script swallows serverError 40901 (already-exists). Run via bun, not
+    # `npx tsx`, to sidestep Node-20 Promise.withResolvers (same gotcha as
+    # example-express-integration-ts).
+    setup:
+      - "bun run src/schedule.ts"
+    processes:
+      - name: worker
+        entry: "bun run src/worker.ts"
+        # ready_regex matches the line worker.ts logs *after* it sees the cron
+        # tick fire. healthy_after_s budget covers up-to-60s cron-tick latency
+        # plus margin. No client — observing the cron tick IS the test.
+        ready_regex: "Report for user"
+        healthy_after_s: 75
+
+  - repo: example-async-http-api-ts
+    sdk: ts
+    requires_server: true
+    processes:
+      - name: gateway
+        entry: "bun run gateway.ts"
+        ready_regex: "gateway listening on"
+        healthy_after_s: 10
+      - name: worker
+        entry: "bun run worker.ts"
+        ready_regex: "worker running, waiting for tasks"
+        healthy_after_s: 10
+    client:
+      # /begin returns 200 JSON immediately (non-blocking beginRpc).
+      entry: "curl -sSf -X POST http://127.0.0.1:5001/begin"
+      timeout_s: 30
+
+  - repo: example-recursive-factorial-rs
+    sdk: rs
+    requires_server: true
+    # cargo build --release already ran in the runner's compile phase, so
+    # cargo run --release --bin <x> is fast (no recompile).
+    processes:
+      - name: worker
+        entry: "cargo run --release --bin worker"
+        ready_regex: "factorial worker running"
+        healthy_after_s: 30
+    client:
+      entry: "cargo run --release --bin client 6"
+      timeout_s: 60

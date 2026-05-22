@@ -4,6 +4,18 @@ import { readFileSync } from "node:fs";
 
 type Sdk = "ts" | "py" | "rs";
 
+type ProcessEntry = {
+  name?: string;
+  entry: string;
+  ready_regex?: string;
+  healthy_after_s?: number;
+};
+
+type ClientEntry = {
+  entry: string;
+  timeout_s?: number;
+};
+
 type Entry = {
   repo: string;
   sdk: Sdk;
@@ -12,6 +24,10 @@ type Entry = {
   timeout_s?: number;
   healthy_after_s?: number;
   health_regex?: string;
+  requires_server?: boolean;
+  setup?: string[];
+  processes?: ProcessEntry[];
+  client?: ClientEntry;
   skip?: boolean;
 };
 
@@ -50,6 +66,15 @@ const matrix = yaml.examples
       timeout_s: e.timeout_s ?? defaults.timeout_s,
       healthy_after_s: e.healthy_after_s ?? defaults.healthy_after_s,
       health_regex: e.health_regex ?? "registered|ready|listening",
+      requires_server: e.requires_server ?? false,
+      multi_config:
+        e.processes || e.setup || e.client
+          ? JSON.stringify({
+              setup: e.setup ?? [],
+              processes: e.processes ?? [],
+              client: e.client,
+            })
+          : "",
     };
   });
 
