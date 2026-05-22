@@ -143,8 +143,15 @@ jobs:
           path: |
             summary.json
             public/
+      # Skip dashboard publish for subset runs (workflow_dispatch with
+      # `examples=foo,bar`). Subset runs only re-run the named shards, so
+      # publishing would overwrite the dashboard with an N-of-total view
+      # and lose all the other examples' status. Operators triggering a
+      # subset want to validate their entries, not refresh the dashboard;
+      # the next no-arg run (or the 07:00 UTC cron) restores the full
+      # picture.
       - name: Publish to gh-pages
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && inputs.examples == ''
         uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -152,7 +159,7 @@ jobs:
           publish_branch: gh-pages
           keep_files: false
       - name: Notify Echo
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && inputs.examples == ''
         env:
           ECHO_API_URL: ${{ vars.ECHO_API_URL }}
           ECHO_API_KEY: ${{ secrets.ECHO_API_KEY }}
