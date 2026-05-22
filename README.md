@@ -9,7 +9,7 @@ Daily compatibility check for [resonatehq-examples](https://github.com/resonateh
 3. **Aggregate.** Per-shard `result.json` artifacts merge into:
    - `summary.json` — array of per-example results, posted to Echo at `POST /api/examples-ci/report`.
    - `public/status/<repo>.json` — shields.io endpoint payloads, published to `gh-pages` for README badges.
-   - `public/index.html` — dashboard at `https://resonatehq.github.io/examples-ci/`.
+   - `public/index.html` — dashboard at [resonatehq.github.io/examples-ci](https://resonatehq.github.io/examples-ci/).
 
 ## Status taxonomy
 
