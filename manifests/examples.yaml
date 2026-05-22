@@ -238,3 +238,107 @@ examples:
     client:
       entry: "cargo run --release --bin client 6"
       timeout_s: 60
+
+  # ---- Phase 1.5 wave 2 (multi-process mirrors of wave-1 patterns) ----
+  # Note on `python <file>` (not `uv run python <file>`): the py runner already
+  # uses pip+venv, not uv. The example READMEs reach for uv; pip install -e .
+  # produces an equivalent venv state for these projects.
+
+  - repo: example-load-balancing-py
+    sdk: py
+    requires_server: true
+    processes:
+      - name: worker
+        entry: "python worker.py"
+        ready_regex: "worker running"
+        healthy_after_s: 8
+    client:
+      entry: "python invoke.py"
+      timeout_s: 30
+
+  - repo: example-load-balancing-rs
+    sdk: rs
+    requires_server: true
+    processes:
+      - name: worker
+        entry: "cargo run --release --bin worker"
+        ready_regex: "worker is running"
+        healthy_after_s: 30
+    client:
+      entry: "cargo run --release --bin client"
+      timeout_s: 60
+
+  - repo: example-recursive-factorial-py
+    sdk: py
+    requires_server: true
+    processes:
+      - name: worker
+        entry: "python factorial_worker.py"
+        ready_regex: "Factorial worker is running"
+        healthy_after_s: 8
+    client:
+      entry: "python factorial_client.py 6"
+      timeout_s: 30
+
+  - repo: example-recursive-factorial-ts
+    sdk: ts
+    requires_server: true
+    processes:
+      - name: worker
+        entry: "bun run factorialWorker.ts"
+        ready_regex: "factorial worker running"
+        healthy_after_s: 10
+    client:
+      entry: "bun run factorialClient.ts 6"
+      timeout_s: 30
+
+  - repo: example-schedule-py
+    sdk: py
+    requires_server: true
+    setup:
+      - "python schedule.py"
+    processes:
+      - name: worker
+        entry: "python worker.py"
+        # Cron is "* * * * *" — first tick fires within 60s of registration.
+        # ready_regex matches the worker's per-tick log; healthy_after_s gives
+        # a full minute plus buffer so the e2e tick is observed.
+        ready_regex: "Report for user"
+        healthy_after_s: 75
+
+  - repo: example-async-http-api-rs
+    sdk: rs
+    requires_server: true
+    processes:
+      - name: gateway
+        entry: "cargo run --release --bin gateway"
+        ready_regex: "gateway listening on"
+        healthy_after_s: 30
+      - name: worker
+        entry: "cargo run --release --bin worker"
+        ready_regex: "worker running, waiting for tasks"
+        healthy_after_s: 30
+    client:
+      entry: "curl -sSf -X POST 'http://127.0.0.1:5001/begin?id=ci-task-001' -H 'Content-Type: application/json' -d '{\"hello\":\"world\"}'"
+      timeout_s: 30
+
+  - repo: example-human-in-the-loop-py
+    sdk: py
+    requires_server: true
+    # `gateway` and `worker` are [project.scripts] aliases installed by
+    # `pip install -e .`. Python gateway uses begin_rpc (non-blocking), so a
+    # single curl drives the workflow; the demo's "human" step is part of the
+    # workflow but the begin call returns immediately. Sibling -ts/-rs variants
+    # use a blocking rpc(...).await and need a two-step shell driver — deferred.
+    processes:
+      - name: gateway
+        entry: "gateway"
+        ready_regex: "http gateway running"
+        healthy_after_s: 10
+      - name: worker
+        entry: "worker"
+        ready_regex: "worker running"
+        healthy_after_s: 10
+    client:
+      entry: "curl -sSf -X POST http://127.0.0.1:5001/start-workflow -H 'Content-Type: application/json' -d '{\"workflow_id\":\"hitl-ci-001\"}'"
+      timeout_s: 30
