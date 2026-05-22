@@ -763,3 +763,15 @@ examples:
     # defaults -iterations=5 -interval-secs=1 → ~5s total
     entry: "go run ."
     timeout_s: 60
+
+  # load-balancing-go: single Go binary that starts N=3 worker goroutines
+  # internally + a client goroutine that dispatches M=6 tasks and collects
+  # results. From CI's view it's a single-process script — no multi-process
+  # orchestration needed. Does require a real `resonate dev` server (-url
+  # is required; localnet has no shared bus across worker instances).
+  - repo: example-load-balancing-go
+    sdk: go
+    kind: script
+    requires_server: true
+    entry: "go run . -url=http://localhost:8001"
+    timeout_s: 60
