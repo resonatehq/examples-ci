@@ -1,16 +1,16 @@
 {
   "schema_version": "1",
   "run_date": "2026-05-22",
-  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26295373427",
+  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/26296204019",
   "versions": {
     "ts": "0.10.2",
     "py": "0.6.7",
     "rs": "0.4.0"
   },
   "totals": {
-    "total": 29,
+    "total": 28,
     "passing": 25,
-    "failing": 4
+    "failing": 3
   },
   "results": [
     {
@@ -18,7 +18,7 @@
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 11,
+      "duration_s": 34,
       "stderr_tail": ""
     },
     {
@@ -26,7 +26,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 10,
+      "duration_s": 9,
       "stderr_tail": ""
     },
     {
@@ -50,7 +50,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 3,
+      "duration_s": 2,
       "stderr_tail": "$ bun run src/index.ts"
     },
     {
@@ -98,7 +98,7 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 11,
+      "duration_s": 9,
       "stderr_tail": ""
     },
     {
@@ -106,7 +106,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 4,
+      "duration_s": 3,
       "stderr_tail": ""
     },
     {
@@ -114,23 +114,23 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "process_unhealthy",
-      "duration_s": 21,
-      "stderr_tail": "[worker] never matched ready_regex within 10s: Networking. Cannot connect to http://localhost:8001. Retrying in 5 sec.\nNetworking. Cannot connect to http://localhost:8001. Retrying in 5 sec."
+      "duration_s": 22,
+      "stderr_tail": "[worker] never matched ready_regex within 10s: "
     },
     {
       "repo": "example-load-balancing-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "process_unhealthy",
-      "duration_s": 24,
-      "stderr_tail": "[worker] never matched ready_regex within 8s: Networking. Cannot connect to http://localhost:8001. Retrying in 5 sec."
+      "duration_s": 19,
+      "stderr_tail": "[worker] never matched ready_regex within 8s: "
     },
     {
       "repo": "example-load-balancing-rs",
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 18,
+      "duration_s": 36,
       "stderr_tail": ""
     },
     {
@@ -146,16 +146,16 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 12,
-      "stderr_tail": "[2026-05-22 15:02:17] [ERROR] [transfer-002] [transfer-002.2] RuntimeError. Function credit_target('transfer-002-credit', 'bob', 75.0, fail=True) failed with TransferRejected(\"target account 'bob' rejected the credit\")"
+      "duration_s": 11,
+      "stderr_tail": "[2026-05-22 15:19:01] [ERROR] [transfer-002] [transfer-002.2] RuntimeError. Function credit_target('transfer-002-credit', 'bob', 75.0, fail=True) failed with TransferRejected(\"target account 'bob' rejected the credit\")"
     },
     {
       "repo": "example-money-transfer-rs",
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 31,
-      "stderr_tail": "\u001b[1m\u001b[92m    Finished\u001b[0m `release` profile [optimized] target(s) in 0.08s\n\u001b[1m\u001b[92m     Running\u001b[0m `target/release/money-transfer`"
+      "duration_s": 24,
+      "stderr_tail": "\u001b[1m\u001b[92m    Finished\u001b[0m `release` profile [optimized] target(s) in 0.09s\n\u001b[1m\u001b[92m     Running\u001b[0m `target/release/money-transfer`"
     },
     {
       "repo": "example-priority-queue-ts",
@@ -170,7 +170,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 11,
+      "duration_s": 10,
       "stderr_tail": "$ bun run src/index.ts"
     },
     {
@@ -178,15 +178,15 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "process_unhealthy",
-      "duration_s": 19,
-      "stderr_tail": "[worker] never matched ready_regex within 8s: Networking. Cannot connect to http://localhost:8001. Retrying in 5 sec.\nNetworking. Cannot connect to http://localhost:8001. Retrying in 5 sec."
+      "duration_s": 20,
+      "stderr_tail": "[worker] never matched ready_regex within 8s: "
     },
     {
       "repo": "example-recursive-factorial-rs",
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 11,
+      "duration_s": 15,
       "stderr_tail": ""
     },
     {
@@ -206,19 +206,11 @@
       "stderr_tail": "$ bun run src/index.ts"
     },
     {
-      "repo": "example-schedule-py",
-      "sdk": "py",
-      "sdk_version": "0.6.7",
-      "status": "setup_failed",
-      "duration_s": 16,
-      "stderr_tail": "setup[0] failed: Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/schedule.py\", line 14, in <module>\n    resonate.schedule(\n    ^^^^^^^^^^^^^^^^^\nAttributeError: 'Resonate' object has no attribute 'schedule'. Did you mean: 'schedules'?"
-    },
-    {
       "repo": "example-schedule-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 48,
+      "duration_s": 9,
       "stderr_tail": ""
     },
     {
@@ -234,7 +226,7 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 15,
+      "duration_s": 14,
       "stderr_tail": ""
     },
     {
@@ -242,7 +234,7 @@
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 3,
+      "duration_s": 2,
       "stderr_tail": "$ bun run src/index.ts"
     }
   ]
