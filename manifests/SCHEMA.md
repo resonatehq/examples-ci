@@ -19,8 +19,40 @@ Each entry:
 | `server_kind` | `rust` / `legacy_go` | `rust` | Which Resonate server to spawn. `rust` (default) downloads from `resonatehq/resonate` — single port 8001, current protocol. `legacy_go` downloads from `resonatehq/resonate-legacy-server` — two ports (API on 8001, poll on 8002), older protocol. Use `legacy_go` for examples whose SDK still speaks the older protocol (e.g. Python SDK 0.6.x: long-poll URL is `host:port/{group}/{id}`, not `/poll/{group}/{id}`). Only meaningful when `requires_server: true`. |
 | `setup` | string[] | `[]` | Multi-process mode. Sequential pre-steps that must each exit 0 before processes start (e.g., `python schedule.py` to register a cron with the server). Runs after SDK install but after the server is up. |
 | `processes` | object[] | `[]` | Multi-process mode. Background processes started in order, each waited for `ready_regex` to appear in stdout/stderr within `healthy_after_s`. Per-entry fields: `name` (label), `entry` (command), `ready_regex` (default `registered\|ready\|listening`; set to empty string `""` to opt out — see below), `healthy_after_s` (default `5`). If a process exits before ready, the run fails with `process_died`. |
-| `client` | object | — | Multi-process mode. Final foreground test after all `processes` are healthy. Fields: `entry` (command), `timeout_s` (default `30`). Pass = client exits 0. If `client` is absent and `processes` is non-empty, pass = all-processes-healthy. |
+| `client` | object | — | Multi-process mode. Final foreground test after all `processes` are healthy. Fields: `entry` (command), `timeout_s` (default `30`). Pass = client exits 0. If `client` is absent and `processes` is non-empty, pass = all-processes-healthy. For blocking-gateway demos see `client.driver` below. |
 | `skip` | bool | `false` | Skip this example. Used for Phase 3 examples requiring external services. |
+
+### `client.driver` — blocking-gateway shell driver
+
+For examples whose `/start-workflow`-style endpoint `await`s the entire workflow (so a single `curl` call hangs until a human resolves a latent durable promise), use the `driver` shape instead of `entry`:
+
+```yaml
+client:
+  driver:
+    background:
+      entry: "curl -sSf -X POST http://127.0.0.1:5001/start-workflow ..."
+    wait_for:
+      file: "multi-worker.out"
+      pattern: "/resolve/([0-9a-f-]+)"   # first capture group is the value
+      capture: promise_id                # exported as $promise_id for `then.entry`
+    then:
+      entry: "curl -sSf 'http://127.0.0.1:5001/resolve/${promise_id}'"
+    timeout_s: 60
+```
+
+Flow:
+
+1. **background**: orchestrator spawns `background.entry` in the background — it'll block on the workflow.
+2. **wait_for**: orchestrator polls the named file (`multi-<process>.out` or `multi-<process>.err`) every 0.5 s; on a `pattern` match, the first regex capture group is exported as a shell variable named `capture`.
+3. **then**: orchestrator runs `then.entry` (with `${capture}` substituted in) — e.g. the unblock URL containing the promise ID.
+4. **wait**: orchestrator waits for the background process to exit 0. Its exit signals that the workflow saw the promise resolve and the gateway returned.
+
+`timeout_s` (default `60`) is the overall budget for all four phases. Failure statuses:
+
+- `driver_pattern_timeout` — pattern didn't match within `timeout_s`.
+- `driver_then_failed` — `then.entry` exited non-zero.
+- `driver_bg_timeout` — background didn't exit after `then.entry` succeeded.
+- `driver_bg_failed` — background exited non-zero.
 
 ### `ready_regex: ""` — silent-worker opt-out
 

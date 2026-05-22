@@ -28,6 +28,10 @@ Daily compatibility check for [resonatehq-examples](https://github.com/resonateh
 | `process_unhealthy` | Multi-process example — a `processes:` entry stayed alive but didn't match `ready_regex` within `healthy_after_s`. |
 | `client_failed` | Multi-process example — `client.entry` exited non-zero. |
 | `client_timeout` | Multi-process example — `client.entry` hit `client.timeout_s`. |
+| `driver_pattern_timeout` | `client.driver` shape — `wait_for.pattern` never matched in the named file within `timeout_s`. |
+| `driver_then_failed` | `client.driver` shape — `then.entry` exited non-zero. |
+| `driver_bg_timeout` | `client.driver` shape — background process didn't exit after `then.entry` succeeded. |
+| `driver_bg_failed` | `client.driver` shape — background process exited non-zero. |
 
 ## Layout
 

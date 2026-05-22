@@ -12,8 +12,18 @@ type ProcessEntry = {
 };
 
 type ClientEntry = {
-  entry: string;
+  entry?: string;
   timeout_s?: number;
+  // Blocking-gateway shell driver: spawn `background` async, poll
+  // `wait_for.file` for `wait_for.pattern`'s first capture group, export
+  // it as $`wait_for.capture`, then run `then.entry` with substitution.
+  // Pass = background eventually exits 0 within `timeout_s`.
+  driver?: {
+    background: { entry: string };
+    wait_for: { file: string; pattern: string; capture?: string };
+    then: { entry: string };
+    timeout_s?: number;
+  };
 };
 
 type Entry = {

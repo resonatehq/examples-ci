@@ -99,9 +99,92 @@ run_multi_process() {
   done
 
   # 3. Client phase
-  local client_entry client_timeout
-  client_entry=$(printf '%s' "$config" | jq -r '.client.entry // ""')
-  if [ -n "$client_entry" ] && [ "$client_entry" != "null" ]; then
+  local client_entry client_timeout client_driver_bg
+  client_entry=$(printf '%s' "$config"     | jq -r '.client.entry // ""')
+  client_driver_bg=$(printf '%s' "$config" | jq -r '.client.driver.background.entry // ""')
+  if [ -n "$client_driver_bg" ] && [ "$client_driver_bg" != "null" ]; then
+    # Driver shape — for blocking-gateway examples (human-in-the-loop):
+    # 1) spawn a background entry that blocks (e.g. POST /start-workflow that
+    #    `await`s a workflow waiting on a human promise),
+    # 2) tail a process's log file until `pattern` matches; extract the first
+    #    capture group and export it as a shell var named `capture`,
+    # 3) run the `then` entry with that var substituted in (e.g. the resolve
+    #    URL containing the promise ID),
+    # 4) wait for the background to exit 0 — its exit signals that the workflow
+    #    saw the promise resolve and returned.
+    local driver_pattern driver_file driver_capture driver_then driver_timeout
+    driver_pattern=$(printf '%s' "$config" | jq -r '.client.driver.wait_for.pattern')
+    driver_file=$(printf '%s' "$config"    | jq -r '.client.driver.wait_for.file')
+    driver_capture=$(printf '%s' "$config" | jq -r '.client.driver.wait_for.capture // "captured"')
+    driver_then=$(printf '%s' "$config"    | jq -r '.client.driver.then.entry')
+    driver_timeout=$(printf '%s' "$config" | jq -r '.client.driver.timeout_s // 60')
+
+    echo "multi: driver bg: $client_driver_bg" >&2
+    bash -c "$client_driver_bg" > multi-driver-bg.out 2> multi-driver-bg.err &
+    local driver_bg_pid=$!
+    MULTI_PIDS+=("$driver_bg_pid")
+    MULTI_NAMES+=("driver-bg")
+
+    # Phase A: poll the named file for the regex pattern; extract group 1.
+    local poll_deadline captured line
+    poll_deadline=$(( $(date -u +%s) + driver_timeout ))
+    captured=""
+    while [ "$(date -u +%s)" -lt "$poll_deadline" ]; do
+      if ! kill -0 "$driver_bg_pid" 2>/dev/null; then
+        # bg died before producing a match — gateway is broken or
+        # workflow short-circuited. Surface as a distinct status.
+        MULTI_STATUS="driver_bg_failed"
+        MULTI_STDERR="driver-bg: exited before '$driver_pattern' appeared in '$driver_file': $(tail -c 4096 multi-driver-bg.err 2>/dev/null || true)"
+        multi_kill_all
+        return 1
+      fi
+      if [ -f "$driver_file" ]; then
+        line=$(grep -E "$driver_pattern" "$driver_file" 2>/dev/null | head -1)
+        if [ -n "$line" ] && [[ "$line" =~ $driver_pattern ]]; then
+          captured="${BASH_REMATCH[1]}"
+          [ -n "$captured" ] && break
+        fi
+      fi
+      sleep 0.5
+    done
+    if [ -z "$captured" ]; then
+      MULTI_STATUS="driver_pattern_timeout"
+      MULTI_STDERR="driver: pattern '$driver_pattern' not found in '$driver_file' within ${driver_timeout}s"
+      multi_kill_all
+      return 1
+    fi
+    echo "multi: driver captured $driver_capture=$captured" >&2
+
+    # Phase B: run the then-entry with the captured value exported.
+    export "$driver_capture=$captured"
+    if ! bash -c "$driver_then" > multi-driver-then.out 2> multi-driver-then.err; then
+      MULTI_STATUS="driver_then_failed"
+      MULTI_STDERR="driver-then: $(tail -c 4096 multi-driver-then.err 2>/dev/null || true)"
+      multi_kill_all
+      return 1
+    fi
+
+    # Phase C: wait for the background entry to exit within the remaining budget.
+    while kill -0 "$driver_bg_pid" 2>/dev/null; do
+      if [ "$(date -u +%s)" -ge "$poll_deadline" ]; then
+        MULTI_STATUS="driver_bg_timeout"
+        MULTI_STDERR="driver-bg: did not exit within ${driver_timeout}s after then-entry succeeded: $(tail -c 4096 multi-driver-bg.err 2>/dev/null || true)"
+        multi_kill_all
+        return 1
+      fi
+      sleep 0.5
+    done
+    wait "$driver_bg_pid" 2>/dev/null
+    local bg_rc=$?
+    if [ "$bg_rc" != "0" ]; then
+      MULTI_STATUS="driver_bg_failed"
+      MULTI_STDERR="driver-bg: exited $bg_rc; $(tail -c 4096 multi-driver-bg.err 2>/dev/null || true)"
+      multi_kill_all
+      return 1
+    fi
+
+    MULTI_STATUS="passing"
+  elif [ -n "$client_entry" ] && [ "$client_entry" != "null" ]; then
     client_timeout=$(printf '%s' "$config" | jq -r '.client.timeout_s // 30')
     echo "multi: client $client_entry (timeout=${client_timeout}s)" >&2
     if "$TIMEOUT_BIN" "$client_timeout" bash -c "$client_entry" > multi-client.out 2> multi-client.err; then

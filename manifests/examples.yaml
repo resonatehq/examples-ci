@@ -473,3 +473,64 @@ examples:
     client:
       entry: "/tmp/resonate invoke fanout-1 --func fan_out_fan_in --arg '[{\"id\":1,\"data\":\"alpha\"},{\"id\":2,\"data\":\"beta\"},{\"id\":3,\"data\":\"gamma\"}]'"
       timeout_s: 60
+
+  # ---- Phase 1.5 wave 5 (blocking-gateway shell driver) ----
+  # human-in-the-loop-{ts,rs} have a `/start-workflow` that `await`s the
+  # whole workflow which blocks on a human-resolved durable promise. A
+  # single curl call would hang forever, so the new `client.driver` shape
+  # spawns the start-workflow curl in the background, watches multi-worker.out
+  # for the URL containing the latent promise ID, then hits the unblock URL
+  # with that ID. Background curl returns once the workflow completes.
+  # See manifests/SCHEMA.md -> "client.driver" for the schema.
+  #
+  # Promise IDs in these examples have shape `<workflow_id>.<seq>` (e.g.
+  # `hitl-ci-001.0`), so the capture regex allows letters, digits, dots,
+  # underscores, and hyphens.
+
+  - repo: example-human-in-the-loop-ts
+    sdk: ts
+    requires_server: true
+    processes:
+      - name: gateway
+        entry: "bun run gateway.ts"
+        ready_regex: "server listening on"
+        healthy_after_s: 10
+      - name: worker
+        entry: "bun run worker.ts"
+        ready_regex: "worker running"
+        healthy_after_s: 10
+    client:
+      driver:
+        background:
+          entry: "curl -sSf -X POST http://127.0.0.1:5001/start-workflow -H 'Content-Type: application/json' -d '{\"workflow_id\":\"hitl-ci-001\"}'"
+        wait_for:
+          file: "multi-worker.out"
+          pattern: "promise_id=([A-Za-z0-9._-]+)"
+          capture: promise_id
+        then:
+          entry: "curl -sSf 'http://127.0.0.1:5001/unblock-workflow?promise_id=${promise_id}'"
+        timeout_s: 60
+
+  - repo: example-human-in-the-loop-rs
+    sdk: rs
+    requires_server: true
+    processes:
+      - name: gateway
+        entry: "cargo run --release --bin gateway"
+        ready_regex: "Gateway listening"
+        healthy_after_s: 30
+      - name: worker
+        entry: "cargo run --release --bin worker"
+        ready_regex: "Worker started"
+        healthy_after_s: 30
+    client:
+      driver:
+        background:
+          entry: "curl -sSf -X POST http://127.0.0.1:5001/start-workflow -H 'Content-Type: application/json' -d '{\"workflow_id\":\"hitl-ci-001\"}'"
+        wait_for:
+          file: "multi-worker.out"
+          pattern: "/resolve/([A-Za-z0-9._-]+)"
+          capture: promise_id
+        then:
+          entry: "curl -sSf 'http://127.0.0.1:5001/resolve/${promise_id}'"
+        timeout_s: 60
