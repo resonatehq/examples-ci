@@ -16,6 +16,7 @@ concurrency:
 
 permissions:
   contents: write
+  actions: read   # needed for `gh api .../actions/runs/.../jobs` from the run step
 
 jobs:
   resolve:
@@ -100,6 +101,25 @@ jobs:
           SERVER_KIND: ${{ matrix.server_kind }}
           MULTI_CONFIG: ${{ matrix.multi_config }}
         run: ci/runners/${{ matrix.sdk }}/run.sh
+      # Capture the current job's URL into result.json so the dashboard
+      # can deep-link directly to the failing shard. GH Actions doesn't
+      # expose the current job's databaseId as an env var, so we look it
+      # up by name pattern via the API.
+      - name: Capture job URL into result.json
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          [ -f result.json ] || exit 0
+          JOB_ID=$(gh api --paginate \
+            repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs \
+            --jq '[.jobs[] | select(.name | startswith("run (${{ matrix.repo }},"))][0].id' \
+            2>/dev/null || echo "")
+          if [ -n "$JOB_ID" ] && [ "$JOB_ID" != "null" ]; then
+            JOB_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/$JOB_ID"
+            jq --arg url "$JOB_URL" '. + { job_url: $url }' result.json > _r.tmp && mv _r.tmp result.json
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:

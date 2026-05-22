@@ -9,6 +9,7 @@ type Result = {
   status: string;
   duration_s: number;
   stderr_tail: string;
+  job_url?: string;
 };
 
 const ARTIFACT_DIR = "artifacts";
@@ -92,7 +93,12 @@ for (const r of results) {
 const rows = results
   .map((r) => {
     const badge = r.status === "passing" ? "✅" : "❌";
-    return `<tr data-sdk="${r.sdk}" data-status="${r.status}"><td>${badge}</td><td><a href="https://github.com/resonatehq-examples/${r.repo}">${r.repo}</a></td><td>${r.sdk}</td><td>${r.sdk_version}</td><td>${r.status}</td><td>${r.duration_s}s</td></tr>`;
+    // Link the status to the per-shard job URL when available so a red row
+    // jumps the operator directly to the failing job's logs.
+    const statusCell = r.job_url
+      ? `<a href="${r.job_url}">${r.status}</a>`
+      : r.status;
+    return `<tr data-sdk="${r.sdk}" data-status="${r.status}"><td>${badge}</td><td><a href="https://github.com/resonatehq-examples/${r.repo}">${r.repo}</a></td><td>${r.sdk}</td><td>${r.sdk_version}</td><td>${statusCell}</td><td>${r.duration_s}s</td></tr>`;
   })
   .join("\n");
 
