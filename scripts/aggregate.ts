@@ -10,6 +10,10 @@ type Result = {
   duration_s: number;
   stderr_tail: string;
   job_url?: string;
+  // Empty when the example didn't spawn a server (Phase 1). When set,
+  // server_kind is "rust" or "legacy_go" and server_version is the GH release tag.
+  server_version?: string;
+  server_kind?: string;
 };
 
 const ARTIFACT_DIR = "artifacts";
@@ -99,7 +103,10 @@ const rows = results
     const statusCell = r.job_url
       ? `<a href="${r.job_url}">${r.status}</a>`
       : r.status;
-    return `<tr data-sdk="${r.sdk}" data-status="${r.status}"><td>${badge}</td><td><a href="https://github.com/resonatehq-examples/${r.repo}">${r.repo}</a></td><td>${r.sdk}</td><td>${r.sdk_version}</td><td>${statusCell}</td><td>${r.duration_s}s</td></tr>`;
+    const serverCell = r.server_version
+      ? `${r.server_kind ?? "rust"} ${r.server_version}`
+      : "—";
+    return `<tr data-sdk="${r.sdk}" data-status="${r.status}"><td>${badge}</td><td><a href="https://github.com/resonatehq-examples/${r.repo}">${r.repo}</a></td><td>${r.sdk}</td><td>${r.sdk_version}</td><td>${serverCell}</td><td>${statusCell}</td><td>${r.duration_s}s</td></tr>`;
   })
   .join("\n");
 
@@ -138,7 +145,7 @@ const html = `<!doctype html>
   <button data-filter="failing">Failing only</button>
 </div>
 <table>
-<thead><tr><th></th><th>Repo</th><th>SDK</th><th>SDK ver</th><th>Status</th><th>Duration</th></tr></thead>
+<thead><tr><th></th><th>Repo</th><th>SDK</th><th>SDK ver</th><th>Server</th><th>Status</th><th>Duration</th></tr></thead>
 <tbody>${rows}</tbody>
 </table>
 <script>

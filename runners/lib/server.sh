@@ -56,6 +56,12 @@ start_resonate_server() {
     return 1
   fi
 
+  # Export as soon as resolved so a later download-failure still surfaces the
+  # tag we were targeting on the dashboard.
+  RESONATE_SERVER_TAG="$tag"
+  RESONATE_SERVER_KIND="$server_kind"
+  export RESONATE_SERVER_TAG RESONATE_SERVER_KIND
+
   url="https://github.com/${repo}/releases/download/${tag}/resonate_${os}_${arch}.tar.gz"
   for attempt in 1 2 3; do
     if curl -sLf --retry 2 --retry-delay 1 "$url" | tar xz -C /tmp resonate 2>/dev/null; then

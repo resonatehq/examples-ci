@@ -36,7 +36,9 @@ emit_result() {
     --arg status "$STATUS" \
     --argjson duration "$duration" \
     --arg stderr_tail "$STDERR_TAIL" \
-    '{repo: $repo, sdk: $sdk, sdk_version: $sdk_version, status: $status, duration_s: $duration, stderr_tail: $stderr_tail}' \
+    --arg server_version "${RESONATE_SERVER_TAG:-}" \
+    --arg server_kind "${RESONATE_SERVER_KIND:-}" \
+    '{repo: $repo, sdk: $sdk, sdk_version: $sdk_version, status: $status, duration_s: $duration, stderr_tail: $stderr_tail, server_version: $server_version, server_kind: $server_kind}' \
     > "$WORKSPACE/result.json"
 }
 
