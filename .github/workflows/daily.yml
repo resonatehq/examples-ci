@@ -90,16 +90,23 @@ jobs:
         with: { python-version: "3.13" }
       - if: matrix.sdk == 'rs'
         uses: dtolnay/rust-toolchain@stable
+      # rdkafka-sys (used by example-kafka-worker-rs via the `cmake-build`
+      # feature) compiles librdkafka from source against SASL/SSL/zstd/lz4
+      # headers. ubuntu-latest images don't include all of them; install
+      # BEFORE the rust-cache restore so cmake's autodetect (whose results
+      # get cached with the build artifacts) sees the deps available.
+      - if: matrix.sdk == 'rs' && contains(matrix.services_json, 'redpanda')
+        name: Install librdkafka build deps
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libsasl2-dev libssl-dev libzstd-dev liblz4-dev pkg-config
       - if: matrix.sdk == 'rs'
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: example
-      # rdkafka-sys (used by example-kafka-worker-rs via the `cmake-build`
-      # feature) compiles librdkafka from source against SASL/SSL/zstd/lz4
-      # headers. ubuntu-latest images don't include all of them.
-      - if: matrix.sdk == 'rs' && contains(matrix.services_json, 'redpanda')
-        name: Install librdkafka build deps
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq libsasl2-dev libssl-dev libzstd-dev liblz4-dev pkg-config
+          # Redpanda-needing shards get their own cache namespace. Without
+          # this, the first failed-cold-cmake build would poison the cache
+          # for every subsequent rs run (cmake's "sasl not detected" gets
+          # baked into the cached build artifacts).
+          prefix-key: ${{ contains(matrix.services_json, 'redpanda') && 'v2-rdkafka' || 'v2' }}
       - if: matrix.sdk == 'go'
         uses: actions/setup-go@v5
         with:
@@ -154,6 +161,8 @@ jobs:
           path: |
             example/multi-*.out
             example/multi-*.err
+            example/build.err
+            example/install.err
             /tmp/resonate.log
             /tmp/redpanda.start.log
             /tmp/tb.log
