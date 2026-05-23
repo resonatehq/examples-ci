@@ -1082,14 +1082,20 @@ examples:
     entry: "bun run src/index.ts ci-001 'distributed systems' 1"
     timeout_s: 60
 
-  # ---- Phase 2 deferred (skip=true): AI examples needing rework ----
-  # deep-research-agent-rs: uses raw `reqwest::Client` with a hardcoded
-  # https://api.openai.com/v1/chat/completions URL. The mock can't
-  # intercept without an upstream patch to read the base URL from
-  # OPENAI_BASE_URL (or equivalent). Enroll once that lands.
+  # deep-research-rs: single-process script (registers + runs workflow +
+  # exits). Connects to the rust server on 8001 via Resonate::new(...).
+  # Upstream patched 2026-05-23 to read OPENAI_BASE_URL with default
+  # https://api.openai.com/v1, letting mock_llm intercept. CLI args:
+  # <id> <topic> [depth]. Same tool-loop short-circuit as ts/py siblings.
   - repo: example-openai-deep-research-agent-rs
     sdk: rs
-    skip: true
+    requires_server: true
+    services: [mock_llm]
+    kind: script
+    entry: "cargo run --release -- ci-001 'distributed systems' 1"
+    timeout_s: 240
+
+  # ---- Phase 2 deferred (skip=true): AI examples needing rework ----
 
   # website-summarization-agent-py: uses Ollama (local LLM), not OpenAI/
   # Anthropic SDK — no OPENAI_BASE_URL / ANTHROPIC_BASE_URL to redirect.
