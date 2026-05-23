@@ -1339,13 +1339,41 @@ examples:
     sdk: py
     skip: true
 
-  # distributed-calculator-py: 4-process multi-group routing demo
-  # (exp/lhs, exp/rhs, ops, client). Feasible to enroll but the schema
-  # would need a multi-group test fixture; not a one-line addition.
-  # Tracked separately.
+  # distributed-calculator-py: 4-process multi-group routing. Workers
+  # poll specific (group, pid) pairs; the client dispatches sub-
+  # expressions to those workers via `ctx.rfi(...).options(send_to=
+  # "poll://exp/lhs")` and the final op via `ctx.rfc(...).send_to=
+  # "poll://ops"`. Workers are silent (banner suppressed when GRP set);
+  # ready_regex: "" with a generous healthy_after_s gives the pollers
+  # time to subscribe. Client pipes one expression then EOFs; banner +
+  # `= <result>` line lands on stdout.
   - repo: example-distributed-calculator-py
     sdk: py
-    skip: true
+    requires_server: true
+    server_kind: legacy_go
+    processes:
+      - name: lhs
+        entry: "GRP=exp PID=lhs resonator"
+        ready_regex: ""
+        healthy_after_s: 12
+      - name: rhs
+        entry: "GRP=exp PID=rhs resonator"
+        ready_regex: ""
+        healthy_after_s: 12
+      - name: ops
+        entry: "GRP=ops PID=ops resonator"
+        ready_regex: ""
+        healthy_after_s: 12
+    client:
+      entry: |
+        echo "(1 + 2)" | resonator > multi-client.driver.out 2>&1
+        if grep -q "= 3" multi-client.driver.out; then
+          exit 0
+        fi
+        echo "expected '= 3' in client output" >&2
+        tail -n 40 multi-client.driver.out >&2 || true
+        exit 1
+      timeout_s: 60
 
   # mcp-tools-rs: worker + stdio MCP server (2 bins). Workers register
   # the workflow; the stdio server proxies tool calls through RPC. Two-
