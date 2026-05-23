@@ -43,6 +43,7 @@ emit_result() {
 
 on_exit() {
   multi_kill_all 2>/dev/null || true
+  stop_services 2>/dev/null || true
   stop_resonate_server 2>/dev/null || true
   emit_result
 }
@@ -50,6 +51,8 @@ on_exit() {
 . "$(dirname "$0")/../lib/util.sh"
 # shellcheck source=../lib/server.sh
 . "$(dirname "$0")/../lib/server.sh"
+# shellcheck source=../lib/services.sh
+. "$(dirname "$0")/../lib/services.sh"
 # shellcheck source=../lib/multi.sh
 . "$(dirname "$0")/../lib/multi.sh"
 trap on_exit EXIT
@@ -83,6 +86,14 @@ if [ "$REQUIRES_SERVER" = "true" ]; then
   STATUS="server_failed"
   if ! start_resonate_server; then
     STDERR_TAIL="resonate server failed to start (see job log)"
+    exit 0
+  fi
+fi
+
+if [ -n "${SERVICES_JSON:-}" ] && [ "$SERVICES_JSON" != "[]" ]; then
+  STATUS="services_failed"
+  if ! start_services; then
+    STDERR_TAIL="services failed to start (see job log)"
     exit 0
   fi
 fi

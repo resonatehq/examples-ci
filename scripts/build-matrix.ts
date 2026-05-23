@@ -26,6 +26,8 @@ type ClientEntry = {
   };
 };
 
+type ServiceKind = "redpanda" | "tigerbeetle";
+
 type Entry = {
   repo: string;
   sdk: Sdk;
@@ -36,6 +38,7 @@ type Entry = {
   health_regex?: string;
   requires_server?: boolean;
   server_kind?: "rust" | "legacy_go";
+  services?: ServiceKind[];
   setup?: string[];
   processes?: ProcessEntry[];
   client?: ClientEntry;
@@ -81,6 +84,7 @@ const matrix = yaml.examples
       health_regex: e.health_regex ?? "registered|ready|listening",
       requires_server: e.requires_server ?? false,
       server_kind: e.server_kind ?? "rust",
+      services_json: e.services && e.services.length > 0 ? JSON.stringify(e.services) : "",
       multi_config:
         e.processes || e.setup || e.client
           ? JSON.stringify({

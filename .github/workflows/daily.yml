@@ -111,6 +111,7 @@ jobs:
           HEALTH_REGEX: ${{ matrix.health_regex }}
           REQUIRES_SERVER: ${{ matrix.requires_server }}
           SERVER_KIND: ${{ matrix.server_kind }}
+          SERVICES_JSON: ${{ matrix.services_json }}
           MULTI_CONFIG: ${{ matrix.multi_config }}
         run: ci/runners/${{ matrix.sdk }}/run.sh
       # Capture the current job's URL into result.json so the dashboard
@@ -148,6 +149,9 @@ jobs:
             example/multi-*.out
             example/multi-*.err
             /tmp/resonate.log
+            /tmp/redpanda.start.log
+            /tmp/tb.log
+            /tmp/tb.format.log
           if-no-files-found: ignore
 
   aggregate:

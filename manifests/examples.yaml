@@ -784,3 +784,120 @@ examples:
     requires_server: true
     entry: "go run . -url=http://localhost:8001"
     timeout_s: 60
+
+  # ---- Phase 1.5 wave 10 (external services: Redpanda + TigerBeetle) ----
+  # First use of the `services:` field. Each named service has a helper at
+  # runners/lib/services/<kind>.sh that starts/stops it; the runner starts
+  # services after the Resonate server but before `setup:` runs, so setup
+  # steps and processes can rely on the service being reachable.
+  #
+  # Redpanda is the Kafka-compatible broker the example-kafka-worker-*
+  # examples connect to at localhost:9092 (no SASL). The helper runs the
+  # official Redpanda image via `docker run` (ubuntu-latest CI has docker).
+  #
+  # TigerBeetle is the System of Record for the account-creation example.
+  # The helper downloads the latest tigerbeetle release, formats a fresh
+  # single-replica data file in /tmp, starts the server on port 3000, and
+  # symlinks the binary into $EXAMPLE_DIR/bin/tigerbeetle so the example's
+  # own scripts (which reference ./bin/tigerbeetle) work unmodified.
+
+  # The workflow has random retries (25% transient error) and random
+  # completion (25% per batch). 1 message + 240s timeout gives enough budget
+  # for several batch attempts with 5s sleeps between. Pass = "all rows
+  # deleted for record" appears in the consumer's log.
+  - repo: example-kafka-worker-ts
+    sdk: ts
+    requires_server: true
+    services: [redpanda]
+    setup:
+      - "bun run setup-topics"
+    processes:
+      - name: consumer
+        entry: "bun run consume"
+        ready_regex: "processor running"
+        healthy_after_s: 20
+    client:
+      entry: |
+        bun run produce -- -n 1
+        for i in $(seq 1 180); do
+          if grep -q "all rows deleted for record" multi-consumer.out 2>/dev/null; then
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "expected 'all rows deleted for record' in multi-consumer.out within 180s" >&2
+        tail -n 30 multi-consumer.out >&2 || true
+        exit 1
+      timeout_s: 240
+
+  - repo: example-kafka-worker-rs
+    sdk: rs
+    requires_server: true
+    services: [redpanda]
+    # The runner's cargo build --release compiles both binaries (consumer +
+    # producer) up front, so the cargo-run calls below hit a warm cache.
+    processes:
+      - name: consumer
+        entry: "cargo run --release --bin consumer"
+        ready_regex: "processor running"
+        healthy_after_s: 60
+    client:
+      entry: |
+        cargo run --release --bin producer -- -n 1
+        for i in $(seq 1 180); do
+          if grep -q "all rows deleted for record" multi-consumer.out 2>/dev/null; then
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "expected 'all rows deleted for record' in multi-consumer.out within 180s" >&2
+        tail -n 30 multi-consumer.out >&2 || true
+        exit 1
+      timeout_s: 240
+
+  # kafka-worker-py is DEFERRED (skip=true): the upstream example's code
+  # is broken. record_deletor/delete.py imports `consumer` from `.config`,
+  # but config.py only defines `producer` + `consumer_config`. config.py
+  # also uses kafka-python (`from kafka import KafkaProducer`) while
+  # pyproject.toml declares confluent-kafka; topics use port 19092 vs the
+  # docker-compose's 9092; SASL/SCRAM is configured client-side without a
+  # corresponding broker config. Enroll once the upstream example runs
+  # end-to-end against a stock Redpanda single-broker.
+  - repo: example-kafka-worker-py
+    sdk: py
+    requires_server: true
+    services: [redpanda]
+    skip: true
+    setup:
+      - "uv run setup-topics"
+    processes:
+      - name: consumer
+        entry: "uv run record-deletor"
+        ready_regex: "processor running"
+        healthy_after_s: 15
+    client:
+      entry: |
+        uv run record-producer -n 1
+        for i in $(seq 1 180); do
+          if grep -q "all rows deleted for record" multi-consumer.out 2>/dev/null; then
+            exit 0
+          fi
+          sleep 1
+        done
+        exit 1
+      timeout_s: 240
+
+  # The example expects bin/tigerbeetle (provided by services/tigerbeetle.sh
+  # via symlink) and bin/accounts.db (we create it in setup). The script
+  # exits 0 on success (printing UUID + GUID); subsequent runs against the
+  # same DB return "exists_same" and still exit 0, so the test is idempotent.
+  - repo: example-tigerbeetle-account-creation-ts
+    sdk: ts
+    requires_server: true
+    services: [tigerbeetle]
+    setup:
+      - "mkdir -p bin"
+      - "sqlite3 bin/accounts.db 'CREATE TABLE accounts (uuid TEXT PRIMARY KEY, guid TEXT NOT NULL UNIQUE);'"
+    client:
+      entry: "npm run demo"
+      timeout_s: 60

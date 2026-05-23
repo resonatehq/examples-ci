@@ -12,6 +12,7 @@ Daily CI matrix that runs every Resonate example against latest published SDKs. 
 - `runners/lib/multi.sh` — sourced by each per-SDK runner. When `MULTI_CONFIG` is a non-empty JSON object (setup / processes / client), orchestrates: sequential `setup` exits → background `processes` started + waited for `ready_regex` → foreground `client` runs with timeout. All processes torn down on exit. Examples with worker+client, gateway+worker, or multi-bin Rust crates go through here. Two opt-ins:
   - **`ready_regex: ""`** on a process — silent worker; pass condition becomes "alive after `healthy_after_s`" (no log-line match).
   - **`client.driver`** — blocking-gateway demos. Spawns `background.entry`, polls a process log for `wait_for.pattern`'s first capture, exports it as `$wait_for.capture`, runs `then.entry`. Pass = background exits 0 within `timeout_s`. New statuses: `driver_pattern_timeout`, `driver_then_failed`, `driver_bg_timeout`, `driver_bg_failed`.
+- `runners/lib/services.sh` + `runners/lib/services/<kind>.sh` — sourced by each per-SDK runner. When `SERVICES_JSON` is a non-empty JSON array (e.g. `["redpanda"]`), the dispatcher loads each kind's helper and calls `start_<kind>` in list order; matching `stop_<kind>` calls run on the EXIT trap. Each helper is self-contained: download/start/ready-probe/stop. Currently shipped: `redpanda` (`docker run` the official image; readiness via `rpk cluster info`) and `tigerbeetle` (downloads latest release zip, formats single-replica data file in /tmp, port 3000; symlinks the binary into `$EXAMPLE_DIR/bin/tigerbeetle` so example scripts that reference `./bin/tigerbeetle` work unchanged). Services start AFTER the Resonate server but BEFORE `setup:` — so manifest setup steps and processes can talk to them.
 - `scripts/build-matrix.ts` — reads `manifests/examples.yaml`, applies SDK defaults + resolved versions from env, emits matrix JSON for GH Actions.
 - `scripts/aggregate.ts` — output contract for two downstream consumers: Echo (`summary.json`) and shields.io (`public/status/<repo>.json`). Schema-versioned (`schema_version: "1"`); bump only on **breaking** changes (renames, removals, semantic shifts) and update Echo's parser in lock-step. Additive optional fields don't bump.
 
@@ -31,10 +32,11 @@ Daily CI matrix that runs every Resonate example against latest published SDKs. 
 ## Phasing
 
 - **Phase 1** (live): single-process examples, no Resonate server required.
-- **Phase 1.5** (live, 40 enrolled): server-required + multi-process examples. `requires_server: true` spawns `resonate dev`; `setup` / `processes` / `client` schema fields orchestrate multi-step demos (worker + client/invoke, gateway + worker, multi-bin Rust). Covers load-balancing, recursive-factorial, schedule-py, async-http-api, durable-sleep, async-rpc, quickstart variants, fan-out-fan-in, human-in-the-loop-py.
-  - 3 manifest entries are `skip: true` pending upstream debugs (HITL × 2, schedule-rs). See their inline comments for the open thread.
+- **Phase 1.5** (live, 54 enrolled): server-required + multi-process examples. `requires_server: true` spawns `resonate dev`; `setup` / `processes` / `client` schema fields orchestrate multi-step demos (worker + client/invoke, gateway + worker, multi-bin Rust). Covers load-balancing, recursive-factorial, schedule-py, async-http-api, durable-sleep, async-rpc, quickstart variants, fan-out-fan-in, human-in-the-loop-py.
+  - Wave 10 (2026-05-23) extended schema with `services:` — first external-process examples: kafka-worker-ts/rs against Redpanda + tigerbeetle-account-creation-ts. See "Adding a new service" in `manifests/SCHEMA.md`.
+  - 4 manifest entries are `skip: true` pending upstream debugs (HITL × 2, schedule-rs, kafka-worker-py). See their inline comments for the open thread.
 - **Phase 2** (not started): AI agent examples with mocked LLM calls (~7 examples). Shape awaiting Cully's decision — see `resonate/handoffs/2026-05-22-examples-ci-iter-gh-proposals.md`.
-- **Phase 3** (not started): Kafka via services-block, TigerBeetle, cloud-creds-gated examples. Same proposals memo.
+- **Phase 3** (in progress): Kafka via `services:` (Redpanda) + TigerBeetle landed wave-10 above. Still gated: cloud-creds examples (aws-lambda, lambda-workers-py, databricks-in-the-loop, supabase-edge); recommendation in the same memo is `skip: true` until someone files a real-world bug their CI would have caught.
 
 ## Don't
 
