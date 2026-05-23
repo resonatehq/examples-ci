@@ -1345,19 +1345,41 @@ examples:
     sdk: py
     skip: true
 
-  # distributed-calculator-py: imports `from resonate.task_sources
-  # import Poller` — that module path doesn't exist in SDK 0.6.7
-  # (the working internal path is `resonate.task_sources.poller`).
-  # The example was written against an older SDK shape. Worker
-  # processes crash at import with ModuleNotFoundError. Needs an
-  # upstream patch to use the current internal API or — better —
-  # switch to `Resonate.remote(group="exp")` which doesn't reach into
-  # task_sources directly. Also depends on upstream `tool.uv.package`
-  # → setuptools shim (pyproject patched 2026-05-23 to scope
-  # packages.find to resonator/, but the import error blocks regardless).
+  # distributed-calculator-py: 4-process multi-group routing. Workers
+  # poll specific (group, pid) pairs; the client dispatches sub-
+  # expressions to those workers via `ctx.rfi(...).options(send_to=
+  # "poll://exp/lhs")` and the final op via `ctx.rfc(...).send_to=
+  # "poll://ops"`. Upstream migrated 2026-05-23 to Resonate.remote()
+  # + explicit start/stop; workers log "worker started: group=..."
+  # so ready_regex is anchored on that. Client pipes one expression
+  # then EOFs; banner + `= <result>` line lands on stdout.
   - repo: example-distributed-calculator-py
     sdk: py
-    skip: true
+    requires_server: true
+    server_kind: legacy_go
+    processes:
+      - name: lhs
+        entry: "GRP=exp PID=lhs resonator"
+        ready_regex: "worker started: group=exp pid=lhs"
+        healthy_after_s: 15
+      - name: rhs
+        entry: "GRP=exp PID=rhs resonator"
+        ready_regex: "worker started: group=exp pid=rhs"
+        healthy_after_s: 15
+      - name: ops
+        entry: "GRP=ops PID=ops resonator"
+        ready_regex: "worker started: group=ops pid=ops"
+        healthy_after_s: 15
+    client:
+      entry: |
+        echo "(1 + 2)" | resonator > multi-client.driver.out 2>&1
+        if grep -q "= 3" multi-client.driver.out; then
+          exit 0
+        fi
+        echo "expected '= 3' in client output" >&2
+        tail -n 40 multi-client.driver.out >&2 || true
+        exit 1
+      timeout_s: 60
 
   # mcp-tools-rs: worker + stdio MCP server (2 bins). Workers register
   # the workflow; the stdio server proxies tool calls through RPC. Two-
