@@ -1014,9 +1014,12 @@ examples:
       timeout_s: 150
 
   # multi-agent-py: orchestrate(topic, crash_on_writer=False) runs three
-  # sequential agent calls (researcher → writer → reviewer). Mock returns
-  # canned text that does NOT contain "APPROVED" → status: rejected →
-  # "Article sent back for revision" log line.
+  # sequential agent calls (researcher → writer → reviewer). The worker
+  # logs each agent's progress; the workflow returns its result dict
+  # silently (the TS variant prints "Pipeline Complete" from index.ts
+  # AFTER resonate.run() returns — the PY worker has no such post-step).
+  # The reviewer's `print(f"[reviewer]    {review[:60]}...")` line is
+  # the last workflow-side log; matching it confirms all 3 agents ran.
   - repo: example-multi-agent-orchestration-py
     sdk: py
     requires_server: true
@@ -1031,12 +1034,12 @@ examples:
       entry: |
         /tmp/resonate invoke orchestration.ci.1 --func orchestrate --arg '"CI topic"' --arg false
         for i in $(seq 1 90); do
-          if grep -qE "Pipeline Complete|Article approved|Article sent back" multi-worker.out 2>/dev/null; then
+          if grep -qE '\[reviewer\] +\{' multi-worker.out 2>/dev/null; then
             exit 0
           fi
           sleep 1
         done
-        echo "expected pipeline completion log within 90s" >&2
+        echo "expected reviewer completion log within 90s" >&2
         tail -n 30 multi-worker.out >&2 || true
         exit 1
       timeout_s: 150
