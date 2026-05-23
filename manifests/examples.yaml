@@ -977,3 +977,104 @@ examples:
     kind: script
     entry: "bun run src/index.ts --crash"
     timeout_s: 60
+
+  # ---- Phase 2 wave 13 (mocked-LLM fan-out: remaining 6 examples) ----
+  # Mock responses contain canned JSON content with no `tool_calls` set;
+  # tool-using examples (schedule-reminder, deep-research-*) short-circuit
+  # to the "final answer" branch instead of exercising the tool loop.
+  # That's enough for SDK-compat: we're testing the call path through
+  # the SDK, not LLM behaviour.
+
+  # HN-py mirrors HN-ts. The `agent` console_script (from pyproject's
+  # [project.scripts]) wraps `python -m src.agent`. Python SDK 0.6.7
+  # speaks the legacy server protocol — server_kind: legacy_go is the
+  # established pattern.
+  - repo: example-hackernews-research-agent-py
+    sdk: py
+    requires_server: true
+    server_kind: legacy_go
+    services: [mock_llm]
+    processes:
+      - name: worker
+        entry: "agent"
+        ready_regex: "Hacker News Agent Worker Started"
+        healthy_after_s: 15
+    client:
+      entry: |
+        /tmp/resonate invoke scan-ci-001 --func scan_keyword --arg '"resonate"'
+        for i in $(seq 1 90); do
+          if grep -qE "Found .* interesting|No interesting findings" multi-worker.out 2>/dev/null; then
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "expected scan completion log within 90s" >&2
+        tail -n 30 multi-worker.out >&2 || true
+        exit 1
+      timeout_s: 150
+
+  # multi-agent-py: orchestrate(topic, crash_on_writer=False) runs three
+  # sequential agent calls (researcher → writer → reviewer). Mock returns
+  # canned text that does NOT contain "APPROVED" → status: rejected →
+  # "Article sent back for revision" log line.
+  - repo: example-multi-agent-orchestration-py
+    sdk: py
+    requires_server: true
+    server_kind: legacy_go
+    services: [mock_llm]
+    processes:
+      - name: worker
+        entry: "agent"
+        ready_regex: "Worker started"
+        healthy_after_s: 15
+    client:
+      entry: |
+        /tmp/resonate invoke orchestration.ci.1 --func orchestrate --arg '"CI topic"' --arg false
+        for i in $(seq 1 90); do
+          if grep -qE "Pipeline Complete|Article approved|Article sent back" multi-worker.out 2>/dev/null; then
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "expected pipeline completion log within 90s" >&2
+        tail -n 30 multi-worker.out >&2 || true
+        exit 1
+      timeout_s: 150
+
+  # multi-agent-ts: embedded (new Resonate()), runs inline via resonate.run.
+  # Same shape as durable-chatbot-ts; no server, no worker, no invoke.
+  - repo: example-multi-agent-orchestration-ts
+    sdk: ts
+    services: [mock_llm]
+    kind: script
+    entry: "bun run src/index.ts"
+    timeout_s: 60
+
+  # schedule-reminder-py: inline __main__ calls .run() directly. Uses
+  # tools — mock has no tool_calls so the while-loop's else: break fires
+  # on the first iteration; script prints messages then exits.
+  - repo: example-schedule-reminder-agent-py
+    sdk: py
+    services: [mock_llm]
+    kind: script
+    entry: "python schedule-reminder.py"
+    timeout_s: 60
+
+  # deep-research-py: inline __main__ calls research.run(). Tool-using;
+  # mock returns no tool_calls → `else: return message.content` → exit.
+  - repo: example-openai-deep-research-agent-py
+    sdk: py
+    services: [mock_llm]
+    kind: script
+    entry: "python research.py"
+    timeout_s: 60
+
+  # deep-research-ts: inline. CLI args required: <id> <topic> [depth].
+  # depth=1 enables tools — mock returns no tool_calls → return content.
+  # Bun runs the .ts file directly; no tsc build step needed.
+  - repo: example-openai-deep-research-agent-ts
+    sdk: ts
+    services: [mock_llm]
+    kind: script
+    entry: "bun run src/index.ts ci-001 'distributed systems' 1"
+    timeout_s: 60
