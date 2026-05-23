@@ -929,3 +929,51 @@ examples:
   - repo: example-supabase-edge-ts
     sdk: ts
     skip: true
+
+  # ---- Phase 2 wave 12 (mocked-LLM pilot: 1 OpenAI + 1 Anthropic) ----
+  # Iter G — first AI-agent examples enrolled. The `mock_llm` service
+  # (Python http.server on :8080) serves canned chat.completions +
+  # messages JSON; start_mock_llm exports OPENAI_BASE_URL,
+  # ANTHROPIC_BASE_URL and dummy API keys so the SDKs route here.
+  # Examples that use tools (schedule-reminder, deep-research-agent-*)
+  # need a tool-aware mock — deferred to a follow-up wave.
+
+  # HN agent registers scanKeyword + monitorHackerNews then waits.
+  # `resonate invoke scan-ci-001` dispatches into the running worker,
+  # which fetches HN stories (real Algolia API call, public + free),
+  # analyzes each via the mock LLM, then logs "Found N interesting" or
+  # "No interesting findings". Either is a pass.
+  - repo: example-hackernews-research-agent-ts
+    sdk: ts
+    requires_server: true
+    services: [mock_llm]
+    processes:
+      - name: worker
+        entry: "npm run dev"
+        ready_regex: "Hacker News Agent Worker Started"
+        healthy_after_s: 20
+    client:
+      entry: |
+        /tmp/resonate invoke scan-ci-001 --func scanKeyword --arg '"resonate"'
+        for i in $(seq 1 90); do
+          if grep -qE "Found .* interesting|No interesting findings" multi-worker.out 2>/dev/null; then
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "expected scan completion log within 90s" >&2
+        tail -n 30 multi-worker.out >&2 || true
+        exit 1
+      timeout_s: 150
+
+  # Chatbot uses `new Resonate()` (embedded — no server). --crash flag
+  # selects the scripted non-interactive demo: 3 turns, turn 2's LLM
+  # call throws on first attempt, Resonate retries automatically. The
+  # mock satisfies the messages.create() call; the throw is internal
+  # to the example so the mock is hit twice on turn 2.
+  - repo: example-durable-chatbot-ts
+    sdk: ts
+    services: [mock_llm]
+    kind: script
+    entry: "bun run src/index.ts --crash"
+    timeout_s: 60

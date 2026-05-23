@@ -26,7 +26,7 @@ type ClientEntry = {
   };
 };
 
-type ServiceKind = "redpanda" | "tigerbeetle";
+type ServiceKind = "redpanda" | "tigerbeetle" | "mock_llm";
 
 type Entry = {
   repo: string;
