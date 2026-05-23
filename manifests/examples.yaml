@@ -1115,9 +1115,9 @@ examples:
     timeout_s: 60
 
   # countdown-py: worker + invoke pattern. Python SDK 0.6.7 → legacy_go
-  # server. Upstream patch added the missing `@resonate.register`
-  # decorator + `requests` dep + a `notify:` log line for completion
-  # detection. interval=100ms × 3 iterations = ~300ms total.
+  # server. Upstream patches added @resonate.register, requests dep, an
+  # Event().wait() guard, and a `notify:` log line. ctx.sleep is in
+  # SECONDS for py (durable-sleep-py confirms); interval=0.1 → 100ms.
   - repo: example-countdown-py
     sdk: py
     requires_server: true
@@ -1130,7 +1130,7 @@ examples:
         healthy_after_s: 10
     client:
       entry: |
-        /tmp/resonate invoke countdown-ci-001 --func countdown --arg 3 --arg 100 --arg "\"$NOTIFY_URL\""
+        /tmp/resonate invoke countdown-ci-001 --func countdown --arg 3 --arg 0.1 --arg "\"$NOTIFY_URL\""
         for i in $(seq 1 60); do
           if grep -q "notify: Countdown complete" multi-worker.out 2>/dev/null; then
             exit 0
@@ -1168,3 +1168,190 @@ examples:
         tail -n 30 multi-worker.out >&2 || true
         exit 1
       timeout_s: 90
+
+  # ---- Wave 15 (more single-process scripts + MCP server probes) ----
+
+  # ai-image-pipeline-ts: fully simulated image generation (no real DALL-E
+  # call, no API keys). Fan-out across 3 styles via ctx.detached. Wall ~3s,
+  # ends with `resonate.stop()` so bun exits cleanly.
+  - repo: example-ai-image-pipeline-ts
+    sdk: ts
+    kind: script
+    entry: "bun run src/index.ts"
+    timeout_s: 60
+
+  # async-tools-mcp-server-py: starts a streamable-http MCP server on
+  # localhost:5001 (FastMCP). Pass condition is process-alive after
+  # healthy_after_s — we don't actually exercise the MCP tools (Claude
+  # Desktop is the intended client). This catches breakage in the
+  # MCP-Resonate integration's startup path, including the
+  # `@resonate.register` decorator + fastmcp tool wrapping.
+  - repo: example-async-tools-mcp-server-py
+    sdk: py
+    requires_server: true
+    server_kind: legacy_go
+    kind: worker
+    entry: "python weather_data.py"
+    health_regex: "Uvicorn running on"
+    healthy_after_s: 12
+    timeout_s: 30
+
+  # agent-tool-background-job (timer): same shape as async-tools-mcp — a
+  # streamable-http MCP server on localhost:5001 that exposes a durable
+  # `set_timer`/`get_timer_status` tool pair backed by Resonate promises.
+  # Process-alive smoke test only.
+  - repo: example-agent-tool-background-job
+    sdk: py
+    requires_server: true
+    server_kind: legacy_go
+    kind: worker
+    entry: "python timer.py"
+    health_regex: "Uvicorn running on"
+    healthy_after_s: 12
+    timeout_s: 30
+
+  # mcp-tools-ts (weather-server): stdio MCP server. `tail -f /dev/null`
+  # keeps stdin open so the StdioServerTransport doesn't see EOF and exit.
+  # Embedded Resonate (`new Resonate()`); no server needed.
+  - repo: example-mcp-tools-ts
+    sdk: ts
+    kind: worker
+    entry: "tail -f /dev/null | bun run src/weather-server.ts"
+    health_regex: "Resonate Weather MCP Server running"
+    healthy_after_s: 8
+    timeout_s: 30
+
+  # ---- Wave 16 (skip-row sweep: cloud-creds, framework-heavy, broken) ----
+  # Tracking rows for examples we won't run in CI. Same rationale shape as
+  # the wave-11 cloud-creds rows — SDK surface is already covered by green
+  # examples, so deferring doesn't lose meaningful signal. Re-enable when
+  # an upstream change makes them tractable, or someone files a real-world
+  # bug a live-creds / browser / framework run would have caught.
+
+  # countdown-* cloud variants: deploy wrappers around the same countdown
+  # workflow that's already green via example-countdown-ts/py. Each
+  # requires the framework's local emulator (wrangler dev, gcloud
+  # functions-framework, supabase functions serve) + the cloud-specific
+  # SDK bridge — none of which add SDK-compat signal we don't already
+  # have. Cover the SDK in green via the local examples.
+  - repo: example-countdown-cloudflare-ts
+    sdk: ts
+    skip: true
+  - repo: example-countdown-gcp-ts
+    sdk: ts
+    skip: true
+  - repo: example-countdown-supabase-ts
+    sdk: ts
+    skip: true
+
+  # countdown-web-ts: requires a browser (Playwright/headless Chrome).
+  # Would also need a UI driver to interact with the page. Heavy infra
+  # for the same countdown workflow already covered.
+  - repo: example-countdown-web-ts
+    sdk: ts
+    skip: true
+
+  # chess-hero-gcp-ts: depends on a live GCP project (Cloud Run / Cloud
+  # Function / Firestore). Mirrors wave-11 H.2 cloud-creds rationale.
+  - repo: example-chess-hero-gcp-ts
+    sdk: ts
+    skip: true
+
+  # deep-research-agent cloud variants: deploy the same agent workflow
+  # already covered by example-openai-deep-research-agent-{py,ts} (mocked
+  # LLM). Each needs the framework emulator + cloud SDK bridge.
+  - repo: example-openai-deep-research-agent-cloudflare-ts
+    sdk: ts
+    skip: true
+  - repo: example-openai-deep-research-agent-gcp-ts
+    sdk: ts
+    skip: true
+  - repo: example-openai-deep-research-agent-supabase-ts
+    sdk: ts
+    skip: true
+
+  # nextjs examples: full Next.js dev server + (for ecommerce) browser
+  # interaction. Resonate API surface is the same as express-integration-ts
+  # which is already green.
+  - repo: example-nextjs-integration-ts
+    sdk: ts
+    skip: true
+  - repo: example-nextjs-ecommerce-ts
+    sdk: ts
+    skip: true
+
+  # dao-proposal-scorer-ts: needs Hardhat (local Ethereum node). Heavy
+  # infra to spin up + the example's value is the on-chain integration
+  # rather than the SDK surface.
+  - repo: example-dao-proposal-scorer-ts
+    sdk: ts
+    skip: true
+
+  # node-drain-orchestrator-ts: needs Kind/Kubernetes — a real k8s
+  # cluster to drain. K8s setup in CI is feasible (kind action) but the
+  # signal is k8s-specific, not SDK-specific.
+  - repo: example-node-drain-orchestrator-ts
+    sdk: ts
+    skip: true
+
+  # webservers-py: meta-repo with django/fastapi/flask sub-projects. No
+  # single entry to run; needs per-framework manifest entries which
+  # blows up the matrix more than the signal justifies.
+  - repo: example-webservers-py
+    sdk: py
+    skip: true
+
+  # browser-worker-ts: Playwright/Puppeteer headless browser. Heavy infra.
+  - repo: example-browser-worker-ts
+    sdk: ts
+    skip: true
+
+  # token-auth-ts: requires server flag `--auth-publickey public_key.pem`
+  # (not currently supported by runners/lib/server.sh) + RSA key
+  # generation + jwt-cli to mint tokens. Defer until either we add an
+  # auth-aware server kind or the example self-contains key gen.
+  - repo: example-token-auth-ts
+    sdk: ts
+    skip: true
+
+  # ai-travel-assistant-py: module-load `os.environ["SERPER_API_KEY"]`
+  # and `BROWSERLESS_API_KEY` (KeyError on import without live creds);
+  # interactive `input()` prompts; success condition is the LLM emitting
+  # "TRIP PLANNING COMPLETE" which mock_llm canned responses won't.
+  # Three independent blockers — not enrollable as-is.
+  - repo: example-ai-travel-assistant-py
+    sdk: py
+    skip: true
+
+  # bluesky-scraper-ts: hits public.api.bsky.app directly (no env-var
+  # base-URL hook). Even at depth=0 we'd be calling the live Bluesky API
+  # on every CI run. Defer until an upstream patch lets us point at a
+  # local mock.
+  - repo: example-bluesky-scraper-ts
+    sdk: ts
+    skip: true
+
+  # function-as-a-service-py: upstream README/code drift (README says
+  # `--mode router` but modulate.py doesn't implement --mode); module-
+  # load side effect starts a poller before the script's CLI parse runs.
+  # Needs upstream cleanup before enrollment is sensible.
+  - repo: example-function-as-a-service-py
+    sdk: py
+    skip: true
+
+  # distributed-calculator-py: 4-process multi-group routing demo
+  # (exp/lhs, exp/rhs, ops, client). Feasible to enroll but the schema
+  # would need a multi-group test fixture; not a one-line addition.
+  # Tracked separately.
+  - repo: example-distributed-calculator-py
+    sdk: py
+    skip: true
+
+  # mcp-tools-rs: worker + stdio MCP server (2 bins). Workers register
+  # the workflow; the stdio server proxies tool calls through RPC. Two-
+  # process setup with stdio means we'd need the tail-f trick AND a way
+  # to coordinate worker startup. Tractable but deferred — same SDK
+  # surface is covered by other rs enrollments.
+  - repo: example-mcp-tools-rs
+    sdk: rs
+    skip: true
