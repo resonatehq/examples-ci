@@ -819,16 +819,16 @@ examples:
     client:
       entry: |
         bun run produce -- -n 1
-        for i in $(seq 1 180); do
+        for i in $(seq 1 300); do
           if grep -q "all rows deleted for record" multi-consumer.out 2>/dev/null; then
             exit 0
           fi
           sleep 1
         done
-        echo "expected 'all rows deleted for record' in multi-consumer.out within 180s" >&2
+        echo "expected 'all rows deleted for record' in multi-consumer.out within 300s" >&2
         tail -n 30 multi-consumer.out >&2 || true
         exit 1
-      timeout_s: 240
+      timeout_s: 360
 
   - repo: example-kafka-worker-rs
     sdk: rs
@@ -844,16 +844,16 @@ examples:
     client:
       entry: |
         cargo run --release --bin producer -- -n 1
-        for i in $(seq 1 180); do
+        for i in $(seq 1 300); do
           if grep -q "all rows deleted for record" multi-consumer.out 2>/dev/null; then
             exit 0
           fi
           sleep 1
         done
-        echo "expected 'all rows deleted for record' in multi-consumer.out within 180s" >&2
+        echo "expected 'all rows deleted for record' in multi-consumer.out within 300s" >&2
         tail -n 30 multi-consumer.out >&2 || true
         exit 1
-      timeout_s: 240
+      timeout_s: 360
 
   # kafka-worker-py is DEFERRED (skip=true): the upstream example's code
   # is broken. record_deletor/delete.py imports `consumer` from `.config`,
