@@ -482,7 +482,7 @@ examples:
   # `hitl-ci-001.0`), so the capture regex allows letters, digits, dots,
   # underscores, and hyphens.
 
-  # ---- DEFERRED (skip=true, 2026-05-22) ----
+  # ---- DEFERRED (skip=true, 2026-05-22; status checked 2026-05-23) ----
   # human-in-the-loop {ts,rs} fail consistently in CI with the rust server
   # returning 404 "Promise not found" on the unblock-workflow / resolve
   # endpoint despite the resonate.log showing the blocking promise was
@@ -491,6 +491,13 @@ examples:
   # status codes, and upstream SDK migrations all shipped.
   #
   # Tracked upstream: https://github.com/resonatehq/resonate-sdk-ts/issues/525
+  # No comments / no fix landed since the issue was filed; the promise log
+  # line shows `target="none"` which may be related (latent promises from
+  # `ctx.promise({})` may not be queryable by `promises.resolve` from a
+  # different group). Likely root-causes to resonatehq/resonate (rust
+  # server), not the TS SDK — needs a server PR. v0.9.7 is still latest;
+  # no newer release to retest against.
+  #
   # Re-enable by removing skip: true once the underlying server lookup
   # is debugged.
 
