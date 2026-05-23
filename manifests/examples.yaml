@@ -901,3 +901,31 @@ examples:
     client:
       entry: "npm run demo"
       timeout_s: 60
+
+  # ---- Phase 1.5 wave 11 (cloud-creds-gated: tracking skip rows) ----
+  # All four examples require real cloud credentials + provisioned
+  # resources (AWS Lambda, Databricks workspace, Supabase project).
+  # Running them daily would burn live credits, leak secrets to fork
+  # PRs, and gate the matrix on infra changes outside Resonate's
+  # control. Their SDK surface duplicates what's already covered by
+  # money-transfer-rs / function-as-a-service-py / etc., so a green
+  # examples-ci doesn't lose meaningful signal by skipping them.
+  # Revisit when someone files a real-world bug that would have been
+  # caught here. Spec:
+  # resonate/handoffs/2026-05-22-examples-ci-iter-gh-proposals.md §H.2.
+
+  - repo: example-aws-lambda-ts
+    sdk: ts
+    skip: true
+
+  - repo: example-lambda-workers-py
+    sdk: py
+    skip: true
+
+  - repo: example-databricks-in-the-loop-py
+    sdk: py
+    skip: true
+
+  - repo: example-supabase-edge-ts
+    sdk: ts
+    skip: true
