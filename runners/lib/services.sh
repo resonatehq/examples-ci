@@ -6,7 +6,9 @@
 # Adding a new service kind = one new file at services/<kind>.sh that
 # exports start_<kind>() and stop_<kind>().
 
-SERVICES_DIR="$(dirname "${BASH_SOURCE[0]}")/services"
+# Absolute path: the per-SDK runner sources this at workspace root then
+# `cd`s into $EXAMPLE_DIR, so a relative path here would 404 at call time.
+SERVICES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/services"
 SERVICES_STARTED=()
 
 start_services() {

@@ -94,6 +94,12 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: example
+      # rdkafka-sys (used by example-kafka-worker-rs via the `cmake-build`
+      # feature) compiles librdkafka from source against SASL/SSL/zstd/lz4
+      # headers. ubuntu-latest images don't include all of them.
+      - if: matrix.sdk == 'rs' && contains(matrix.services_json, 'redpanda')
+        name: Install librdkafka build deps
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libsasl2-dev libssl-dev libzstd-dev liblz4-dev pkg-config
       - if: matrix.sdk == 'go'
         uses: actions/setup-go@v5
         with:
