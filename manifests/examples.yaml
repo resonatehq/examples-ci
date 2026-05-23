@@ -558,7 +558,11 @@ examples:
   # the server has no dispatch target and the promise sits pending forever.
   #
   # Tracked upstream: https://github.com/resonatehq/resonate-sdk-rs/issues/25
-  # Re-enable by removing skip once the SDK ships the fix.
+  # Fix proposed in https://github.com/resonatehq/resonate-sdk-rs/pull/26
+  # (2026-05-23): ResScheduleTask::into_future derives poll://any@<group>
+  # from the Resonate instance and writes promise_tags["resonate:invoke"];
+  # callers get .target() / .tags() builders. Cargo.toml here pins
+  # branch="main", so re-enrollment is one skip flip once PR #26 merges.
   - repo: example-schedule-rs
     sdk: rs
     requires_server: true
