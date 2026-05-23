@@ -1081,3 +1081,21 @@ examples:
     kind: script
     entry: "bun run src/index.ts ci-001 'distributed systems' 1"
     timeout_s: 60
+
+  # ---- Phase 2 deferred (skip=true): AI examples needing rework ----
+  # deep-research-agent-rs: uses raw `reqwest::Client` with a hardcoded
+  # https://api.openai.com/v1/chat/completions URL. The mock can't
+  # intercept without an upstream patch to read the base URL from
+  # OPENAI_BASE_URL (or equivalent). Enroll once that lands.
+  - repo: example-openai-deep-research-agent-rs
+    sdk: rs
+    skip: true
+
+  # website-summarization-agent-py: uses Ollama (local LLM), not OpenAI/
+  # Anthropic SDK — no OPENAI_BASE_URL / ANTHROPIC_BASE_URL to redirect.
+  # Also requires Selenium + ChromeDriver + a running Ollama daemon
+  # with llama3.1 pulled + Flask gateway + separate worker process.
+  # Heavy external deps; would need an Ollama mock or LLM backend swap.
+  - repo: example-website-summarization-agent-py
+    sdk: py
+    skip: true
