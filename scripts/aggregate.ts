@@ -10,10 +10,11 @@ type Result = {
   duration_s: number;
   stderr_tail: string;
   job_url?: string;
-  // Empty when the example didn't spawn a server (Phase 1). When set,
-  // server_kind is "rust" or "legacy_go" and server_version is the GH release tag.
-  server_version?: string;
-  server_kind?: string;
+  // Always present (jq writes the key); empty string when the example didn't
+  // spawn a server (Phase 1). When non-empty, server_kind is "rust" or
+  // "legacy_go" and server_version is the GH release tag.
+  server_version: string;
+  server_kind: string;
 };
 
 const ARTIFACT_DIR = "artifacts";

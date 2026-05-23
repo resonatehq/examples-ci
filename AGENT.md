@@ -13,7 +13,7 @@ Daily CI matrix that runs every Resonate example against latest published SDKs. 
   - **`ready_regex: ""`** on a process — silent worker; pass condition becomes "alive after `healthy_after_s`" (no log-line match).
   - **`client.driver`** — blocking-gateway demos. Spawns `background.entry`, polls a process log for `wait_for.pattern`'s first capture, exports it as `$wait_for.capture`, runs `then.entry`. Pass = background exits 0 within `timeout_s`. New statuses: `driver_pattern_timeout`, `driver_then_failed`, `driver_bg_timeout`, `driver_bg_failed`.
 - `scripts/build-matrix.ts` — reads `manifests/examples.yaml`, applies SDK defaults + resolved versions from env, emits matrix JSON for GH Actions.
-- `scripts/aggregate.ts` — output contract for two downstream consumers: Echo (`summary.json`) and shields.io (`public/status/<repo>.json`). Schema-versioned (`schema_version: "1"`); bump in lock-step with Echo's parser.
+- `scripts/aggregate.ts` — output contract for two downstream consumers: Echo (`summary.json`) and shields.io (`public/status/<repo>.json`). Schema-versioned (`schema_version: "1"`); bump only on **breaking** changes (renames, removals, semantic shifts) and update Echo's parser in lock-step. Additive optional fields don't bump.
 
 ## Downstream consumers
 
