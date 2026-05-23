@@ -1099,3 +1099,72 @@ examples:
   - repo: example-website-summarization-agent-py
     sdk: py
     skip: true
+
+  # ---- Wave 14 (cheap-win expansion: countdown + infinite-workflow) ----
+  # Introduces the `notify_sink` service — a tiny Python HTTP server on
+  # localhost:9999 that 200s any GET/POST/PUT. Exports `NOTIFY_URL`.
+  # Used by webhook-pattern examples whose READMEs default to ntfy.sh.
+
+  # infinite-workflow-ts: embedded `new Resonate()` (no server). Self-driven
+  # `resonate.run()` call inside src/index.ts with 8 iterations × 500ms
+  # ~= 4s wall. Final console.log prints alert summary; bun exits cleanly.
+  - repo: example-infinite-workflow-ts
+    sdk: ts
+    kind: script
+    entry: "bun run src/index.ts"
+    timeout_s: 60
+
+  # countdown-py: worker + invoke pattern. Python SDK 0.6.7 → legacy_go
+  # server. Upstream patch added the missing `@resonate.register`
+  # decorator + `requests` dep + a `notify:` log line for completion
+  # detection. interval=100ms × 3 iterations = ~300ms total.
+  - repo: example-countdown-py
+    sdk: py
+    requires_server: true
+    server_kind: legacy_go
+    services: [notify_sink]
+    processes:
+      - name: worker
+        entry: "python countdown.py"
+        ready_regex: "countdown worker running"
+        healthy_after_s: 10
+    client:
+      entry: |
+        /tmp/resonate invoke countdown-ci-001 --func countdown --arg 3 --arg 100 --arg "\"$NOTIFY_URL\""
+        for i in $(seq 1 60); do
+          if grep -q "notify: Countdown complete" multi-worker.out 2>/dev/null; then
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "expected 'notify: Countdown complete' within 60s" >&2
+        tail -n 30 multi-worker.out >&2 || true
+        exit 1
+      timeout_s: 90
+
+  # countdown-ts: worker + invoke. TS SDK speaks the rust server protocol.
+  # delay arg is in minutes (multiplied by 60_000 ms internally); 0.001
+  # delay × 60_000 = 60ms per iteration × 3 + final "Done" notify.
+  # Upstream patch added a startup log + per-notify log line.
+  - repo: example-countdown-ts
+    sdk: ts
+    requires_server: true
+    services: [notify_sink]
+    processes:
+      - name: worker
+        entry: "bun run src/index.ts"
+        ready_regex: "countdown worker running"
+        healthy_after_s: 10
+    client:
+      entry: |
+        /tmp/resonate invoke countdown-ci-001 --func countdown --arg 3 --arg 0.001 --arg "\"$NOTIFY_URL\""
+        for i in $(seq 1 60); do
+          if grep -q "notify: Done" multi-worker.out 2>/dev/null; then
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "expected 'notify: Done' within 60s" >&2
+        tail -n 30 multi-worker.out >&2 || true
+        exit 1
+      timeout_s: 90
