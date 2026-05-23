@@ -97,7 +97,7 @@ jobs:
       # get cached with the build artifacts) sees the deps available.
       - if: matrix.sdk == 'rs' && contains(matrix.services_json, 'redpanda')
         name: Install librdkafka build deps
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq libsasl2-dev libssl-dev libzstd-dev liblz4-dev pkg-config
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libsasl2-dev libssl-dev libzstd-dev liblz4-dev libcurl4-openssl-dev pkg-config
       - if: matrix.sdk == 'rs'
         uses: Swatinem/rust-cache@v2
         with:
