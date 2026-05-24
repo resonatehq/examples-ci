@@ -878,37 +878,37 @@ examples:
         exit 1
       timeout_s: 360
 
-  # kafka-worker-py is DEFERRED (skip=true): the upstream example's code
-  # is broken. record_deletor/delete.py imports `consumer` from `.config`,
-  # but config.py only defines `producer` + `consumer_config`. config.py
-  # also uses kafka-python (`from kafka import KafkaProducer`) while
-  # pyproject.toml declares confluent-kafka; topics use port 19092 vs the
-  # docker-compose's 9092; SASL/SCRAM is configured client-side without a
-  # corresponding broker config. Enroll once the upstream example runs
-  # end-to-end against a stock Redpanda single-broker.
+  # kafka-worker-py: same shape as the ts/rs siblings against a single-
+  # broker Redpanda. Worker uses Resonate.remote() and blocks in its own
+  # consume() loop after resonate.start() so the runner doesn't need an
+  # Event().wait() guard. CI installs via `pip install -e .` so the
+  # [project.scripts] aliases (record-producer, record-deletor, setup-
+  # topics) are direct PATH binaries — no `uv run` prefix.
   - repo: example-kafka-worker-py
     sdk: py
     requires_server: true
+    server_kind: legacy_go
     services: [redpanda]
-    skip: true
     setup:
-      - "uv run setup-topics"
+      - "setup-topics"
     processes:
       - name: consumer
-        entry: "uv run record-deletor"
+        entry: "record-deletor"
         ready_regex: "processor running"
-        healthy_after_s: 15
+        healthy_after_s: 30
     client:
       entry: |
-        uv run record-producer -n 1
-        for i in $(seq 1 180); do
+        record-producer -n 1
+        for i in $(seq 1 300); do
           if grep -q "all rows deleted for record" multi-consumer.out 2>/dev/null; then
             exit 0
           fi
           sleep 1
         done
+        echo "expected 'all rows deleted for record' in multi-consumer.out within 300s" >&2
+        tail -n 30 multi-consumer.out >&2 || true
         exit 1
-      timeout_s: 240
+      timeout_s: 360
 
   # The example expects bin/tigerbeetle (provided by services/tigerbeetle.sh
   # via symlink) and bin/accounts.db (we create it in setup). The script
