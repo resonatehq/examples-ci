@@ -482,29 +482,21 @@ examples:
   # `hitl-ci-001.0`), so the capture regex allows letters, digits, dots,
   # underscores, and hyphens.
 
-  # ---- DEFERRED (skip=true, 2026-05-22; status checked 2026-05-23) ----
-  # human-in-the-loop {ts,rs} fail consistently in CI with the rust server
-  # returning 404 "Promise not found" on the unblock-workflow / resolve
-  # endpoint despite the resonate.log showing the blocking promise was
-  # created ~1.5s earlier in the same job's server. Local repro on macOS
-  # works end-to-end with identical versions. Driver shape, schema,
-  # status codes, and upstream SDK migrations all shipped.
-  #
-  # Tracked upstream: https://github.com/resonatehq/resonate-sdk-ts/issues/525
-  # No comments / no fix landed since the issue was filed; the promise log
-  # line shows `target="none"` which may be related (latent promises from
-  # `ctx.promise({})` may not be queryable by `promises.resolve` from a
-  # different group). Likely root-causes to resonatehq/resonate (rust
-  # server), not the TS SDK — needs a server PR. v0.9.7 is still latest;
-  # no newer release to retest against.
-  #
-  # Re-enable by removing skip: true once the underlying server lookup
-  # is debugged.
+  # ---- HITL (blocking-gateway, retry-on-race) ----
+  # human-in-the-loop {ts,rs} previously skipped: the rust server returned
+  # 404 "Promise not found" on resolve despite resonate.log showing the
+  # promise created ~1.5s earlier. Now enrolled with a retry-loop driver:
+  # the worker prints the resolve URL the moment ctx.run(sendEmail, ...)
+  # dispatches, which can outrun the server-side commit of the latent
+  # ctx.promise({}) by hundreds of ms. The gateway wraps the SDK's 404
+  # SERVER_ERROR as a 500; retrying on 5xx until the promise is queryable
+  # closes the race. If all 20 attempts 5xx the bug is non-temporal and
+  # the upstream tracker (resonatehq/resonate-sdk-ts#525) becomes load-
+  # bearing again.
 
   - repo: example-human-in-the-loop-ts
     sdk: ts
     requires_server: true
-    skip: true
     processes:
       - name: gateway
         entry: "bun run gateway.ts"
@@ -523,18 +515,28 @@ examples:
           pattern: "promise_id=([A-Za-z0-9._-]+)"
           capture: promise_id
         then:
-          # Brief grace period: the worker can print the URL up to ~50ms before
-          # the server-side promise.create RPC fully commits in the Rust
-          # server's in-memory store; resolving too fast races into 404. The
-          # sleep is empirically the smallest delay that makes the race
-          # disappear in CI.
-          entry: "sleep 1 && curl -sSf 'http://127.0.0.1:5001/unblock-workflow?promise_id=${promise_id}'"
+          # The worker prints the resolve URL the moment ctx.run(sendEmail, ...)
+          # is invoked, which can race the server-side commit of the latent
+          # ctx.promise({}) by some hundreds of ms in CI. Retry on 5xx (the
+          # gateway wraps the SDK's 404 SERVER_ERROR as a 500); the first
+          # successful 200 wins. 20 attempts × 1s buffer = absorbs slow CI
+          # commits; if all retries 5xx, the bug is non-temporal.
+          entry: |
+            for attempt in $(seq 1 20); do
+              if curl -sSf "http://127.0.0.1:5001/unblock-workflow?promise_id=${promise_id}" 2>>multi-driver-retries.err; then
+                echo "resolve succeeded on attempt $attempt" >&2
+                exit 0
+              fi
+              sleep 1
+            done
+            echo "exhausted 20 retries; resolve never returned 2xx" >&2
+            tail -n 60 multi-driver-retries.err >&2 || true
+            exit 1
         timeout_s: 60
 
   - repo: example-human-in-the-loop-rs
     sdk: rs
     requires_server: true
-    skip: true
     processes:
       - name: gateway
         entry: "cargo run --release --bin gateway"
@@ -553,8 +555,18 @@ examples:
           pattern: "/resolve/([A-Za-z0-9._-]+)"
           capture: promise_id
         then:
-          # See HITL-ts entry above re: the 1s grace period.
-          entry: "sleep 1 && curl -sSf 'http://127.0.0.1:5001/resolve/${promise_id}'"
+          # See HITL-ts entry above re: the retry loop rationale.
+          entry: |
+            for attempt in $(seq 1 20); do
+              if curl -sSf "http://127.0.0.1:5001/resolve/${promise_id}" 2>>multi-driver-retries.err; then
+                echo "resolve succeeded on attempt $attempt" >&2
+                exit 0
+              fi
+              sleep 1
+            done
+            echo "exhausted 20 retries; resolve never returned 2xx" >&2
+            tail -n 60 multi-driver-retries.err >&2 || true
+            exit 1
         timeout_s: 60
 
   # ---- Phase 1.5 wave 7 (sibling enrollments) ----
