@@ -126,6 +126,9 @@ jobs:
           SERVER_KIND: ${{ matrix.server_kind }}
           SERVICES_JSON: ${{ matrix.services_json }}
           MULTI_CONFIG: ${{ matrix.multi_config }}
+          # Lifts the anonymous 60/hr rate limit on the release-tag lookup
+          # in runners/lib/server.sh — see comment there.
+          GITHUB_TOKEN: ${{ github.token }}
         run: ci/runners/${{ matrix.sdk }}/run.sh
       # Capture the current job's URL into result.json so the dashboard
       # can deep-link directly to the failing shard. GH Actions doesn't

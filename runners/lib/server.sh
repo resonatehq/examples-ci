@@ -43,10 +43,14 @@ start_resonate_server() {
   esac
 
   # Retry the release-tag lookup — single curl was flaky on ~25% of runs
-  # with TLS / connection timeouts under concurrent matrix load.
-  local attempt
+  # with TLS / connection timeouts under concurrent matrix load. Authenticate
+  # with GITHUB_TOKEN when available to lift the rate limit from 60/hr (anon,
+  # per source IP) to 5000/hr (authenticated) — matters when 74 shards burst
+  # the API at 07:00 UTC.
+  local attempt auth_header=()
+  [ -n "${GITHUB_TOKEN:-}" ] && auth_header=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
   for attempt in 1 2 3; do
-    tag=$(curl -sf --retry 2 --retry-delay 1 \
+    tag=$(curl -sf --retry 2 --retry-delay 1 "${auth_header[@]}" \
       "https://api.github.com/repos/${repo}/releases/latest" | jq -r .tag_name 2>/dev/null)
     if [ -n "$tag" ] && [ "$tag" != "null" ]; then break; fi
     [ "$attempt" -lt 3 ] && sleep 2
