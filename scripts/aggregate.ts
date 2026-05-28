@@ -106,7 +106,7 @@ const rows = results
       : r.status;
     const serverCell = r.server_version
       ? `${r.server_kind ?? "rust"} ${r.server_version}`
-      : "—";
+      : "in memory";
     return `<tr data-sdk="${r.sdk}" data-status="${r.status}"><td>${badge}</td><td><a href="https://github.com/resonatehq-examples/${r.repo}">${r.repo}</a></td><td>${r.sdk}</td><td>${r.sdk_version}</td><td>${serverCell}</td><td>${statusCell}</td><td>${r.duration_s}s</td></tr>`;
   })
   .join("\n");
