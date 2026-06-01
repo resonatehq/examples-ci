@@ -4,27 +4,163 @@
 <meta charset="utf-8">
 <title>Resonate examples-ci</title>
 <style>
-  body { font: 14px/1.5 system-ui, sans-serif; margin: 2rem; max-width: 980px; }
+  :root {
+    --bg: #080A0E;
+    --elevated: #0F1115;
+    --subtle: #1A1E26;
+    --heading: #E4E7EB;
+    --body: #94A3B8;
+    --muted: #7E93AE;
+    --hairline: rgba(228, 231, 235, 0.08);
+    --teal: #1EE3CF;
+    --plum: #EC4899;
+    --ember: #FBBF24;
+    --red: #F87171;
+  }
+  * { box-sizing: border-box; }
+  html, body { background: var(--bg); }
+  body {
+    font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--body);
+    margin: 0;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; }
+  .eyebrow {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 0 0 0.5rem;
+  }
+  h1 {
+    color: var(--heading);
+    font-size: 1.5rem;
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.01em;
+    font-weight: 500;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  h1 .accent { color: var(--teal); }
+  .meta { color: var(--muted); margin: 0 0 2rem; font-size: 13px; }
+  .meta strong { color: var(--heading); font-weight: 600; }
+  .meta .pass-count { color: var(--heading); font-weight: 600; }
+  a { color: var(--teal); text-decoration: none; }
+  a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:focus-visible, .filters button:focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  code {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    background: var(--elevated);
+    border: 1px solid var(--hairline);
+    color: var(--teal);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  .filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0 0 1.25rem;
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .filters .label { margin-right: 0.25rem; }
+  .filters button {
+    font: inherit;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 13px;
+    padding: 8px 14px;
+    min-height: 36px;
+    border: 1px solid var(--hairline);
+    background: transparent;
+    color: var(--body);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .filters button:hover { color: var(--teal); border-color: var(--teal); }
+  .filters button.active {
+    color: var(--bg);
+    background: var(--teal);
+    border-color: var(--teal);
+    font-weight: 600;
+  }
+  .table-wrap {
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background: var(--elevated);
+  }
   table { width: 100%; border-collapse: collapse; }
-  th, td { padding: 6px 10px; text-align: left; border-bottom: 1px solid #eee; }
-  th { background: #fafafa; font-weight: 600; }
-  .meta { color: #666; margin: 1rem 0 2rem; }
-  .filters { margin-bottom: 1rem; }
-  .filters button { margin-right: 6px; padding: 4px 10px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 4px; }
-  .filters button.active { background: #eef; }
-  code { background: #f6f6f6; padding: 1px 4px; border-radius: 3px; }
+  th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--hairline); }
+  thead th {
+    background: var(--subtle);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--hairline);
+  }
+  tbody tr { transition: background 0.12s; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(30, 227, 207, 0.04); }
+  tbody tr[data-status]:not([data-status="passing"]) {
+    background: rgba(236, 72, 153, 0.05);
+    box-shadow: inset 3px 0 0 var(--plum);
+  }
+  tbody tr[data-status]:not([data-status="passing"]) td:nth-child(6) { color: var(--red); }
+  td.badge { width: 1.5rem; padding-right: 0; font-size: 13px; }
+  td.num { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .sdk-tag {
+    display: inline-block;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--hairline);
+    color: var(--body);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  @media (max-width: 480px) {
+    body { padding: 1.25rem 1rem 3rem; }
+    .filters button { min-height: 44px; padding: 10px 14px; }
+    h1 { font-size: 1.25rem; }
+  }
 </style>
 </head>
 <body>
-<h1>Resonate examples-ci</h1>
+<main class="wrap">
+<p class="eyebrow">Run 2026-06-01</p>
+<h1>Resonate <span class="accent">examples-ci</span></h1>
 <p class="meta">
-  Run date: <strong>2026-05-31</strong> ·
-  74/74 passing ·
-  SDK: ts <code>0.10.2</code>, py <code>0.6.7</code>, rs <code>0.4.0</code>, go <code>v0.0.0-20260526165115-d787251a9733</code> ·
-  <a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245">workflow run</a>
+  <span class="pass-count">74/74</span> passing ·
+  SDK ts <code>0.10.2</code> · py <code>0.6.7</code> · rs <code>0.4.0</code> · go <code>v0.0.0-20260526165115-d787251a9733</code> ·
+  <a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252">workflow run →</a>
 </p>
 <div class="filters">
-  Filter:
+  <span class="label">Filter</span>
   <button class="active" data-filter="all">All</button>
   <button data-filter="ts">TS</button>
   <button data-filter="py">Py</button>
@@ -32,84 +168,89 @@
   <button data-filter="go">Go</button>
   <button data-filter="failing">Failing only</button>
 </div>
+<div class="table-wrap">
 <table>
-<thead><tr><th></th><th>Repo</th><th>SDK</th><th>SDK ver</th><th>Server</th><th>Status</th><th>Duration</th></tr></thead>
-<tbody><tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-agent-tool-background-job">example-agent-tool-background-job</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710680433">passing</a></td><td>30s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-ai-image-pipeline-ts">example-ai-image-pipeline-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710680225">passing</a></td><td>3s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-async-http-api-py">example-async-http-api-py</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679407">passing</a></td><td>23s</td></tr>
-<tr data-sdk="rs" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-async-http-api-rs">example-async-http-api-rs</a></td><td>rs</td><td>0.4.0</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679075">passing</a></td><td>11s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-async-http-api-ts">example-async-http-api-ts</a></td><td>ts</td><td>0.10.2</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679106">passing</a></td><td>11s</td></tr>
-<tr data-sdk="go" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-async-rpc-go">example-async-rpc-go</a></td><td>go</td><td>v0.0.0-20260526165115-d787251a9733</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679735">passing</a></td><td>14s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-async-rpc-py">example-async-rpc-py</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679695">passing</a></td><td>20s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-async-rpc-ts">example-async-rpc-ts</a></td><td>ts</td><td>0.10.2</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679703">passing</a></td><td>15s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-async-tools-mcp-server-py">example-async-tools-mcp-server-py</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710680429">passing</a></td><td>33s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-batch-processor-ts">example-batch-processor-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679030">passing</a></td><td>2s</td></tr>
-<tr data-sdk="go" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-countdown-go">example-countdown-go</a></td><td>go</td><td>v0.0.0-20260526165115-d787251a9733</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679717">passing</a></td><td>24s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-countdown-py">example-countdown-py</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710680212">passing</a></td><td>22s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-countdown-ts">example-countdown-ts</a></td><td>ts</td><td>0.10.2</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710680201">passing</a></td><td>12s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-distributed-calculator-py">example-distributed-calculator-py</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710680468">passing</a></td><td>15s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-distributed-mutex-ts">example-distributed-mutex-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679041">passing</a></td><td>2s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-durable-chatbot-ts">example-durable-chatbot-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679955">passing</a></td><td>5s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-durable-entity-ts">example-durable-entity-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679056">passing</a></td><td>3s</td></tr>
-<tr data-sdk="go" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-durable-sleep-go">example-durable-sleep-go</a></td><td>go</td><td>v0.0.0-20260526165115-d787251a9733</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679733">passing</a></td><td>21s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-durable-sleep-py">example-durable-sleep-py</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679417">passing</a></td><td>18s</td></tr>
-<tr data-sdk="rs" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-durable-sleep-rs">example-durable-sleep-rs</a></td><td>rs</td><td>0.4.0</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679437">passing</a></td><td>27s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-durable-sleep-ts">example-durable-sleep-ts</a></td><td>ts</td><td>0.10.2</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679412">passing</a></td><td>22s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-encryption-ts">example-encryption-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679036">passing</a></td><td>1s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-event-sourcing-ts">example-event-sourcing-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679052">passing</a></td><td>2s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-express-integration-ts">example-express-integration-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679088">passing</a></td><td>6s</td></tr>
-<tr data-sdk="go" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-fan-out-fan-in-go">example-fan-out-fan-in-go</a></td><td>go</td><td>v0.0.0-20260526165115-d787251a9733</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679723">passing</a></td><td>18s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-fan-out-fan-in-py">example-fan-out-fan-in-py</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679461">passing</a></td><td>13s</td></tr>
-<tr data-sdk="rs" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-fan-out-fan-in-rs">example-fan-out-fan-in-rs</a></td><td>rs</td><td>0.4.0</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679427">passing</a></td><td>22s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-fan-out-fan-in-ts">example-fan-out-fan-in-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679011">passing</a></td><td>1s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-food-delivery-ts">example-food-delivery-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679064">passing</a></td><td>4s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-hackernews-research-agent-py">example-hackernews-research-agent-py</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679969">passing</a></td><td>23s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-hackernews-research-agent-ts">example-hackernews-research-agent-ts</a></td><td>ts</td><td>0.10.2</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679948">passing</a></td><td>15s</td></tr>
-<tr data-sdk="go" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-hello-world-go">example-hello-world-go</a></td><td>go</td><td>v0.0.0-20260526165115-d787251a9733</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679715">passing</a></td><td>25s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-hello-world-py">example-hello-world-py</a></td><td>py</td><td>0.6.7</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679015">passing</a></td><td>10s</td></tr>
-<tr data-sdk="rs" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-hello-world-rs">example-hello-world-rs</a></td><td>rs</td><td>0.4.0</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679395">passing</a></td><td>16s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-hello-world-ts">example-hello-world-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679001">passing</a></td><td>4s</td></tr>
-<tr data-sdk="go" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-human-in-the-loop-go">example-human-in-the-loop-go</a></td><td>go</td><td>v0.0.0-20260526165115-d787251a9733</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679728">passing</a></td><td>20s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-human-in-the-loop-py">example-human-in-the-loop-py</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679089">passing</a></td><td>15s</td></tr>
-<tr data-sdk="rs" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-human-in-the-loop-rs">example-human-in-the-loop-rs</a></td><td>rs</td><td>0.4.0</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679443">passing</a></td><td>13s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-human-in-the-loop-ts">example-human-in-the-loop-ts</a></td><td>ts</td><td>0.10.2</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679436">passing</a></td><td>10s</td></tr>
-<tr data-sdk="go" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-infinite-workflow-go">example-infinite-workflow-go</a></td><td>go</td><td>v0.0.0-20260526165115-d787251a9733</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679921">passing</a></td><td>26s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-infinite-workflow-ts">example-infinite-workflow-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710680182">passing</a></td><td>8s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-kafka-worker-py">example-kafka-worker-py</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679929">passing</a></td><td>36s</td></tr>
-<tr data-sdk="rs" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-kafka-worker-rs">example-kafka-worker-rs</a></td><td>rs</td><td>0.4.0</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679920">passing</a></td><td>28s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-kafka-worker-ts">example-kafka-worker-ts</a></td><td>ts</td><td>0.10.2</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679937">passing</a></td><td>16s</td></tr>
-<tr data-sdk="go" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-load-balancing-go">example-load-balancing-go</a></td><td>go</td><td>v0.0.0-20260526165115-d787251a9733</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679924">passing</a></td><td>18s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-load-balancing-py">example-load-balancing-py</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679090">passing</a></td><td>15s</td></tr>
-<tr data-sdk="rs" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-load-balancing-rs">example-load-balancing-rs</a></td><td>rs</td><td>0.4.0</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679156">passing</a></td><td>8s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-load-balancing-ts">example-load-balancing-ts</a></td><td>ts</td><td>0.10.2</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679071">passing</a></td><td>10s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-mcp-tools-ts">example-mcp-tools-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710680451">passing</a></td><td>17s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-money-transfer-py">example-money-transfer-py</a></td><td>py</td><td>0.6.7</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679014">passing</a></td><td>10s</td></tr>
-<tr data-sdk="rs" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-money-transfer-rs">example-money-transfer-rs</a></td><td>rs</td><td>0.4.0</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679050">passing</a></td><td>61s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-multi-agent-orchestration-py">example-multi-agent-orchestration-py</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710680125">passing</a></td><td>22s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-multi-agent-orchestration-ts">example-multi-agent-orchestration-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710680140">passing</a></td><td>3s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-openai-deep-research-agent-py">example-openai-deep-research-agent-py</a></td><td>py</td><td>0.6.7</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710680160">passing</a></td><td>17s</td></tr>
-<tr data-sdk="rs" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-openai-deep-research-agent-rs">example-openai-deep-research-agent-rs</a></td><td>rs</td><td>0.4.0</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710680164">passing</a></td><td>10s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-openai-deep-research-agent-ts">example-openai-deep-research-agent-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710680174">passing</a></td><td>8s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-priority-queue-ts">example-priority-queue-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679022">passing</a></td><td>3s</td></tr>
-<tr data-sdk="go" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-quickstart-go">example-quickstart-go</a></td><td>go</td><td>v0.0.0-20260526165115-d787251a9733</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679732">passing</a></td><td>15s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-quickstart-py">example-quickstart-py</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679129">passing</a></td><td>19s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-quickstart-ts">example-quickstart-ts</a></td><td>ts</td><td>0.10.2</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679091">passing</a></td><td>15s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-rate-limiter-ts">example-rate-limiter-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679044">passing</a></td><td>10s</td></tr>
-<tr data-sdk="go" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-recursive-factorial-go">example-recursive-factorial-go</a></td><td>go</td><td>v0.0.0-20260526165115-d787251a9733</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679721">passing</a></td><td>23s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-recursive-factorial-py">example-recursive-factorial-py</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679094">passing</a></td><td>15s</td></tr>
-<tr data-sdk="rs" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-recursive-factorial-rs">example-recursive-factorial-rs</a></td><td>rs</td><td>0.4.0</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679077">passing</a></td><td>9s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-recursive-factorial-ts">example-recursive-factorial-ts</a></td><td>ts</td><td>0.10.2</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679136">passing</a></td><td>10s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-saga-booking-ts">example-saga-booking-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679010">passing</a></td><td>2s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-schedule-py">example-schedule-py</a></td><td>py</td><td>0.6.7</td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679411">passing</a></td><td>71s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-schedule-reminder-agent-py">example-schedule-reminder-agent-py</a></td><td>py</td><td>0.6.7</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710680141">passing</a></td><td>14s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-schedule-ts">example-schedule-ts</a></td><td>ts</td><td>0.10.2</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679097">passing</a></td><td>29s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-state-machine-ts">example-state-machine-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679016">passing</a></td><td>1s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-tigerbeetle-account-creation-ts">example-tigerbeetle-account-creation-ts</a></td><td>ts</td><td>0.10.2</td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679927">passing</a></td><td>13s</td></tr>
-<tr data-sdk="go" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-webhook-handler-go">example-webhook-handler-go</a></td><td>go</td><td>v0.0.0-20260526165115-d787251a9733</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679907">passing</a></td><td>15s</td></tr>
-<tr data-sdk="py" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-webhook-handler-py">example-webhook-handler-py</a></td><td>py</td><td>0.6.7</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679018">passing</a></td><td>15s</td></tr>
-<tr data-sdk="ts" data-status="passing"><td>✅</td><td><a href="https://github.com/resonatehq-examples/example-webhook-handler-ts">example-webhook-handler-ts</a></td><td>ts</td><td>0.10.2</td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26707211245/job/78710679013">passing</a></td><td>2s</td></tr></tbody>
+<thead><tr><th aria-label="Status icon"></th><th>Repo</th><th>SDK</th><th>SDK ver</th><th>Server</th><th>Status</th><th>Duration</th></tr></thead>
+<tbody><tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-agent-tool-background-job">example-agent-tool-background-job</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817702000">passing</a></td><td class="num">33s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-ai-image-pipeline-ts">example-ai-image-pipeline-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817701937">passing</a></td><td class="num">2s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-async-http-api-py">example-async-http-api-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817697818">passing</a></td><td class="num">24s</td></tr>
+<tr data-sdk="rs" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-async-http-api-rs">example-async-http-api-rs</a></td><td><span class="sdk-tag sdk-rs">rs</span></td><td><code>0.4.0</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817697035">passing</a></td><td class="num">12s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-async-http-api-ts">example-async-http-api-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696910">passing</a></td><td class="num">10s</td></tr>
+<tr data-sdk="go" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-async-rpc-go">example-async-rpc-go</a></td><td><span class="sdk-tag sdk-go">go</span></td><td><code>v0.0.0-20260526165115-d787251a9733</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817699439">passing</a></td><td class="num">15s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-async-rpc-py">example-async-rpc-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817698969">passing</a></td><td class="num">18s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-async-rpc-ts">example-async-rpc-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817698695">passing</a></td><td class="num">16s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-async-tools-mcp-server-py">example-async-tools-mcp-server-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817701960">passing</a></td><td class="num">33s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-batch-processor-ts">example-batch-processor-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696875">passing</a></td><td class="num">2s</td></tr>
+<tr data-sdk="go" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-countdown-go">example-countdown-go</a></td><td><span class="sdk-tag sdk-go">go</span></td><td><code>v0.0.0-20260526165115-d787251a9733</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817699094">passing</a></td><td class="num">22s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-countdown-py">example-countdown-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817701472">passing</a></td><td class="num">21s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-countdown-ts">example-countdown-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817701822">passing</a></td><td class="num">14s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-distributed-calculator-py">example-distributed-calculator-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817702400">passing</a></td><td class="num">14s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-distributed-mutex-ts">example-distributed-mutex-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696864">passing</a></td><td class="num">2s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-durable-chatbot-ts">example-durable-chatbot-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817700632">passing</a></td><td class="num">5s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-durable-entity-ts">example-durable-entity-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696881">passing</a></td><td class="num">3s</td></tr>
+<tr data-sdk="go" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-durable-sleep-go">example-durable-sleep-go</a></td><td><span class="sdk-tag sdk-go">go</span></td><td><code>v0.0.0-20260526165115-d787251a9733</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817699308">passing</a></td><td class="num">18s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-durable-sleep-py">example-durable-sleep-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817698007">passing</a></td><td class="num">23s</td></tr>
+<tr data-sdk="rs" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-durable-sleep-rs">example-durable-sleep-rs</a></td><td><span class="sdk-tag sdk-rs">rs</span></td><td><code>0.4.0</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817697976">passing</a></td><td class="num">29s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-durable-sleep-ts">example-durable-sleep-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817697992">passing</a></td><td class="num">21s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-encryption-ts">example-encryption-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696955">passing</a></td><td class="num">1s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-event-sourcing-ts">example-event-sourcing-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696909">passing</a></td><td class="num">3s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-express-integration-ts">example-express-integration-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696964">passing</a></td><td class="num">5s</td></tr>
+<tr data-sdk="go" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-fan-out-fan-in-go">example-fan-out-fan-in-go</a></td><td><span class="sdk-tag sdk-go">go</span></td><td><code>v0.0.0-20260526165115-d787251a9733</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817699233">passing</a></td><td class="num">19s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-fan-out-fan-in-py">example-fan-out-fan-in-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817698127">passing</a></td><td class="num">13s</td></tr>
+<tr data-sdk="rs" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-fan-out-fan-in-rs">example-fan-out-fan-in-rs</a></td><td><span class="sdk-tag sdk-rs">rs</span></td><td><code>0.4.0</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817697979">passing</a></td><td class="num">22s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-fan-out-fan-in-ts">example-fan-out-fan-in-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696846">passing</a></td><td class="num">2s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-food-delivery-ts">example-food-delivery-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696959">passing</a></td><td class="num">4s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-hackernews-research-agent-py">example-hackernews-research-agent-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817700769">passing</a></td><td class="num">19s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-hackernews-research-agent-ts">example-hackernews-research-agent-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817700409">passing</a></td><td class="num">13s</td></tr>
+<tr data-sdk="go" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-hello-world-go">example-hello-world-go</a></td><td><span class="sdk-tag sdk-go">go</span></td><td><code>v0.0.0-20260526165115-d787251a9733</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817699053">passing</a></td><td class="num">19s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-hello-world-py">example-hello-world-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696874">passing</a></td><td class="num">8s</td></tr>
+<tr data-sdk="rs" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-hello-world-rs">example-hello-world-rs</a></td><td><span class="sdk-tag sdk-rs">rs</span></td><td><code>0.4.0</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817697749">passing</a></td><td class="num">21s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-hello-world-ts">example-hello-world-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696888">passing</a></td><td class="num">4s</td></tr>
+<tr data-sdk="go" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-human-in-the-loop-go">example-human-in-the-loop-go</a></td><td><span class="sdk-tag sdk-go">go</span></td><td><code>v0.0.0-20260526165115-d787251a9733</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817699554">passing</a></td><td class="num">18s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-human-in-the-loop-py">example-human-in-the-loop-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696953">passing</a></td><td class="num">15s</td></tr>
+<tr data-sdk="rs" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-human-in-the-loop-rs">example-human-in-the-loop-rs</a></td><td><span class="sdk-tag sdk-rs">rs</span></td><td><code>0.4.0</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817698103">passing</a></td><td class="num">12s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-human-in-the-loop-ts">example-human-in-the-loop-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817697941">passing</a></td><td class="num">11s</td></tr>
+<tr data-sdk="go" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-infinite-workflow-go">example-infinite-workflow-go</a></td><td><span class="sdk-tag sdk-go">go</span></td><td><code>v0.0.0-20260526165115-d787251a9733</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817700020">passing</a></td><td class="num">24s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-infinite-workflow-ts">example-infinite-workflow-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817701350">passing</a></td><td class="num">9s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-kafka-worker-py">example-kafka-worker-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817700204">passing</a></td><td class="num">30s</td></tr>
+<tr data-sdk="rs" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-kafka-worker-rs">example-kafka-worker-rs</a></td><td><span class="sdk-tag sdk-rs">rs</span></td><td><code>0.4.0</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817700185">passing</a></td><td class="num">40s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-kafka-worker-ts">example-kafka-worker-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817700064">passing</a></td><td class="num">54s</td></tr>
+<tr data-sdk="go" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-load-balancing-go">example-load-balancing-go</a></td><td><span class="sdk-tag sdk-go">go</span></td><td><code>v0.0.0-20260526165115-d787251a9733</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817700075">passing</a></td><td class="num">22s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-load-balancing-py">example-load-balancing-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696920">passing</a></td><td class="num">14s</td></tr>
+<tr data-sdk="rs" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-load-balancing-rs">example-load-balancing-rs</a></td><td><span class="sdk-tag sdk-rs">rs</span></td><td><code>0.4.0</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696956">passing</a></td><td class="num">9s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-load-balancing-ts">example-load-balancing-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696929">passing</a></td><td class="num">8s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-mcp-tools-ts">example-mcp-tools-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817702287">passing</a></td><td class="num">16s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-money-transfer-py">example-money-transfer-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696918">passing</a></td><td class="num">9s</td></tr>
+<tr data-sdk="rs" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-money-transfer-rs">example-money-transfer-rs</a></td><td><span class="sdk-tag sdk-rs">rs</span></td><td><code>0.4.0</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696879">passing</a></td><td class="num">45s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-multi-agent-orchestration-py">example-multi-agent-orchestration-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817701053">passing</a></td><td class="num">21s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-multi-agent-orchestration-ts">example-multi-agent-orchestration-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817701073">passing</a></td><td class="num">3s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-openai-deep-research-agent-py">example-openai-deep-research-agent-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817701267">passing</a></td><td class="num">15s</td></tr>
+<tr data-sdk="rs" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-openai-deep-research-agent-rs">example-openai-deep-research-agent-rs</a></td><td><span class="sdk-tag sdk-rs">rs</span></td><td><code>0.4.0</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817701382">passing</a></td><td class="num">10s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-openai-deep-research-agent-ts">example-openai-deep-research-agent-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817701367">passing</a></td><td class="num">7s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-priority-queue-ts">example-priority-queue-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696903">passing</a></td><td class="num">2s</td></tr>
+<tr data-sdk="go" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-quickstart-go">example-quickstart-go</a></td><td><span class="sdk-tag sdk-go">go</span></td><td><code>v0.0.0-20260526165115-d787251a9733</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817699281">passing</a></td><td class="num">17s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-quickstart-py">example-quickstart-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696993">passing</a></td><td class="num">22s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-quickstart-ts">example-quickstart-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817697008">passing</a></td><td class="num">15s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-rate-limiter-ts">example-rate-limiter-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696960">passing</a></td><td class="num">10s</td></tr>
+<tr data-sdk="go" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-recursive-factorial-go">example-recursive-factorial-go</a></td><td><span class="sdk-tag sdk-go">go</span></td><td><code>v0.0.0-20260526165115-d787251a9733</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817699256">passing</a></td><td class="num">29s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-recursive-factorial-py">example-recursive-factorial-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817697037">passing</a></td><td class="num">16s</td></tr>
+<tr data-sdk="rs" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-recursive-factorial-rs">example-recursive-factorial-rs</a></td><td><span class="sdk-tag sdk-rs">rs</span></td><td><code>0.4.0</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696931">passing</a></td><td class="num">9s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-recursive-factorial-ts">example-recursive-factorial-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696938">passing</a></td><td class="num">10s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-saga-booking-ts">example-saga-booking-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696893">passing</a></td><td class="num">2s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-schedule-py">example-schedule-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>legacy_go v0.8.2</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817697935">passing</a></td><td class="num">39s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-schedule-reminder-agent-py">example-schedule-reminder-agent-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817701217">passing</a></td><td class="num">15s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-schedule-ts">example-schedule-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696921">passing</a></td><td class="num">54s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-state-machine-ts">example-state-machine-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696866">passing</a></td><td class="num">2s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-tigerbeetle-account-creation-ts">example-tigerbeetle-account-creation-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>rust v0.9.7</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817700203">passing</a></td><td class="num">12s</td></tr>
+<tr data-sdk="go" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-webhook-handler-go">example-webhook-handler-go</a></td><td><span class="sdk-tag sdk-go">go</span></td><td><code>v0.0.0-20260526165115-d787251a9733</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817699882">passing</a></td><td class="num">14s</td></tr>
+<tr data-sdk="py" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-webhook-handler-py">example-webhook-handler-py</a></td><td><span class="sdk-tag sdk-py">py</span></td><td><code>0.6.7</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696899">passing</a></td><td class="num">15s</td></tr>
+<tr data-sdk="ts" data-status="passing"><td class="badge">✅</td><td><a href="https://github.com/resonatehq-examples/example-webhook-handler-ts">example-webhook-handler-ts</a></td><td><span class="sdk-tag sdk-ts">ts</span></td><td><code>0.10.2</code></td><td>in memory</td><td><a href="https://github.com/resonatehq/examples-ci/actions/runs/26744863252/job/78817696927">passing</a></td><td class="num">3s</td></tr></tbody>
 </table>
+</div>
+<span id="filter-status" aria-live="polite" class="sr-only"></span>
+</main>
 <script>
+  const status = document.getElementById('filter-status');
   document.querySelectorAll('.filters button').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filters button').forEach(b => b.classList.remove('active'));
@@ -120,6 +261,8 @@
         if (f === 'failing') { tr.style.display = tr.dataset.status === 'passing' ? 'none' : ''; return; }
         tr.style.display = tr.dataset.sdk === f ? '' : 'none';
       });
+      const visible = [...document.querySelectorAll('tbody tr')].filter(r => r.style.display !== 'none').length;
+      status.textContent = `Showing ${visible} example${visible !== 1 ? 's' : ''}`;
     });
   });
 </script>
