@@ -853,9 +853,24 @@ examples:
         exit 1
       timeout_s: 360
 
+  # SKIPPED 2026-06-03: the Rust SDK has no automatic ctx.run step retry,
+  # but this example depends on it. lib.rs delete_batch returns
+  # Err(Error::Application) on a 25% "transient" roll and comments "Resonate
+  # retries automatically" — true for the TS/Py SDKs (both siblings pass),
+  # false for rs. resonate-sdk-rs 0.4.0 has no retry surface at all (no
+  # retry/max_attempts/backoff in src); core.rs only RELEASES a task on
+  # execution failure for crash-recovery, while a user Err settles the
+  # promise as terminally rejected. Server log from run 26906295324 confirms:
+  # promise 3f59...0 settled rejected, then 5 min of listener re-registration
+  # with zero re-execution. Producer sends -n 1, so one early 25% error =
+  # dead run (~50% per-record completion odds with no retry → ~daily red).
+  # Re-enroll when EITHER the rs SDK gains automatic step retry, OR the
+  # example is rewritten to retry in user code (and the "retries
+  # automatically" comment is corrected). Tracked for the SDK team.
   - repo: example-kafka-worker-rs
     sdk: rs
     requires_server: true
+    skip: true
     services: [redpanda]
     # The runner's cargo build --release compiles both binaries (consumer +
     # producer) up front, so the cargo-run calls below hit a warm cache.
