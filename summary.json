@@ -1,12 +1,12 @@
 {
   "schema_version": "1",
-  "run_date": "2026-06-05",
-  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551",
+  "run_date": "2026-06-06",
+  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337",
   "versions": {
     "ts": "0.10.2",
     "py": "0.6.7",
     "rs": "0.4.0",
-    "go": "v0.0.0-20260605035525-24091accde0a"
+    "go": "v0.0.0-20260605184126-22076134651f"
   },
   "totals": {
     "total": 73,
@@ -19,11 +19,11 @@
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 31,
-      "stderr_tail": "                             transport 'streamable-http' on                     \n                             http://127.0.0.1:5001/mcp                          \nINFO:     Started server process [2561]\nINFO:     Waiting for application startup.\nINFO:     Application startup complete.\nINFO:     Uvicorn running on http://127.0.0.1:5001 (Press CTRL+C to quit)\nINFO:     Shutting down\nINFO:     Waiting for application shutdown.\nINFO:     Application shutdown complete.\nINFO:     Finished server process [2561]",
+      "duration_s": 37,
+      "stderr_tail": "                             transport 'streamable-http' on                     \n                             http://127.0.0.1:5001/mcp                          \nINFO:     Started server process [2350]\nINFO:     Waiting for application startup.\nINFO:     Application startup complete.\nINFO:     Uvicorn running on http://127.0.0.1:5001 (Press CTRL+C to quit)\nINFO:     Shutting down\nINFO:     Waiting for application shutdown.\nINFO:     Application shutdown complete.\nINFO:     Finished server process [2350]",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690995598"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862583023"
     },
     {
       "repo": "example-ai-image-pipeline-ts",
@@ -34,18 +34,18 @@
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690995511"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582948"
     },
     {
       "repo": "example-async-http-api-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 26,
+      "duration_s": 28,
       "stderr_tail": "",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992810"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582199"
     },
     {
       "repo": "example-async-http-api-rs",
@@ -56,40 +56,40 @@
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991982"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582022"
     },
     {
       "repo": "example-async-http-api-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 9,
+      "duration_s": 10,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991993"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582014"
     },
     {
       "repo": "example-async-rpc-go",
       "sdk": "go",
-      "sdk_version": "v0.0.0-20260605035525-24091accde0a",
+      "sdk_version": "v0.0.0-20260605184126-22076134651f",
       "status": "passing",
-      "duration_s": 15,
+      "duration_s": 20,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690993700"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582556"
     },
     {
       "repo": "example-async-rpc-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 18,
+      "duration_s": 16,
       "stderr_tail": "",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690993434"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582441"
     },
     {
       "repo": "example-async-rpc-ts",
@@ -100,40 +100,40 @@
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690993473"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582440"
     },
     {
       "repo": "example-async-tools-mcp-server-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 35,
-      "stderr_tail": "                             transport 'streamable-http' on                     \n                             http://127.0.0.1:5001/mcp                          \nINFO:     Started server process [2555]\nINFO:     Waiting for application startup.\nINFO:     Application startup complete.\nINFO:     Uvicorn running on http://127.0.0.1:5001 (Press CTRL+C to quit)\nINFO:     Shutting down\nINFO:     Waiting for application shutdown.\nINFO:     Application shutdown complete.\nINFO:     Finished server process [2555]",
+      "duration_s": 37,
+      "stderr_tail": "                             transport 'streamable-http' on                     \n                             http://127.0.0.1:5001/mcp                          \nINFO:     Started server process [2610]\nINFO:     Waiting for application startup.\nINFO:     Application startup complete.\nINFO:     Uvicorn running on http://127.0.0.1:5001 (Press CTRL+C to quit)\nINFO:     Shutting down\nINFO:     Waiting for application shutdown.\nINFO:     Application shutdown complete.\nINFO:     Finished server process [2610]",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690995599"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582968"
     },
     {
       "repo": "example-batch-processor-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 2,
+      "duration_s": 3,
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991905"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581975"
     },
     {
       "repo": "example-countdown-go",
       "sdk": "go",
-      "sdk_version": "v0.0.0-20260605035525-24091accde0a",
+      "sdk_version": "v0.0.0-20260605184126-22076134651f",
       "status": "passing",
-      "duration_s": 22,
+      "duration_s": 20,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690993612"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582445"
     },
     {
       "repo": "example-countdown-py",
@@ -144,54 +144,32 @@
       "stderr_tail": "",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690995276"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582941"
     },
     {
       "repo": "example-countdown-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 14,
+      "duration_s": 13,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690995323"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582931"
     },
     {
       "repo": "example-distributed-calculator-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 14,
+      "duration_s": 21,
       "stderr_tail": "",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690995956"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862583072"
     },
     {
       "repo": "example-distributed-mutex-ts",
-      "sdk": "ts",
-      "sdk_version": "0.10.2",
-      "status": "passing",
-      "duration_s": 1,
-      "stderr_tail": "$ bun run src/index.ts",
-      "server_version": "",
-      "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991910"
-    },
-    {
-      "repo": "example-durable-chatbot-ts",
-      "sdk": "ts",
-      "sdk_version": "0.10.2",
-      "status": "passing",
-      "duration_s": 5,
-      "stderr_tail": "{\"timestamp\":\"2026-06-05T08:23:07.629Z\",\"level\":\"warn\",\"msg\":\"Function 'callClaude' failed with 'Error: LLM API connection timeout (simulated)' (retrying in 2 secs)\",\"component\":\"runtime\",\"func\":\"callClaude\",\"attempt\":1,\"retryIn\":2000}",
-      "server_version": "",
-      "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690994525"
-    },
-    {
-      "repo": "example-durable-entity-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
@@ -199,51 +177,73 @@
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991968"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581992"
+    },
+    {
+      "repo": "example-durable-chatbot-ts",
+      "sdk": "ts",
+      "sdk_version": "0.10.2",
+      "status": "passing",
+      "duration_s": 5,
+      "stderr_tail": "{\"timestamp\":\"2026-06-06T07:58:14.474Z\",\"level\":\"warn\",\"msg\":\"Function 'callClaude' failed with 'Error: LLM API connection timeout (simulated)' (retrying in 2 secs)\",\"component\":\"runtime\",\"func\":\"callClaude\",\"attempt\":1,\"retryIn\":2000}",
+      "server_version": "",
+      "server_kind": "",
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582715"
+    },
+    {
+      "repo": "example-durable-entity-ts",
+      "sdk": "ts",
+      "sdk_version": "0.10.2",
+      "status": "passing",
+      "duration_s": 3,
+      "stderr_tail": "$ bun run src/index.ts",
+      "server_version": "",
+      "server_kind": "",
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581980"
     },
     {
       "repo": "example-durable-sleep-go",
       "sdk": "go",
-      "sdk_version": "v0.0.0-20260605035525-24091accde0a",
+      "sdk_version": "v0.0.0-20260605184126-22076134651f",
       "status": "passing",
-      "duration_s": 18,
+      "duration_s": 19,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690993725"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582489"
     },
     {
       "repo": "example-durable-sleep-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 19,
+      "duration_s": 18,
       "stderr_tail": "",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992963"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582220"
     },
     {
       "repo": "example-durable-sleep-rs",
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 31,
+      "duration_s": 32,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992940"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582218"
     },
     {
       "repo": "example-durable-sleep-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 20,
+      "duration_s": 21,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992959"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582209"
     },
     {
       "repo": "example-encryption-ts",
@@ -254,7 +254,7 @@
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992056"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581974"
     },
     {
       "repo": "example-event-sourcing-ts",
@@ -265,51 +265,51 @@
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991990"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581996"
     },
     {
       "repo": "example-express-integration-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 5,
+      "duration_s": 6,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992023"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581978"
     },
     {
       "repo": "example-fan-out-fan-in-go",
       "sdk": "go",
-      "sdk_version": "v0.0.0-20260605035525-24091accde0a",
+      "sdk_version": "v0.0.0-20260605184126-22076134651f",
       "status": "passing",
       "duration_s": 18,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690993584"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582488"
     },
     {
       "repo": "example-fan-out-fan-in-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 12,
+      "duration_s": 14,
       "stderr_tail": "",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690993017"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582256"
     },
     {
       "repo": "example-fan-out-fan-in-rs",
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 25,
+      "duration_s": 26,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992974"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582232"
     },
     {
       "repo": "example-fan-out-fan-in-ts",
@@ -320,7 +320,7 @@
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991895"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581981"
     },
     {
       "repo": "example-food-delivery-ts",
@@ -331,7 +331,7 @@
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992011"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582019"
     },
     {
       "repo": "example-hackernews-research-agent-py",
@@ -342,84 +342,84 @@
       "stderr_tail": "",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690994783"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582731"
     },
     {
       "repo": "example-hackernews-research-agent-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 13,
+      "duration_s": 16,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690994473"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582716"
     },
     {
       "repo": "example-hello-world-go",
       "sdk": "go",
-      "sdk_version": "v0.0.0-20260605035525-24091accde0a",
+      "sdk_version": "v0.0.0-20260605184126-22076134651f",
       "status": "passing",
-      "duration_s": 22,
+      "duration_s": 20,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690993430"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582442"
     },
     {
       "repo": "example-hello-world-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 7,
+      "duration_s": 10,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991957"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581991"
     },
     {
       "repo": "example-hello-world-rs",
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 22,
+      "duration_s": 26,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992808"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582192"
     },
     {
       "repo": "example-hello-world-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 5,
+      "duration_s": 4,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991900"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581997"
     },
     {
       "repo": "example-human-in-the-loop-go",
       "sdk": "go",
-      "sdk_version": "v0.0.0-20260605035525-24091accde0a",
+      "sdk_version": "v0.0.0-20260605184126-22076134651f",
       "status": "passing",
-      "duration_s": 18,
+      "duration_s": 22,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690993658"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582565"
     },
     {
       "repo": "example-human-in-the-loop-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 13,
+      "duration_s": 17,
       "stderr_tail": "",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992050"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582009"
     },
     {
       "repo": "example-human-in-the-loop-rs",
@@ -430,29 +430,29 @@
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992945"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582263"
     },
     {
       "repo": "example-human-in-the-loop-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 10,
+      "duration_s": 12,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992973"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582213"
     },
     {
       "repo": "example-infinite-workflow-go",
       "sdk": "go",
-      "sdk_version": "v0.0.0-20260605035525-24091accde0a",
+      "sdk_version": "v0.0.0-20260605184126-22076134651f",
       "status": "passing",
       "duration_s": 25,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690994123"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582653"
     },
     {
       "repo": "example-infinite-workflow-ts",
@@ -463,51 +463,51 @@
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690995238"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582934"
     },
     {
       "repo": "example-kafka-worker-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 24,
+      "duration_s": 21,
       "stderr_tail": "",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690994458"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582706"
     },
     {
       "repo": "example-kafka-worker-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 82,
-      "stderr_tail": "",
-      "server_version": "v0.9.8",
-      "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690994354"
-    },
-    {
-      "repo": "example-load-balancing-go",
-      "sdk": "go",
-      "sdk_version": "v0.0.0-20260605035525-24091accde0a",
-      "status": "passing",
       "duration_s": 20,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690994113"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582681"
+    },
+    {
+      "repo": "example-load-balancing-go",
+      "sdk": "go",
+      "sdk_version": "v0.0.0-20260605184126-22076134651f",
+      "status": "passing",
+      "duration_s": 18,
+      "stderr_tail": "",
+      "server_version": "v0.9.8",
+      "server_kind": "rust",
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582661"
     },
     {
       "repo": "example-load-balancing-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 16,
+      "duration_s": 14,
       "stderr_tail": "",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991983"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582012"
     },
     {
       "repo": "example-load-balancing-rs",
@@ -518,62 +518,62 @@
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992001"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582015"
     },
     {
       "repo": "example-load-balancing-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 9,
+      "duration_s": 8,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992032"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582007"
     },
     {
       "repo": "example-mcp-tools-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 17,
+      "duration_s": 16,
       "stderr_tail": "Resonate Weather MCP Server running on stdio",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690995971"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862583071"
     },
     {
       "repo": "example-money-transfer-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 11,
-      "stderr_tail": "[2026-06-05 08:21:54] [ERROR] [transfer-002] [transfer-002.2] RuntimeError. Function credit_target('transfer-002-credit', 'bob', 75.0, fail=True) failed with TransferRejected(\"target account 'bob' rejected the credit\")",
+      "duration_s": 12,
+      "stderr_tail": "[2026-06-06 07:57:03] [ERROR] [transfer-002] [transfer-002.2] RuntimeError. Function credit_target('transfer-002-credit', 'bob', 75.0, fail=True) failed with TransferRejected(\"target account 'bob' rejected the credit\")",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991952"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581970"
     },
     {
       "repo": "example-money-transfer-rs",
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 62,
+      "duration_s": 60,
       "stderr_tail": "\u001b[1m\u001b[92m    Finished\u001b[0m `release` profile [optimized] target(s) in 0.09s\n\u001b[1m\u001b[92m     Running\u001b[0m `target/release/money-transfer`",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991924"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581972"
     },
     {
       "repo": "example-multi-agent-orchestration-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 19,
+      "duration_s": 22,
       "stderr_tail": "",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690994857"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582757"
     },
     {
       "repo": "example-multi-agent-orchestration-ts",
@@ -584,40 +584,40 @@
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690994904"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582862"
     },
     {
       "repo": "example-openai-deep-research-agent-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 16,
-      "stderr_tail": "[2026-06-05 08:23:25] [DEBUG] [research.1] [research.1] Running function research('What are distributed systems', 1)\n[2026-06-05 08:23:25] [DEBUG] [research.1] [research.1.1] Running function prompt([{'role': 'system', 'content': '\\nYou are a recursive research agent.\\n\\nWhen given a broad or high-...)\n[2026-06-05 08:23:25] [DEBUG] [research.1] [research.1.1] Function prompt([{'role': 'system', 'content': '\\nYou are a recursive research agent.\\n\\nWhen given a broad or high-...) succeeded with ChatCompletionMessage(content='{\"relevanceScore\": 7, \"summary\": \"Mock LLM response for examples-ci.\"...\n[2026-06-05 08:23:25] [DEBUG] [research.1] [research.1] Function research('What are distributed systems', 1) succeeded with '{\"relevanceScore\": 7, \"summary\": \"Mock LLM response for examples-ci.\", \"keyPoints\": [\"mock point 1\"...",
+      "duration_s": 14,
+      "stderr_tail": "[2026-06-06 07:58:26] [DEBUG] [research.1] [research.1] Running function research('What are distributed systems', 1)\n[2026-06-06 07:58:26] [DEBUG] [research.1] [research.1.1] Running function prompt([{'role': 'system', 'content': '\\nYou are a recursive research agent.\\n\\nWhen given a broad or high-...)\n[2026-06-06 07:58:26] [DEBUG] [research.1] [research.1.1] Function prompt([{'role': 'system', 'content': '\\nYou are a recursive research agent.\\n\\nWhen given a broad or high-...) succeeded with ChatCompletionMessage(content='{\"relevanceScore\": 7, \"summary\": \"Mock LLM response for examples-ci.\"...\n[2026-06-06 07:58:26] [DEBUG] [research.1] [research.1] Function research('What are distributed systems', 1) succeeded with '{\"relevanceScore\": 7, \"summary\": \"Mock LLM response for examples-ci.\", \"keyPoints\": [\"mock point 1\"...",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690995052"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582874"
     },
     {
       "repo": "example-openai-deep-research-agent-rs",
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 10,
-      "stderr_tail": "\u001b[1m\u001b[92m    Finished\u001b[0m `release` profile [optimized] target(s) in 0.09s\n\u001b[1m\u001b[92m     Running\u001b[0m `target/release/research ci-001 'distributed systems' 1`",
+      "duration_s": 9,
+      "stderr_tail": "\u001b[1m\u001b[92m    Finished\u001b[0m `release` profile [optimized] target(s) in 0.10s\n\u001b[1m\u001b[92m     Running\u001b[0m `target/release/research ci-001 'distributed systems' 1`",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690995224"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582939"
     },
     {
       "repo": "example-openai-deep-research-agent-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 7,
+      "duration_s": 6,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690995122"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582937"
     },
     {
       "repo": "example-priority-queue-ts",
@@ -628,40 +628,40 @@
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992004"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581973"
     },
     {
       "repo": "example-quickstart-go",
       "sdk": "go",
-      "sdk_version": "v0.0.0-20260605035525-24091accde0a",
+      "sdk_version": "v0.0.0-20260605184126-22076134651f",
       "status": "passing",
-      "duration_s": 18,
+      "duration_s": 16,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690993832"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582496"
     },
     {
       "repo": "example-quickstart-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 23,
+      "duration_s": 20,
       "stderr_tail": "",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991996"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582025"
     },
     {
       "repo": "example-quickstart-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 16,
+      "duration_s": 15,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991994"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582008"
     },
     {
       "repo": "example-rate-limiter-ts",
@@ -672,62 +672,62 @@
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992000"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581986"
     },
     {
       "repo": "example-recursive-factorial-go",
       "sdk": "go",
-      "sdk_version": "v0.0.0-20260605035525-24091accde0a",
+      "sdk_version": "v0.0.0-20260605184126-22076134651f",
       "status": "passing",
-      "duration_s": 21,
+      "duration_s": 20,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690993560"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582457"
     },
     {
       "repo": "example-recursive-factorial-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 13,
+      "duration_s": 14,
       "stderr_tail": "",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992057"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582016"
     },
     {
       "repo": "example-recursive-factorial-rs",
       "sdk": "rs",
       "sdk_version": "0.4.0",
       "status": "passing",
-      "duration_s": 11,
+      "duration_s": 9,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992025"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582010"
     },
     {
       "repo": "example-recursive-factorial-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 10,
+      "duration_s": 9,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992009"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582023"
     },
     {
       "repo": "example-saga-booking-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 3,
+      "duration_s": 2,
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991899"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581989"
     },
     {
       "repo": "example-schedule-py",
@@ -738,73 +738,73 @@
       "stderr_tail": "",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992964"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582197"
     },
     {
       "repo": "example-schedule-reminder-agent-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 18,
+      "duration_s": 15,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690995072"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582867"
     },
     {
       "repo": "example-schedule-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 21,
+      "duration_s": 9,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690992232"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582013"
     },
     {
       "repo": "example-state-machine-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 2,
+      "duration_s": 1,
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991934"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581993"
     },
     {
       "repo": "example-tigerbeetle-account-creation-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 13,
+      "duration_s": 12,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690994492"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582712"
     },
     {
       "repo": "example-webhook-handler-go",
       "sdk": "go",
-      "sdk_version": "v0.0.0-20260605035525-24091accde0a",
+      "sdk_version": "v0.0.0-20260605184126-22076134651f",
       "status": "passing",
-      "duration_s": 16,
+      "duration_s": 15,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690994023"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862582647"
     },
     {
       "repo": "example-webhook-handler-py",
       "sdk": "py",
       "sdk_version": "0.6.7",
       "status": "passing",
-      "duration_s": 13,
+      "duration_s": 14,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991896"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581979"
     },
     {
       "repo": "example-webhook-handler-ts",
@@ -815,7 +815,7 @@
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27003994551/job/79690991891"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27056795337/job/79862581987"
     }
   ]
 }
