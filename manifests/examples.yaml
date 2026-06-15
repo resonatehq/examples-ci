@@ -764,11 +764,23 @@ examples:
     entry: "go run ."
     timeout_s: 30
 
+  # quickstart-go was rewritten (2026-06-08) into a durable-countdown worker:
+  # it registers `countdown`, blocks on a signal, and logs no startup line —
+  # so the old `kind: script` config timed out. Mirror quickstart-ts/-py:
+  # server-backed worker (ready_regex "" = pass on still-alive) + a CLI client
+  # that invokes the workflow. Per the README, each `--arg` is one element of
+  # the handler's `[]int` slice, so `--arg 5 --arg 1` => count=5, delay=1.
   - repo: example-quickstart-go
     sdk: go
-    kind: script
-    entry: "go run ."
-    timeout_s: 30
+    requires_server: true
+    processes:
+      - name: worker
+        entry: "go run ."
+        ready_regex: ""
+        healthy_after_s: 8
+    client:
+      entry: "/tmp/resonate invoke countdown.1 --func countdown --arg 5 --arg 1"
+      timeout_s: 60
 
   - repo: example-async-rpc-go
     sdk: go
