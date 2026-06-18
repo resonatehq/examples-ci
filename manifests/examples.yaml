@@ -795,6 +795,14 @@ examples:
     entry: "go run ."
     timeout_s: 30
 
+  # money-transfer-go: saga / compensation. Default `go run .` runs the happy
+  # path in localnet (no server) and exits — alice 200→150, bob 0→50.
+  - repo: example-money-transfer-go
+    sdk: go
+    kind: script
+    entry: "go run ."
+    timeout_s: 30
+
   - repo: example-webhook-handler-go
     sdk: go
     kind: script
