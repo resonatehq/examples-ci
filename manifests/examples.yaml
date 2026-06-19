@@ -803,6 +803,16 @@ examples:
     entry: "go run ."
     timeout_s: 30
 
+  # subscription-go: recurring billing on a durable timer. Default `go run .`
+  # uses localnet (no server). -interval is shortened so the 3-period demo
+  # finishes in ~1s instead of the 5s/period default; the timer path is still
+  # exercised. Charges 3 periods, prints a completion line, and exits.
+  - repo: example-subscription-go
+    sdk: go
+    kind: script
+    entry: "go run . -interval=500ms"
+    timeout_s: 30
+
   - repo: example-webhook-handler-go
     sdk: go
     kind: script
