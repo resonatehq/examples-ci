@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
-  "run_date": "2026-06-18",
-  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666",
+  "run_date": "2026-06-19",
+  "run_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307",
   "versions": {
     "ts": "0.10.2",
     "py": "0.7.0",
@@ -9,8 +9,8 @@
     "go": "v0.0.0-20260617195620-152de9b5bc17"
   },
   "totals": {
-    "total": 73,
-    "passing": 49,
+    "total": 74,
+    "passing": 50,
     "failing": 24
   },
   "results": [
@@ -19,44 +19,44 @@
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "worker_died",
-      "duration_s": 38,
+      "duration_s": 49,
       "stderr_tail": "Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/timer.py\", line 2, in <module>\n    from resonate import Resonate\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087985117"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315614389"
     },
     {
       "repo": "example-ai-image-pipeline-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 2,
+      "duration_s": 3,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087984752"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315614123"
     },
     {
       "repo": "example-async-http-api-py",
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "process_died",
-      "duration_s": 17,
+      "duration_s": 18,
       "stderr_tail": "[gateway] died before ready:            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1395, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1331, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 935, in _load_unlocked\n  File \"<frozen importlib._bootstrap_external>\", line 1023, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/home/runner/work/examples-ci/examples-ci/example/main.py\", line 6, in <module>\n    from resonate import Resonate\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087981934"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315611081"
     },
     {
       "repo": "example-async-http-api-rs",
       "sdk": "rs",
       "sdk_version": "0.5.0",
       "status": "passing",
-      "duration_s": 60,
+      "duration_s": 64,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980945"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610302"
     },
     {
       "repo": "example-async-http-api-ts",
@@ -67,51 +67,51 @@
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980932"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610313"
     },
     {
       "repo": "example-async-rpc-go",
       "sdk": "go",
       "sdk_version": "v0.0.0-20260617195620-152de9b5bc17",
       "status": "passing",
-      "duration_s": 16,
+      "duration_s": 15,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087983044"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315612186"
     },
     {
       "repo": "example-async-rpc-py",
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "process_died",
-      "duration_s": 12,
+      "duration_s": 15,
       "stderr_tail": "[service-a] died before ready: Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/.venv/bin/a\", line 3, in <module>\n    from src.service_a import main\n  File \"/home/runner/work/examples-ci/examples-ci/example/src/service_a.py\", line 1, in <module>\n    from resonate.message_sources.poller import Poller\nModuleNotFoundError: No module named 'resonate.message_sources'",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087982764"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315611885"
     },
     {
       "repo": "example-async-rpc-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 15,
+      "duration_s": 14,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087982740"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315611836"
     },
     {
       "repo": "example-async-tools-mcp-server-py",
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "worker_died",
-      "duration_s": 34,
+      "duration_s": 32,
       "stderr_tail": "Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/weather_data.py\", line 1, in <module>\n    from resonate import Resonate\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087984907"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315614179"
     },
     {
       "repo": "example-batch-processor-ts",
@@ -122,18 +122,18 @@
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980857"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610134"
     },
     {
       "repo": "example-countdown-go",
       "sdk": "go",
       "sdk_version": "v0.0.0-20260617195620-152de9b5bc17",
       "status": "passing",
-      "duration_s": 24,
+      "duration_s": 22,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087982940"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315612024"
     },
     {
       "repo": "example-countdown-py",
@@ -144,29 +144,29 @@
       "stderr_tail": "[worker] died before ready: Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/countdown.py\", line 1, in <module>\n    from resonate import Resonate, Context\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087984577"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613820"
     },
     {
       "repo": "example-countdown-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 13,
+      "duration_s": 12,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087984632"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613822"
     },
     {
       "repo": "example-distributed-calculator-py",
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "process_died",
-      "duration_s": 17,
+      "duration_s": 13,
       "stderr_tail": "[lhs] died before ready: Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/.venv/bin/resonator\", line 3, in <module>\n    from resonator.resonator import run\n  File \"/home/runner/work/examples-ci/examples-ci/example/resonator/resonator.py\", line 10, in <module>\n    from resonate import Resonate, Context\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087985201"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315614456"
     },
     {
       "repo": "example-distributed-mutex-ts",
@@ -177,7 +177,7 @@
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980909"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610115"
     },
     {
       "repo": "example-durable-chatbot-ts",
@@ -185,54 +185,54 @@
       "sdk_version": "0.10.2",
       "status": "passing",
       "duration_s": 5,
-      "stderr_tail": "{\"timestamp\":\"2026-06-18T08:34:42.531Z\",\"level\":\"warn\",\"msg\":\"Function 'callClaude' failed with 'Error: LLM API connection timeout (simulated)' (retrying in 2 secs)\",\"component\":\"runtime\",\"func\":\"callClaude\",\"attempt\":1,\"retryIn\":2000}",
+      "stderr_tail": "{\"timestamp\":\"2026-06-19T08:48:27.914Z\",\"level\":\"warn\",\"msg\":\"Function 'callClaude' failed with 'Error: LLM API connection timeout (simulated)' (retrying in 2 secs)\",\"component\":\"runtime\",\"func\":\"callClaude\",\"attempt\":1,\"retryIn\":2000}",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087983826"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613087"
     },
     {
       "repo": "example-durable-entity-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 2,
+      "duration_s": 3,
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980842"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610085"
     },
     {
       "repo": "example-durable-sleep-go",
       "sdk": "go",
       "sdk_version": "v0.0.0-20260617195620-152de9b5bc17",
       "status": "passing",
-      "duration_s": 19,
+      "duration_s": 18,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087982948"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315612049"
     },
     {
       "repo": "example-durable-sleep-py",
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "process_died",
-      "duration_s": 14,
+      "duration_s": 15,
       "stderr_tail": "[worker] died before ready: Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/worker.py\", line 1, in <module>\n    from resonate import Resonate, Context\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087982026"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315611239"
     },
     {
       "repo": "example-durable-sleep-rs",
       "sdk": "rs",
       "sdk_version": "0.5.0",
       "status": "passing",
-      "duration_s": 79,
+      "duration_s": 76,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087982134"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315611208"
     },
     {
       "repo": "example-durable-sleep-ts",
@@ -243,76 +243,87 @@
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087982057"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315611207"
     },
     {
       "repo": "example-encryption-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 1,
+      "duration_s": 2,
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980917"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610192"
     },
     {
       "repo": "example-event-sourcing-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 1,
+      "duration_s": 2,
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980867"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610216"
     },
     {
       "repo": "example-express-integration-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 6,
+      "duration_s": 7,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980918"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610208"
     },
     {
       "repo": "example-fan-out-fan-in-go",
       "sdk": "go",
       "sdk_version": "v0.0.0-20260617195620-152de9b5bc17",
       "status": "passing",
-      "duration_s": 19,
+      "duration_s": 25,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087982960"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315612079"
     },
     {
       "repo": "example-fan-out-fan-in-py",
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "runtime_failed",
-      "duration_s": 13,
+      "duration_s": 12,
       "stderr_tail": "Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/main.py\", line 16, in <module>\n    from resonate import Resonate\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087982115"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315611829"
     },
     {
       "repo": "example-fan-out-fan-in-rs",
       "sdk": "rs",
       "sdk_version": "0.5.0",
       "status": "compile_failed",
-      "duration_s": 73,
+      "duration_s": 67,
       "stderr_tail": "   \u001b[1m\u001b[94m= \u001b[0m\u001b[1mhelp\u001b[0m: the trait `Future` is not implemented for `Result<DurableFuture<WorkResult>, resonate_sdk::error::Error>`\n   \u001b[1m\u001b[94m= \u001b[0m\u001b[1mnote\u001b[0m: Result<DurableFuture<WorkResult>, resonate_sdk::error::Error> must be a future or must implement `IntoFuture` to be awaited\n   \u001b[1m\u001b[94m= \u001b[0m\u001b[1mnote\u001b[0m: required for `Result<DurableFuture<WorkResult>, resonate_sdk::error::Error>` to implement `IntoFuture`\n\u001b[1m\u001b[96mhelp\u001b[0m: remove the `.await`\n   \u001b[1m\u001b[94m|\u001b[0m\n\u001b[1m\u001b[94m28\u001b[0m \u001b[91m- \u001b[0m    let h3 = ctx.run(process_item, items[2].clone()).spawn()\u001b[91m.await\u001b[0m?;\n\u001b[1m\u001b[94m28\u001b[0m \u001b[92m+ \u001b[0m    let h3 = ctx.run(process_item, items[2].clone()).spawn()?;\n   \u001b[1m\u001b[94m|\u001b[0m\n\u001b[1mFor more information about this error, try `rustc --explain E0277`.\u001b[0m\n\u001b[1m\u001b[91merror\u001b[0m: could not compile `example-fan-out-fan-in-rs` (bin \"example-fan-out-fan-in-rs\") due to 3 previous errors",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087982087"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315611411"
     },
     {
       "repo": "example-fan-out-fan-in-ts",
+      "sdk": "ts",
+      "sdk_version": "0.10.2",
+      "status": "passing",
+      "duration_s": 2,
+      "stderr_tail": "$ bun run src/index.ts",
+      "server_version": "",
+      "server_kind": "",
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610141"
+    },
+    {
+      "repo": "example-food-delivery-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
@@ -320,29 +331,18 @@
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980858"
-    },
-    {
-      "repo": "example-food-delivery-ts",
-      "sdk": "ts",
-      "sdk_version": "0.10.2",
-      "status": "passing",
-      "duration_s": 5,
-      "stderr_tail": "$ bun run src/index.ts",
-      "server_version": "",
-      "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980926"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610176"
     },
     {
       "repo": "example-hackernews-research-agent-py",
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "process_died",
-      "duration_s": 17,
+      "duration_s": 21,
       "stderr_tail": "[worker] died before ready: Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/.venv/bin/agent\", line 3, in <module>\n    from src.agent import main\n  File \"/home/runner/work/examples-ci/examples-ci/example/src/agent.py\", line 21, in <module>\n    from resonate import Context, Resonate\nImportError: cannot import name 'Context' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087983831"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613420"
     },
     {
       "repo": "example-hackernews-research-agent-ts",
@@ -353,18 +353,18 @@
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087983756"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613056"
     },
     {
       "repo": "example-hello-world-go",
       "sdk": "go",
       "sdk_version": "v0.0.0-20260617195620-152de9b5bc17",
       "status": "passing",
-      "duration_s": 18,
+      "duration_s": 19,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087982984"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315612027"
     },
     {
       "repo": "example-hello-world-py",
@@ -375,40 +375,40 @@
       "stderr_tail": "Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/main.py\", line 1, in <module>\n    from resonate import Resonate, Context\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980884"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610152"
     },
     {
       "repo": "example-hello-world-rs",
       "sdk": "rs",
       "sdk_version": "0.5.0",
       "status": "passing",
-      "duration_s": 70,
+      "duration_s": 72,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087981843"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315611030"
     },
     {
       "repo": "example-hello-world-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 5,
+      "duration_s": 4,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980863"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610039"
     },
     {
       "repo": "example-human-in-the-loop-go",
       "sdk": "go",
       "sdk_version": "v0.0.0-20260617195620-152de9b5bc17",
       "status": "passing",
-      "duration_s": 19,
+      "duration_s": 18,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087983031"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315612626"
     },
     {
       "repo": "example-human-in-the-loop-py",
@@ -419,40 +419,40 @@
       "stderr_tail": "[gateway] died before ready: Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/.venv/bin/gateway\", line 3, in <module>\n    from src.gateway import main\n  File \"/home/runner/work/examples-ci/examples-ci/example/src/gateway.py\", line 2, in <module>\n    from resonate import Resonate\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980954"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610283"
     },
     {
       "repo": "example-human-in-the-loop-rs",
       "sdk": "rs",
       "sdk_version": "0.5.0",
       "status": "compile_failed",
-      "duration_s": 53,
+      "duration_s": 69,
       "stderr_tail": "\u001b[1m\u001b[92m   Compiling\u001b[0m resonate-sdk v0.5.0\n\u001b[1m\u001b[92m   Compiling\u001b[0m example-human-in-the-loop-rs v0.1.0 (/home/runner/work/examples-ci/examples-ci/example)\n\u001b[1m\u001b[91merror[E0599]\u001b[0m\u001b[1m: no method named `id` found for struct `PromiseTask<'ctx, T>` in the current scope\u001b[0m\n  \u001b[1m\u001b[94m--> \u001b[0msrc/bin/worker.rs:15:39\n   \u001b[1m\u001b[94m|\u001b[0m\n\u001b[1m\u001b[94m15\u001b[0m \u001b[1m\u001b[94m|\u001b[0m     let promise_id = blocking_promise.id().await?;\n   \u001b[1m\u001b[94m|\u001b[0m                                       \u001b[1m\u001b[91m^^\u001b[0m \u001b[1m\u001b[91mmethod not found in `PromiseTask<'_, bool>`\u001b[0m\n\u001b[1mFor more information about this error, try `rustc --explain E0599`.\u001b[0m\n\u001b[1m\u001b[91merror\u001b[0m: could not compile `example-human-in-the-loop-rs` (bin \"worker\") due to 1 previous error\n\u001b[1m\u001b[33mwarning\u001b[0m: build failed, waiting for other jobs to finish...",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087982120"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315611292"
     },
     {
       "repo": "example-human-in-the-loop-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 12,
+      "duration_s": 10,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087982055"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315611233"
     },
     {
       "repo": "example-infinite-workflow-go",
       "sdk": "go",
       "sdk_version": "v0.0.0-20260617195620-152de9b5bc17",
       "status": "passing",
-      "duration_s": 27,
+      "duration_s": 25,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087983607"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613021"
     },
     {
       "repo": "example-infinite-workflow-ts",
@@ -463,62 +463,62 @@
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087984548"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613823"
     },
     {
       "repo": "example-kafka-worker-py",
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "process_died",
-      "duration_s": 23,
+      "duration_s": 21,
       "stderr_tail": "[consumer] died before ready: Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/.venv/bin/record-deletor\", line 3, in <module>\n    from record_deletor.delete import main\n  File \"/home/runner/work/examples-ci/examples-ci/example/record_deletor/delete.py\", line 2, in <module>\n    from resonate import Resonate\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087983750"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613046"
     },
     {
       "repo": "example-kafka-worker-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 52,
+      "duration_s": 46,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087983717"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613030"
     },
     {
       "repo": "example-load-balancing-go",
       "sdk": "go",
       "sdk_version": "v0.0.0-20260617195620-152de9b5bc17",
       "status": "passing",
-      "duration_s": 19,
+      "duration_s": 23,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087983677"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315612993"
     },
     {
       "repo": "example-load-balancing-py",
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "process_died",
-      "duration_s": 14,
+      "duration_s": 13,
       "stderr_tail": "[worker] died before ready: Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/worker.py\", line 1, in <module>\n    from resonate import Resonate\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980976"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610217"
     },
     {
       "repo": "example-load-balancing-rs",
       "sdk": "rs",
       "sdk_version": "0.5.0",
       "status": "passing",
-      "duration_s": 57,
+      "duration_s": 60,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980941"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610312"
     },
     {
       "repo": "example-load-balancing-ts",
@@ -529,7 +529,7 @@
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980897"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610306"
     },
     {
       "repo": "example-mcp-tools-ts",
@@ -540,7 +540,18 @@
       "stderr_tail": "Resonate Weather MCP Server running on stdio",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087985165"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315614431"
+    },
+    {
+      "repo": "example-money-transfer-go",
+      "sdk": "go",
+      "sdk_version": "v0.0.0-20260617195620-152de9b5bc17",
+      "status": "passing",
+      "duration_s": 19,
+      "stderr_tail": "",
+      "server_version": "",
+      "server_kind": "",
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315612641"
     },
     {
       "repo": "example-money-transfer-py",
@@ -551,29 +562,29 @@
       "stderr_tail": "Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/main.py\", line 20, in <module>\n    from resonate import Context, Resonate\nImportError: cannot import name 'Context' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980886"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610122"
     },
     {
       "repo": "example-money-transfer-rs",
       "sdk": "rs",
       "sdk_version": "0.5.0",
       "status": "passing",
-      "duration_s": 89,
-      "stderr_tail": "\u001b[1m\u001b[92m    Finished\u001b[0m `release` profile [optimized] target(s) in 0.10s\n\u001b[1m\u001b[92m     Running\u001b[0m `target/release/money-transfer`",
+      "duration_s": 87,
+      "stderr_tail": "\u001b[1m\u001b[92m    Finished\u001b[0m `release` profile [optimized] target(s) in 0.11s\n\u001b[1m\u001b[92m     Running\u001b[0m `target/release/money-transfer`",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980899"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610083"
     },
     {
       "repo": "example-multi-agent-orchestration-py",
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "process_died",
-      "duration_s": 19,
+      "duration_s": 20,
       "stderr_tail": "[worker] died before ready: Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/.venv/bin/agent\", line 3, in <module>\n    from src.agent import main\n  File \"/home/runner/work/examples-ci/examples-ci/example/src/agent.py\", line 23, in <module>\n    from resonate import Context, Resonate\nImportError: cannot import name 'Context' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087984098"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613427"
     },
     {
       "repo": "example-multi-agent-orchestration-ts",
@@ -584,73 +595,73 @@
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087984365"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613596"
     },
     {
       "repo": "example-openai-deep-research-agent-py",
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "runtime_failed",
-      "duration_s": 13,
+      "duration_s": 15,
       "stderr_tail": "Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/research.py\", line 7, in <module>\n    from resonate import Context, Resonate\nImportError: cannot import name 'Context' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087984370"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613694"
     },
     {
       "repo": "example-openai-deep-research-agent-rs",
       "sdk": "rs",
       "sdk_version": "0.5.0",
       "status": "compile_failed",
-      "duration_s": 59,
+      "duration_s": 58,
       "stderr_tail": "    \u001b[1m\u001b[94m= \u001b[0m\u001b[1mhelp\u001b[0m: the trait `Future` is not implemented for `Result<DurableFuture<std::string::String>, resonate_sdk::error::Error>`\n    \u001b[1m\u001b[94m= \u001b[0m\u001b[1mnote\u001b[0m: Result<DurableFuture<std::string::String>, resonate_sdk::error::Error> must be a future or must implement `IntoFuture` to be awaited\n    \u001b[1m\u001b[94m= \u001b[0m\u001b[1mnote\u001b[0m: required for `Result<DurableFuture<std::string::String>, resonate_sdk::error::Error>` to implement `IntoFuture`\n\u001b[1m\u001b[96mhelp\u001b[0m: remove the `.await`\n    \u001b[1m\u001b[94m|\u001b[0m\n\u001b[1m\u001b[94m113\u001b[0m \u001b[91m- \u001b[0m                        \u001b[91m.await\u001b[0m?;\n\u001b[1m\u001b[94m113\u001b[0m \u001b[92m+ \u001b[0m                        ?;\n    \u001b[1m\u001b[94m|\u001b[0m\n\u001b[1mFor more information about this error, try `rustc --explain E0277`.\u001b[0m\n\u001b[1m\u001b[91merror\u001b[0m: could not compile `example-openai-deep-research-agent-rs` (bin \"research\") due to 1 previous error",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087984501"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613740"
     },
     {
       "repo": "example-openai-deep-research-agent-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 8,
+      "duration_s": 7,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087984419"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613743"
     },
     {
       "repo": "example-priority-queue-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 2,
+      "duration_s": 3,
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980888"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610204"
     },
     {
       "repo": "example-quickstart-go",
       "sdk": "go",
       "sdk_version": "v0.0.0-20260617195620-152de9b5bc17",
       "status": "passing",
-      "duration_s": 27,
+      "duration_s": 25,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087983043"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315612047"
     },
     {
       "repo": "example-quickstart-py",
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "process_died",
-      "duration_s": 14,
+      "duration_s": 15,
       "stderr_tail": "[worker] died before healthy_after_s: Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/countdown.py\", line 1, in <module>\n    from resonate import Resonate, Context\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087981056"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610315"
     },
     {
       "repo": "example-quickstart-ts",
@@ -661,18 +672,18 @@
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980942"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610329"
     },
     {
       "repo": "example-rate-limiter-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 11,
+      "duration_s": 10,
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980896"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610201"
     },
     {
       "repo": "example-recursive-factorial-go",
@@ -683,7 +694,7 @@
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087983113"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315612074"
     },
     {
       "repo": "example-recursive-factorial-py",
@@ -694,29 +705,29 @@
       "stderr_tail": "[worker] died before ready: Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/factorial_worker.py\", line 1, in <module>\n    from resonate import Resonate\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980953"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610339"
     },
     {
       "repo": "example-recursive-factorial-rs",
       "sdk": "rs",
       "sdk_version": "0.5.0",
       "status": "passing",
-      "duration_s": 57,
+      "duration_s": 56,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980943"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610318"
     },
     {
       "repo": "example-recursive-factorial-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 8,
+      "duration_s": 10,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980947"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610296"
     },
     {
       "repo": "example-saga-booking-ts",
@@ -727,40 +738,40 @@
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980876"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610113"
     },
     {
       "repo": "example-schedule-py",
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "setup_failed",
-      "duration_s": 13,
+      "duration_s": 14,
       "stderr_tail": "setup[0] failed: Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/schedule.py\", line 6, in <module>\n    from resonate import Resonate\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "v0.8.2",
       "server_kind": "legacy_go",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087982079"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315611113"
     },
     {
       "repo": "example-schedule-reminder-agent-py",
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "runtime_failed",
-      "duration_s": 16,
+      "duration_s": 14,
       "stderr_tail": "Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/schedule-reminder.py\", line 7, in <module>\n    from resonate import Resonate\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087984386"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613718"
     },
     {
       "repo": "example-schedule-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 51,
+      "duration_s": 59,
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980911"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610299"
     },
     {
       "repo": "example-state-machine-ts",
@@ -771,7 +782,7 @@
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980878"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610168"
     },
     {
       "repo": "example-tigerbeetle-account-creation-ts",
@@ -782,40 +793,40 @@
       "stderr_tail": "",
       "server_version": "v0.9.8",
       "server_kind": "rust",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087983719"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315613068"
     },
     {
       "repo": "example-webhook-handler-go",
       "sdk": "go",
       "sdk_version": "v0.0.0-20260617195620-152de9b5bc17",
       "status": "passing",
-      "duration_s": 18,
+      "duration_s": 19,
       "stderr_tail": "",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087983688"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315612783"
     },
     {
       "repo": "example-webhook-handler-py",
       "sdk": "py",
       "sdk_version": "0.7.0",
       "status": "runtime_failed",
-      "duration_s": 11,
+      "duration_s": 13,
       "stderr_tail": "Traceback (most recent call last):\n  File \"/home/runner/work/examples-ci/examples-ci/example/main.py\", line 25, in <module>\n    from resonate import Resonate\nImportError: cannot import name 'Resonate' from 'resonate' (/home/runner/work/examples-ci/examples-ci/example/.venv/lib/python3.13/site-packages/resonate/__init__.py)",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980849"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610063"
     },
     {
       "repo": "example-webhook-handler-ts",
       "sdk": "ts",
       "sdk_version": "0.10.2",
       "status": "passing",
-      "duration_s": 3,
+      "duration_s": 2,
       "stderr_tail": "$ bun run src/index.ts",
       "server_version": "",
       "server_kind": "",
-      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27747082666/job/82087980874"
+      "job_url": "https://github.com/resonatehq/examples-ci/actions/runs/27815503307/job/82315610098"
     }
   ]
 }
