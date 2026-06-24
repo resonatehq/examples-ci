@@ -18,7 +18,7 @@
 #   - example-recursive-factorial-rs multi-bin (worker + client)
 #   - example-recursive-factorial-py multi-worker + server-required
 #   - example-recursive-factorial-ts server-required (`resonate dev`)
-#   - example-fan-out-fan-in-py     README says requires legacy server (uses ctx.rfi)
+#   - example-fan-out-fan-in-py     graduated: now enrolled on Rust server (SDK 0.7.0 async/await)
 #   - example-fan-out-fan-in-rs     multi-process worker + invoke-from-CLI
 #   - example-hello-world-rs        README run-instructions assume a server
 #   - example-quickstart-py/-ts     Resonate.remote() + `resonate dev` + invoke CLI
@@ -41,7 +41,7 @@
 #   - example-function-as-a-service-py      server-required
 #   - example-lambda-workers-py     server-required (legacy server)
 #   - example-multi-agent-orchestration-ts  needs ANTHROPIC_API_KEY
-#   - example-multi-agent-orchestration-py  needs OPENAI_API_KEY + server
+#   - example-multi-agent-orchestration-py  graduated: enrolled with mock_llm service on Rust server
 #   - example-schedule-reminder-agent-py    needs OPENAI_API_KEY
 #   - example-async-tools-mcp-server-py     server-required
 #   - example-webservers-py         meta-repo (django/fastapi/flask sub-projects)
@@ -237,13 +237,15 @@ examples:
       timeout_s: 60
 
   # ---- Phase 1.5 wave 2 (multi-process mirrors of wave-1 patterns) ----
-  # Python multi-process examples use `server_kind: legacy_go` because Py SDK
-  # 0.6.7 speaks the older long-poll protocol (host:port/{group}/{id} on port
-  # 8002) that the legacy Go server provides. The new Rust server unified
-  # everything onto /poll/{group}/{id} on 8001; the Py SDK port to that
-  # protocol hasn't shipped yet. Once it does, switch these to `server_kind:
-  # rust` (or drop the field — rust is the default) for one server image
-  # across the matrix.
+  # Most Python multi-process examples still use `server_kind: legacy_go`
+  # because Py SDK 0.6.7 speaks the older long-poll protocol
+  # (host:port/{group}/{id} on port 8002) that the legacy Go server provides.
+  # The Rust server unified everything onto /poll/{group}/{id} on 8001; Py SDK
+  # 0.7.0 ported to that protocol. example-fan-out-fan-in-py and
+  # example-multi-agent-orchestration-py have already graduated to the Rust
+  # server (enrolled above without server_kind). The remaining entries in this
+  # block are still on SDK 0.6.x and keep `server_kind: legacy_go` until they
+  # are individually migrated.
   #
   # example-schedule-py is still deferred: it uses `resonate.schedule(...)`,
   # which was replaced by `resonate.schedules.create(...)` (taking promise_id
@@ -595,14 +597,12 @@ examples:
         healthy_after_s: 75
 
   # fan-out-fan-in-py: single-process script that registers workflow +
-  # channels, starts the SDK, submits a workflow with workflow.run(),
-  # waits for fan-in, prints results, exits. Needs legacy server because
-  # the workflow uses ctx.rfi() which speaks the older protocol.
+  # channels, starts the SDK, submits a workflow via r.run(), waits for
+  # fan-in, prints results, exits. SDK 0.7.0 async/await — Rust server.
   - repo: example-fan-out-fan-in-py
     sdk: py
     kind: script
     requires_server: true
-    server_kind: legacy_go
     entry: "python main.py"
     timeout_s: 60
 
@@ -1091,7 +1091,6 @@ examples:
   - repo: example-multi-agent-orchestration-py
     sdk: py
     requires_server: true
-    server_kind: legacy_go
     services: [mock_llm]
     processes:
       - name: worker
