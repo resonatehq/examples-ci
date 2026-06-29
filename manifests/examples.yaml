@@ -69,6 +69,7 @@ examples:
   - repo: example-hello-world-py
     sdk: py
     kind: script
+    requires_server: true
     entry: python main.py
     timeout_s: 30
 
@@ -81,6 +82,7 @@ examples:
   - repo: example-money-transfer-py
     sdk: py
     kind: script
+    requires_server: true
     entry: python main.py
     timeout_s: 60
 
@@ -254,7 +256,6 @@ examples:
   - repo: example-load-balancing-py
     sdk: py
     requires_server: true
-    server_kind: legacy_go
     processes:
       - name: worker
         entry: "python worker.py"
@@ -267,7 +268,6 @@ examples:
   - repo: example-recursive-factorial-py
     sdk: py
     requires_server: true
-    server_kind: legacy_go
     processes:
       - name: worker
         entry: "python factorial_worker.py"
@@ -280,7 +280,6 @@ examples:
   - repo: example-human-in-the-loop-py
     sdk: py
     requires_server: true
-    server_kind: legacy_go
     # `gateway` and `worker` are [project.scripts] aliases installed by
     # `pip install -e .`. The Python gateway uses begin_rpc (non-blocking),
     # so a single curl drives the workflow; the demo's "human" step is part
@@ -363,7 +362,6 @@ examples:
   - repo: example-quickstart-py
     sdk: py
     requires_server: true
-    server_kind: legacy_go
     processes:
       - name: worker
         entry: "python countdown.py"
@@ -388,7 +386,6 @@ examples:
   - repo: example-async-http-api-py
     sdk: py
     requires_server: true
-    server_kind: legacy_go
     processes:
       - name: gateway
         entry: "uvicorn main:app --host 127.0.0.1 --port 8000"
@@ -409,7 +406,6 @@ examples:
   - repo: example-schedule-py
     sdk: py
     requires_server: true
-    server_kind: legacy_go
     setup:
       - "python schedule.py"
     processes:
@@ -423,7 +419,6 @@ examples:
   - repo: example-durable-sleep-py
     sdk: py
     requires_server: true
-    server_kind: legacy_go
     processes:
       - name: worker
         entry: "python worker.py"
@@ -665,7 +660,6 @@ examples:
   - repo: example-async-rpc-py
     sdk: py
     requires_server: true
-    server_kind: legacy_go
     processes:
       - name: service-a
         entry: "a"
@@ -932,7 +926,6 @@ examples:
   - repo: example-kafka-worker-py
     sdk: py
     requires_server: true
-    server_kind: legacy_go
     services: [redpanda]
     setup:
       - "setup-topics"
@@ -1194,7 +1187,6 @@ examples:
   - repo: example-countdown-py
     sdk: py
     requires_server: true
-    server_kind: legacy_go
     services: [notify_sink]
     processes:
       - name: worker
@@ -1423,7 +1415,6 @@ examples:
   - repo: example-distributed-calculator-py
     sdk: py
     requires_server: true
-    server_kind: legacy_go
     processes:
       - name: lhs
         entry: "GRP=exp PID=lhs resonator"
