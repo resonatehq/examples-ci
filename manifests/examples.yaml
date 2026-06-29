@@ -1053,7 +1053,6 @@ examples:
   - repo: example-hackernews-research-agent-py
     sdk: py
     requires_server: true
-    server_kind: legacy_go
     services: [mock_llm]
     processes:
       - name: worker
@@ -1120,6 +1119,7 @@ examples:
     sdk: py
     services: [mock_llm]
     kind: script
+    requires_server: true
     entry: "python schedule-reminder.py"
     timeout_s: 60
 
@@ -1129,6 +1129,7 @@ examples:
     sdk: py
     services: [mock_llm]
     kind: script
+    requires_server: true
     entry: "python research.py"
     timeout_s: 60
 
