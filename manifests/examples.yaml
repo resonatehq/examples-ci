@@ -1254,7 +1254,6 @@ examples:
   - repo: example-async-tools-mcp-server-py
     sdk: py
     requires_server: true
-    server_kind: legacy_go
     kind: worker
     entry: "python weather_data.py"
     health_regex: "Uvicorn running on"
@@ -1268,7 +1267,6 @@ examples:
   - repo: example-agent-tool-background-job
     sdk: py
     requires_server: true
-    server_kind: legacy_go
     kind: worker
     entry: "python timer.py"
     health_regex: "Uvicorn running on"
