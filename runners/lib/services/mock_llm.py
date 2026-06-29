@@ -12,9 +12,13 @@
 # downstream schema we've enrolled (HN research-agent's relevance verdict).
 # Examples that just want any text treat the JSON as opaque content.
 #
-# Tool-using examples (schedule-reminder, deep-research-agent) will get
-# non-tool responses and either short-circuit to "final answer" or fail —
-# enrolling those is Iter G.2 work pending a tool-aware mock.
+# Tool-using examples (schedule-reminder, deep-research-agent) are supported:
+# when a chat request carries a non-empty `tools` list and the conversation
+# has not yet produced a tool result, the mock replies with ONE tool_call
+# whose arguments are synthesized from the tool's JSON-schema parameters.
+# Once a tool result is present (or no tools are offered), it returns the
+# canned final content. This drives a single tool round then terminates, so
+# agent loops always converge in CI.
 
 import json
 import os
@@ -35,19 +39,75 @@ CANNED_CONTENT = json.dumps({
 })
 
 
-def openai_chat_response(model: str) -> dict:
+def _synthesize_args(parameters: dict) -> dict:
+    """Build a minimal arguments object that satisfies a tool's JSON schema.
+
+    Fills every declared property (required first) with a type-appropriate
+    placeholder so the example's tool dispatch can json.loads + call its
+    handler without KeyError or type surprises.
+    """
+    props = (parameters or {}).get("properties", {}) or {}
+    out: dict = {}
+    for name, spec in props.items():
+        t = (spec or {}).get("type", "string")
+        if t in ("integer", "number"):
+            out[name] = 1
+        elif t == "boolean":
+            out[name] = True
+        elif t == "array":
+            out[name] = []
+        elif t == "object":
+            out[name] = {}
+        else:  # string and anything unrecognized
+            out[name] = "mock"
+    return out
+
+
+def _wants_tool_call(req: dict) -> bool:
+    """True when we should answer with a tool_call instead of final content.
+
+    Emit a tool_call only on the first turn of a tool-using conversation:
+    `tools` offered, tool_choice not disabled, and no tool result returned yet.
+    After one tool round (a role=="tool" message appears) we fall through to
+    final content so the agent loop terminates.
+    """
+    tools = req.get("tools") or []
+    if not tools:
+        return False
+    if req.get("tool_choice") == "none":
+        return False
+    messages = req.get("messages") or []
+    if any(isinstance(m, dict) and m.get("role") == "tool" for m in messages):
+        return False
+    return True
+
+
+def openai_chat_response(model: str, req: dict) -> dict:
+    if _wants_tool_call(req):
+        fn = (req["tools"][0] or {}).get("function", {}) or {}
+        name = fn.get("name", "mock_tool")
+        args = _synthesize_args(fn.get("parameters", {}))
+        message = {
+            "role": "assistant",
+            "content": None,
+            "tool_calls": [
+                {
+                    "id": f"call_mock_{uuid.uuid4().hex[:8]}",
+                    "type": "function",
+                    "function": {"name": name, "arguments": json.dumps(args)},
+                }
+            ],
+        }
+        finish_reason = "tool_calls"
+    else:
+        message = {"role": "assistant", "content": CANNED_CONTENT}
+        finish_reason = "stop"
     return {
         "id": f"chatcmpl-mock-{uuid.uuid4().hex[:8]}",
         "object": "chat.completion",
         "created": int(time.time()),
         "model": model,
-        "choices": [
-            {
-                "index": 0,
-                "message": {"role": "assistant", "content": CANNED_CONTENT},
-                "finish_reason": "stop",
-            }
-        ],
+        "choices": [{"index": 0, "message": message, "finish_reason": finish_reason}],
         "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
     }
 
@@ -92,7 +152,7 @@ class Handler(BaseHTTPRequestHandler):
         model = req.get("model", "mock-model")
 
         if self.path.endswith("/v1/chat/completions"):
-            self._send_json(200, openai_chat_response(model))
+            self._send_json(200, openai_chat_response(model, req))
         elif self.path.endswith("/v1/messages"):
             self._send_json(200, anthropic_messages_response(model))
         else:
