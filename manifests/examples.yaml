@@ -1183,8 +1183,8 @@ examples:
 
   # countdown-py: worker + invoke pattern. Python SDK 0.6.7 → legacy_go
   # server. Upstream patches added @resonate.register, requests dep, an
-  # Event().wait() guard, and a `notify:` log line. ctx.sleep is in
-  # SECONDS for py (durable-sleep-py confirms); interval=0.1 → 100ms.
+  # Event().wait() guard, and a `notify:` log line. ctx.sleep takes a
+  # datetime.timedelta in SDK 0.7.x (NOT seconds); interval=0.1 → 100ms.
   - repo: example-countdown-py
     sdk: py
     requires_server: true

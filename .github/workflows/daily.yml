@@ -237,3 +237,22 @@ jobs:
             -H "Content-Type: application/json" \
             -d @summary.json
           echo "Echo notification succeeded"
+      # Visibility gate: fail the workflow when any examples are failing so
+      # the daily run (and subset validation dispatches) go red in the GitHub
+      # UI. Runs after the publish + Echo steps so the dashboard still updates
+      # on failure. Skipped on pull_request events (no summary.json available).
+      # For full runs (cron / no-arg dispatch) all results are evaluated.
+      # For subset dispatch runs (inputs.examples != '') only the subset
+      # results land in summary.json, so any failure in that subset turns red.
+      - name: Fail if any examples are failing
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          FAILING=$(jq '.totals.failing' summary.json)
+          TOTAL=$(jq '.totals.total' summary.json)
+          if [ "$FAILING" -gt 0 ]; then
+            echo "::error::${FAILING}/${TOTAL} examples are failing:"
+            jq -r '.results[] | select(.status != "passing") | "  - \(.repo): \(.status)"' summary.json
+            exit 1
+          fi
+          echo "All ${TOTAL} examples passing."
