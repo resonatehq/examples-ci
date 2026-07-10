@@ -12,21 +12,23 @@ const yaml = parseYaml(readFileSync("manifests/examples.yaml", "utf8")) as {
 
 const manifestRepos = new Set(yaml.examples.map((e) => e.repo));
 
+// `gh repo list` is used rather than `gh api /orgs/.../repos?type=public`
+// because the REST endpoint with type=public omits repos that are internal-
+// visibility or newly created (observed: 108 vs 113 actual repos). --limit 500
+// is a generous ceiling; gh handles pagination internally.
 let orgRepoNames: string[];
 try {
-  // --paginate follows Link headers; resonatehq-examples has ~100 repos so
-  // one request is typically sufficient, but pagination is free.
   const raw = execSync(
-    "gh api \"/orgs/resonatehq-examples/repos?per_page=100&type=public\" --paginate " +
-      "--jq '.[] | select(.archived == false) | .name'",
+    "gh repo list resonatehq-examples --limit 500 --json name,isArchived " +
+      "--jq '.[] | select(.isArchived == false) | select(.name | startswith(\"example-\")) | .name'",
     { encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] }
   );
   orgRepoNames = raw
     .trim()
     .split("\n")
-    .filter((r) => r.startsWith("example-") && r.length > 0);
+    .filter((r) => r.length > 0);
 } catch (err) {
-  console.error("coverage-check: gh api call failed:", err);
+  console.error("coverage-check: gh repo list failed:", err);
   process.exit(1);
 }
 

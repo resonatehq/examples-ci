@@ -1146,6 +1146,13 @@ examples:
 
   # ---- Phase 2 deferred (skip=true): AI examples needing rework ----
 
+  # website-summarization-agent-ts: runtime requires Ollama (no OPENAI_BASE_URL
+  # hook to redirect) and Puppeteer/headless Chrome. No build script in
+  # package.json; build coverage uses tsc --noEmit via the committed tsconfig.
+  - repo: example-website-summarization-agent-ts
+    sdk: ts
+    build_only: true
+
   # website-summarization-agent-py: requires Ollama (no OPENAI_BASE_URL hook
   # to redirect), Selenium + ChromeDriver, and a running Ollama daemon with
   # llama3.1 pulled. Three independent blockers; not enrollable as-is.
