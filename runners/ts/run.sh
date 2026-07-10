@@ -11,6 +11,8 @@ HEALTHY_AFTER_S="${HEALTHY_AFTER_S:-15}"
 HEALTH_REGEX="${HEALTH_REGEX:-registered|ready|listening}"
 REQUIRES_SERVER="${REQUIRES_SERVER:-false}"
 MULTI_CONFIG="${MULTI_CONFIG:-}"
+BUILD_ONLY="${BUILD_ONLY:-false}"
+SUBDIRS_JSON="${SUBDIRS_JSON:-}"
 
 # Detect timeout binary (GNU `timeout` on Linux CI, `gtimeout` from coreutils on macOS).
 TIMEOUT_BIN=""
@@ -59,6 +61,59 @@ on_exit() {
 trap on_exit EXIT
 
 cd "$EXAMPLE_DIR"
+
+# build_only: install from lockfile, compile/typecheck, done.
+# No SDK version pin, no server, no runtime.
+if [ "$BUILD_ONLY" = "true" ]; then
+  STATUS="compile_failed"
+
+  # Install + build one package directory (path relative to EXAMPLE_DIR).
+  # Runs in a subshell so cwd changes are scoped.
+  build_one_ts_dir() {
+    local dir="$1"
+    (
+      cd "$dir" 2>>"$EXAMPLE_DIR/build.err" || exit 1
+
+      if [ -f bun.lockb ] || [ -f bun.lock ]; then
+        bun install 2>>"$EXAMPLE_DIR/build.err" || exit 1
+      elif [ -f package-lock.json ]; then
+        npm ci 2>>"$EXAMPLE_DIR/build.err" || exit 1
+      elif [ -f package.json ]; then
+        npm install 2>>"$EXAMPLE_DIR/build.err" || exit 1
+      else
+        echo "build_only: no package.json in $dir" >> "$EXAMPLE_DIR/build.err"
+        exit 1
+      fi
+
+      if [ -f package.json ] && jq -e '.scripts.build' package.json >/dev/null 2>&1; then
+        (command -v bun >/dev/null 2>&1 && bun run build 2>>"$EXAMPLE_DIR/build.err") \
+          || npm run build 2>>"$EXAMPLE_DIR/build.err" || exit 1
+      elif [ -f tsconfig.json ]; then
+        npx --yes tsc --noEmit 2>>"$EXAMPLE_DIR/build.err" || exit 1
+      fi
+    )
+  }
+
+  if [ -n "$SUBDIRS_JSON" ] && [ "$SUBDIRS_JSON" != "[]" ]; then
+    n=$(printf '%s' "$SUBDIRS_JSON" | jq 'length')
+    for ((i=0; i<n; i++)); do
+      subdir=$(printf '%s' "$SUBDIRS_JSON" | jq -r ".[$i]")
+      echo "build_only: building $subdir" >&2
+      if ! build_one_ts_dir "$EXAMPLE_DIR/$subdir"; then
+        STDERR_TAIL=$(tail_meaningful "$EXAMPLE_DIR/build.err")
+        exit 0
+      fi
+    done
+  else
+    if ! build_one_ts_dir "$EXAMPLE_DIR"; then
+      STDERR_TAIL=$(tail_meaningful build.err)
+      exit 0
+    fi
+  fi
+
+  STATUS="passing"
+  exit 0
+fi
 
 if [ -f bun.lockb ] || [ -f bun.lock ]; then
   bun install 2>>install.err || exit 0

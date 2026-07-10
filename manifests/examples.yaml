@@ -567,22 +567,17 @@ examples:
         timeout_s: 60
 
   # ---- Phase 1.5 wave 7 (sibling enrollments) ----
-  # schedule-rs DEFERRED (skip=true, 2026-05-22): the Rust SDK's high-level
-  # `.schedule(name, cron, func, args)` wrapper calls Schedules.create()
-  # with promise_tags=HashMap::new(). The fired promise inherits those
-  # empty tags (plus auto-added resonate:schedule). Without resonate:invoke,
-  # the server has no dispatch target and the promise sits pending forever.
-  #
-  # Tracked upstream: https://github.com/resonatehq/resonate-sdk-rs/issues/25
-  # Fix proposed in https://github.com/resonatehq/resonate-sdk-rs/pull/26
-  # (2026-05-23): ResScheduleTask::into_future derives poll://any@<group>
-  # from the Resonate instance and writes promise_tags["resonate:invoke"];
-  # callers get .target() / .tags() builders. Cargo.toml here pins
-  # branch="main", so re-enrollment is one skip flip once PR #26 merges.
+  # schedule-rs: the Rust SDK's .schedule() wrapper calls Schedules.create()
+  # with promise_tags=HashMap::new(). Without resonate:invoke in the tags
+  # the server has no dispatch target and the fired promise sits pending.
+  # Tracked: https://github.com/resonatehq/resonate-sdk-rs/issues/25
+  # PR #26 (2026-05-23) was closed without merging; the fix is still pending
+  # in the SDK. Build coverage is now active via build_only; runtime remains
+  # blocked until resonatehq/resonate-sdk-rs#25 is resolved.
   - repo: example-schedule-rs
     sdk: rs
+    build_only: true
     requires_server: true
-    skip: true
     setup:
       - "cargo run --release --bin schedule"
     processes:
@@ -877,27 +872,16 @@ examples:
         exit 1
       timeout_s: 360
 
-  # SKIPPED 2026-06-03: the Rust SDK has no automatic ctx.run step retry,
-  # but this example depends on it. lib.rs delete_batch returns
-  # Err(Error::Application) on a 25% "transient" roll and comments "Resonate
-  # retries automatically" — true for the TS/Py SDKs (both siblings pass),
-  # false for rs. resonate-sdk-rs 0.4.0 has no retry surface at all (no
-  # retry/max_attempts/backoff in src); core.rs only RELEASES a task on
-  # execution failure for crash-recovery, while a user Err settles the
-  # promise as terminally rejected. Server log from run 26906295324 confirms:
-  # promise 3f59...0 settled rejected, then 5 min of listener re-registration
-  # with zero re-execution. Producer sends -n 1, so one early 25% error =
-  # dead run (~50% per-record completion odds with no retry → ~daily red).
-  # Re-enroll when EITHER the rs SDK gains automatic step retry, OR the
-  # example is rewritten to retry in user code (and the "retries
-  # automatically" comment is corrected). Tracked for the SDK team.
+  # kafka-worker-rs: the Rust SDK has no automatic ctx.run step retry.
+  # lib.rs delete_batch returns Err(Error::Application) on a 25% "transient"
+  # roll; the SDK settles the promise as rejected instead of retrying. Runtime
+  # re-enrollment blocked until the rs SDK gains automatic step retry or the
+  # example retries in user code. Build coverage is active via build_only.
   - repo: example-kafka-worker-rs
     sdk: rs
+    build_only: true
     requires_server: true
-    skip: true
     services: [redpanda]
-    # The runner's cargo build --release compiles both binaries (consumer +
-    # producer) up front, so the cargo-run calls below hit a warm cache.
     processes:
       - name: consumer
         entry: "cargo run --release --bin consumer"
@@ -963,30 +947,34 @@ examples:
       entry: "npm run demo"
       timeout_s: 60
 
-  # ---- Phase 1.5 wave 11 (cloud-creds-gated: tracking skip rows) ----
-  # All four examples require real cloud credentials + provisioned
-  # resources (AWS Lambda, Databricks workspace, Supabase project).
-  # Running them daily would burn live credits, leak secrets to fork
-  # PRs, and gate the matrix on infra changes outside Resonate's
-  # control. Their SDK surface duplicates what's already covered by
-  # money-transfer-rs / function-as-a-service-py / etc., so a green
-  # examples-ci doesn't lose meaningful signal by skipping them.
-  # Revisit when someone files a real-world bug that would have been
-  # caught here. Spec:
-  # resonate/handoffs/2026-05-22-examples-ci-iter-gh-proposals.md §H.2.
+  # ---- Phase 1.5 wave 11 (cloud-creds-gated rows) ----
+  # Runtime requires live cloud credentials (AWS Lambda, Databricks workspace,
+  # Supabase project). Running daily would burn credits and gate the matrix on
+  # infra outside Resonate's control. Build coverage is active for aws-lambda-ts
+  # and lambda-workers-py; the Supabase pair and Databricks remain skip because
+  # their install step itself fails (see comments below).
 
+  # aws-lambda-ts: root has no lockfile (npm install falls back gracefully);
+  # local-demo is a second sub-package. Runtime deploys to AWS Lambda — build
+  # coverage catches TypeScript regressions without cloud creds.
   - repo: example-aws-lambda-ts
     sdk: ts
-    skip: true
+    build_only: true
+    subdirs: [".", "local-demo"]
 
+  # lambda-workers-py: runtime deploys to AWS Lambda. Build coverage now active.
   - repo: example-lambda-workers-py
     sdk: py
-    skip: true
+    build_only: true
 
+  # databricks-in-the-loop-py: runtime requires a live Databricks workspace.
+  # No install-time blockers; repo fixes in flight before flipping to build_only.
   - repo: example-databricks-in-the-loop-py
     sdk: py
     skip: true
 
+  # supabase-edge-ts: @resonatehq/supabase is not published to npm (404);
+  # install fails before any build step can run. Skip until the package ships.
   - repo: example-supabase-edge-ts
     sdk: ts
     skip: true
@@ -1158,11 +1146,9 @@ examples:
 
   # ---- Phase 2 deferred (skip=true): AI examples needing rework ----
 
-  # website-summarization-agent-py: uses Ollama (local LLM), not OpenAI/
-  # Anthropic SDK — no OPENAI_BASE_URL / ANTHROPIC_BASE_URL to redirect.
-  # Also requires Selenium + ChromeDriver + a running Ollama daemon
-  # with llama3.1 pulled + Flask gateway + separate worker process.
-  # Heavy external deps; would need an Ollama mock or LLM backend swap.
+  # website-summarization-agent-py: requires Ollama (no OPENAI_BASE_URL hook
+  # to redirect), Selenium + ChromeDriver, and a running Ollama daemon with
+  # llama3.1 pulled. Three independent blockers; not enrollable as-is.
   - repo: example-website-summarization-agent-py
     sdk: py
     skip: true
@@ -1292,113 +1278,132 @@ examples:
   # an upstream change makes them tractable, or someone files a real-world
   # bug a live-creds / browser / framework run would have caught.
 
-  # countdown-* cloud variants: deploy wrappers around the same countdown
-  # workflow that's already green via example-countdown-ts/py. Each
-  # requires the framework's local emulator (wrangler dev, gcloud
-  # functions-framework, supabase functions serve) + the cloud-specific
-  # SDK bridge — none of which add SDK-compat signal we don't already
-  # have. Cover the SDK in green via the local examples.
+  # countdown-cloudflare-ts, countdown-gcp-ts: runtime requires the
+  # framework's local emulator (wrangler dev, gcloud functions-framework).
+  # Build coverage now active; SDK-compat signal is already covered by
+  # example-countdown-ts which is green.
   - repo: example-countdown-cloudflare-ts
     sdk: ts
-    skip: true
+    build_only: true
   - repo: example-countdown-gcp-ts
     sdk: ts
-    skip: true
+    build_only: true
+
+  # countdown-supabase-ts: @resonatehq/supabase is not published to npm
+  # (returns 404); npm install fails at the install step. Skip until the
+  # package is published or the example pins a different transport.
   - repo: example-countdown-supabase-ts
     sdk: ts
     skip: true
 
-  # countdown-web-ts: requires a browser (Playwright/headless Chrome).
-  # Would also need a UI driver to interact with the page. Heavy infra
-  # for the same countdown workflow already covered.
+  # countdown-web-ts: requires a browser environment (Playwright/headless
+  # Chrome) for the runtime test. Repo uses a bundler (webpack/vite) for
+  # the browser build — follow-up flip once the build step is verified.
   - repo: example-countdown-web-ts
     sdk: ts
     skip: true
 
-  # chess-hero-gcp-ts: depends on a live GCP project (Cloud Run / Cloud
-  # Function / Firestore). Mirrors wave-11 H.2 cloud-creds rationale.
-  - repo: example-chess-hero-gcp-ts
+  # countdown-kafka-ts: Kafka broker required at runtime; repo fixes in
+  # flight. Flip to build_only once upstream stabilises the install step.
+  - repo: example-countdown-kafka-ts
     sdk: ts
     skip: true
 
-  # deep-research-agent cloud variants: deploy the same agent workflow
-  # already covered by example-openai-deep-research-agent-{py,ts} (mocked
-  # LLM). Each needs the framework emulator + cloud SDK bridge.
+  # chess-hero-gcp-ts: runtime requires a live GCP project (Cloud Run /
+  # Cloud Function / Firestore). Build coverage now active.
+  - repo: example-chess-hero-gcp-ts
+    sdk: ts
+    build_only: true
+
+  # openai-deep-research-agent-cloudflare-ts: runtime requires wrangler dev.
+  # Build coverage now active.
   - repo: example-openai-deep-research-agent-cloudflare-ts
     sdk: ts
-    skip: true
+    build_only: true
+
+  # openai-deep-research-agent-gcp-ts: runtime requires GCP credentials.
+  # Skip: this repo is not in the org yet; add a build_only row when it appears.
   - repo: example-openai-deep-research-agent-gcp-ts
     sdk: ts
     skip: true
+
+  # openai-deep-research-agent-supabase-ts: @resonatehq/supabase is not
+  # published to npm (404); build step fails. Skip until the package ships.
   - repo: example-openai-deep-research-agent-supabase-ts
     sdk: ts
     skip: true
 
-  # nextjs examples: full Next.js dev server + (for ecommerce) browser
-  # interaction. Resonate API surface is the same as express-integration-ts
-  # which is already green.
+  # openai-deep-research-agent-kafka-ts: Kafka broker required at runtime;
+  # repo fixes in flight. Flip to build_only once upstream stabilises.
+  - repo: example-openai-deep-research-agent-kafka-ts
+    sdk: ts
+    skip: true
+
+  # nextjs-integration-ts, nextjs-ecommerce-ts: runtime requires a Next.js
+  # dev server (and for ecommerce, browser interaction). Build coverage now
+  # active — `next build` typechecks + compiles the app without a running
+  # server.
   - repo: example-nextjs-integration-ts
     sdk: ts
-    skip: true
+    build_only: true
   - repo: example-nextjs-ecommerce-ts
     sdk: ts
-    skip: true
+    build_only: true
 
-  # dao-proposal-scorer-ts: needs Hardhat (local Ethereum node). Heavy
-  # infra to spin up + the example's value is the on-chain integration
-  # rather than the SDK surface.
+  # dao-proposal-scorer-ts: three sub-packages (resonate-layer, demo,
+  # contracts). Runtime needs a Hardhat local chain + Resonate server.
+  # Build coverage now active: resonate-layer and demo typecheck via tsc;
+  # contracts uses `hardhat compile` (no chain required for compilation).
   - repo: example-dao-proposal-scorer-ts
     sdk: ts
-    skip: true
+    build_only: true
+    subdirs: [resonate-layer, demo, contracts]
 
-  # node-drain-orchestrator-ts: needs Kind/Kubernetes — a real k8s
-  # cluster to drain. K8s setup in CI is feasible (kind action) but the
-  # signal is k8s-specific, not SDK-specific.
+  # node-drain-orchestrator-ts: runtime needs a Kind/Kubernetes cluster.
+  # Build coverage now active.
   - repo: example-node-drain-orchestrator-ts
     sdk: ts
-    skip: true
+    build_only: true
 
-  # webservers-py: meta-repo with django/fastapi/flask sub-projects. No
-  # single entry to run; needs per-framework manifest entries which
-  # blows up the matrix more than the signal justifies.
+  # webservers-py: meta-repo (django/fastapi/flask sub-projects). No single
+  # entry point; per-framework runner entries would multiply matrix size
+  # beyond the SDK-compat signal they add. Repo fixes in flight.
   - repo: example-webservers-py
     sdk: py
     skip: true
 
-  # browser-worker-ts: Playwright/Puppeteer headless browser. Heavy infra.
+  # browser-worker-ts: @resonatehq/sdk 0.11 fixed the browser-bundling
+  # issue that blocked this repo; it now builds clean from a fresh clone.
+  # Build coverage now active.
   - repo: example-browser-worker-ts
     sdk: ts
-    skip: true
+    build_only: true
 
-  # token-auth-ts: requires server flag `--auth-publickey public_key.pem`
-  # (not currently supported by runners/lib/server.sh) + RSA key
-  # generation + jwt-cli to mint tokens. Defer until either we add an
-  # auth-aware server kind or the example self-contains key gen.
+  # token-auth-ts: runtime requires server flag --auth-publickey + RSA key
+  # generation + jwt-cli to mint tokens. Build coverage now active (two
+  # sub-packages: token-auth and prefix-authz).
   - repo: example-token-auth-ts
     sdk: ts
-    skip: true
+    build_only: true
+    subdirs: [token-auth, prefix-authz]
 
-  # ai-travel-assistant-py: module-load `os.environ["SERPER_API_KEY"]`
-  # and `BROWSERLESS_API_KEY` (KeyError on import without live creds);
-  # interactive `input()` prompts; success condition is the LLM emitting
-  # "TRIP PLANNING COMPLETE" which mock_llm canned responses won't.
+  # ai-travel-assistant-py: module-load reads os.environ["SERPER_API_KEY"]
+  # and BROWSERLESS_API_KEY (KeyError without live creds); interactive
+  # input() prompts; LLM success condition requires tool-aware responses.
   # Three independent blockers — not enrollable as-is.
   - repo: example-ai-travel-assistant-py
     sdk: py
     skip: true
 
-  # bluesky-scraper-ts: hits public.api.bsky.app directly (no env-var
-  # base-URL hook). Even at depth=0 we'd be calling the live Bluesky API
-  # on every CI run. Defer until an upstream patch lets us point at a
-  # local mock.
+  # bluesky-scraper-ts: API base URL is hardcoded (public.api.bsky.app);
+  # no env-var hook to redirect to a local mock. Build coverage now active.
   - repo: example-bluesky-scraper-ts
     sdk: ts
-    skip: true
+    build_only: true
 
-  # function-as-a-service-py: upstream README/code drift (README says
-  # `--mode router` but modulate.py doesn't implement --mode); module-
-  # load side effect starts a poller before the script's CLI parse runs.
-  # Needs upstream cleanup before enrollment is sensible.
+  # function-as-a-service-py: README/code drift (README says --mode router
+  # but modulate.py doesn't implement --mode); module-load side effect
+  # starts a poller before CLI parse. Needs upstream cleanup.
   - repo: example-function-as-a-service-py
     sdk: py
     skip: true
@@ -1438,11 +1443,53 @@ examples:
         exit 1
       timeout_s: 60
 
-  # mcp-tools-rs: worker + stdio MCP server (2 bins). Workers register
-  # the workflow; the stdio server proxies tool calls through RPC. Two-
-  # process setup with stdio means we'd need the tail-f trick AND a way
-  # to coordinate worker startup. Tractable but deferred — same SDK
-  # surface is covered by other rs enrollments.
+  # mcp-tools-rs: runtime needs two coordinated processes (worker + stdio MCP
+  # server). Build coverage now active; runtime deferred until multi.sh
+  # grows a stdio-server coordination pattern.
   - repo: example-mcp-tools-rs
     sdk: rs
-    skip: true
+    build_only: true
+
+  # ---- New build_only rows: previously unlisted repos ----
+
+  # Java examples: all use Gradle + io.resonatehq:resonate-sdk-java 0.1.1.
+  # Runtime requires a Resonate server; build coverage via ./gradlew build.
+  - repo: example-hello-world-java
+    sdk: java
+    build_only: true
+  - repo: example-quickstart-java
+    sdk: java
+    build_only: true
+  - repo: example-countdown-java
+    sdk: java
+    build_only: true
+  - repo: example-fan-out-fan-in-java
+    sdk: java
+    build_only: true
+  - repo: example-recursive-factorial-java
+    sdk: java
+    build_only: true
+
+  # countdown-aws-ts: AWS Lambda deploy wrapper; runtime needs live AWS creds.
+  # Build coverage catches TypeScript regressions.
+  - repo: example-countdown-aws-ts
+    sdk: ts
+    build_only: true
+
+  # money-transfer-application-ts: Express webserver that needs an external
+  # curl driver and a running Resonate server. Build coverage now active.
+  - repo: example-money-transfer-application-ts
+    sdk: ts
+    build_only: true
+
+  # node-drain-orchestrator-go: runtime needs a Kind/Kubernetes cluster.
+  # Build coverage via go build ./... + go vet ./...
+  - repo: example-node-drain-orchestrator-go
+    sdk: go
+    build_only: true
+
+  # deep-research-outreach-agent-py: runtime needs OPENAI_API_KEY and a live
+  # web-search service. Build coverage via pip install.
+  - repo: example-deep-research-outreach-agent-py
+    sdk: py
+    build_only: true

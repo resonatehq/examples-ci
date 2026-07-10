@@ -4,7 +4,7 @@ import { join } from "node:path";
 
 type Result = {
   repo: string;
-  sdk: "ts" | "py" | "rs" | "go";
+  sdk: "ts" | "py" | "rs" | "go" | "java";
   sdk_version: string;
   status: string;
   duration_s: number;
@@ -32,6 +32,8 @@ for (const name of REQUIRED_ENV) {
     process.exit(1);
   }
 }
+// JAVA_VERSION is optional: present only when java rows appear in the matrix.
+const javaVersion = process.env.JAVA_VERSION ?? "";
 
 mkdirSync(STATUS_DIR, { recursive: true });
 
@@ -60,6 +62,7 @@ const summary = {
     py: process.env.PY_VERSION ?? "",
     rs: process.env.RS_VERSION ?? "",
     go: process.env.GO_VERSION ?? "",
+    ...(javaVersion ? { java: javaVersion } : {}),
   },
   totals: {
     total: results.length,
@@ -269,7 +272,7 @@ const html = `<!doctype html>
 <h1>Resonate <span class="accent">examples-ci</span></h1>
 <p class="meta">
   <span class="pass-count">${summary.totals.passing}/${summary.totals.total}</span> passing ·
-  SDK ts <code>${summary.versions.ts}</code> · py <code>${summary.versions.py}</code> · rs <code>${summary.versions.rs}</code> · go <code>${summary.versions.go}</code> ·
+  SDK ts <code>${summary.versions.ts}</code> · py <code>${summary.versions.py}</code> · rs <code>${summary.versions.rs}</code> · go <code>${summary.versions.go}</code>${javaVersion ? ` · java <code>${javaVersion}</code>` : ""} ·
   <a href="${summary.run_url}">workflow run →</a>
 </p>
 <div class="filters">
@@ -279,6 +282,7 @@ const html = `<!doctype html>
   <button data-filter="py">Py</button>
   <button data-filter="rs">Rs</button>
   <button data-filter="go">Go</button>
+  <button data-filter="java">Java</button>
   <button data-filter="failing">Failing only</button>
 </div>
 <div class="table-wrap">

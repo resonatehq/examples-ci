@@ -21,7 +21,10 @@ Each entry:
 | `setup` | string[] | `[]` | Multi-process mode. Sequential pre-steps that must each exit 0 before processes start (e.g., `python schedule.py` to register a cron with the server). Runs after SDK install but after the server is up. |
 | `processes` | object[] | `[]` | Multi-process mode. Background processes started in order, each waited for `ready_regex` to appear in stdout/stderr within `healthy_after_s`. Per-entry fields: `name` (label), `entry` (command), `ready_regex` (default `registered\|ready\|listening`; set to empty string `""` to opt out — see below), `healthy_after_s` (default `5`). If a process exits before ready, the run fails with `process_died`. |
 | `client` | object | — | Multi-process mode. Final foreground test after all `processes` are healthy. Fields: `entry` (command), `timeout_s` (default `30`). Pass = client exits 0. If `client` is absent and `processes` is non-empty, pass = all-processes-healthy. For blocking-gateway demos see `client.driver` below. |
-| `skip` | bool | `false` | Skip this example. Used for Phase 3 examples requiring external services. |
+| `skip` | bool | `false` | Skip this example entirely — no CI run, no compile check. Add a comment explaining why. |
+| `build_only` | bool | `false` | Install dependencies and compile/typecheck only; no Resonate server, no services, no runtime. Pass = build exits 0. Per-SDK behaviour: **ts** — `bun install` or `npm ci`/`npm install`, then `npm run build` if the script exists else `npx tsc --noEmit`. **py** — `uv sync --frozen` (if `uv.lock` present) or `pip install -e .`/`pip install -r requirements.txt`; optional `build_cmd:` override for an explicit import check. **rs** — `cargo build --release --locked`, falling back to non-locked with a logged warning if the lockfile is stale. **go** — `go build ./...` + `go vet ./...`. **java** — `./gradlew build --no-daemon`. Records pass/fail into `result.json` using the same status codes as run entries (`install_failed`, `compile_failed`, `passing`) so the aggregate gate and dashboard work unchanged. |
+| `subdirs` | string[] | `[]` | **ts + `build_only` only.** List of subdirectory paths (relative to repo root) each containing an independent `package.json`. When present, the runner installs and builds each listed path in order instead of the repo root. Use for repos with multiple independent sub-packages (e.g. `[resonate-layer, demo, contracts]`). The path `"."` refers to the repo root (useful when the root has no lockfile and must be listed alongside subdirs that do). |
+| `build_cmd` | string | `""` | **py + `build_only` only.** Override the default import check with an explicit command run inside the venv (or uv environment) after install. E.g. `"python -c 'import mymodule'"`. When absent, install success is the pass criterion. |
 
 ### `client.driver` — blocking-gateway shell driver
 
@@ -69,6 +72,20 @@ Some workers register a function with the Resonate server and then block silentl
 ## Single-process vs multi-process modes
 
 When `processes` is non-empty (or `setup` is non-empty), the entry runs in **multi-process mode** and the single-process fields (`kind`, `entry`, `timeout_s`, `healthy_after_s`, `health_regex`) are ignored. Examples with a worker + client/invoke split, or a gateway + worker, or a multi-bin Rust crate go here. See `runners/lib/multi.sh` for the orchestrator logic.
+
+## Manifest coverage check
+
+`scripts/coverage-check.ts` runs in the `coverage-check` job (parallel with the example matrix). It lists all non-archived repos named `example-*` in the `resonatehq-examples` org via `gh api` and fails the workflow when any such repo has no row in `manifests/examples.yaml`. Every repo must be explicitly tracked — as a run entry, `build_only: true`, or `skip: true` with a comment explaining why.
+
+To add a new repo to the org without breaking CI: add a row to `manifests/examples.yaml` before or alongside the repo creation. The minimum valid row is:
+
+```yaml
+- repo: example-my-new-thing
+  sdk: ts
+  skip: true  # reason why it isn't running yet
+```
+
+The coverage-check gate ensures the manifest is the authoritative record of every example repo and no repo can silently rot unbuildable.
 
 ## Future: per-repo overrides
 
