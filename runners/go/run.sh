@@ -11,6 +11,7 @@ HEALTHY_AFTER_S="${HEALTHY_AFTER_S:-15}"
 HEALTH_REGEX="${HEALTH_REGEX:-registered|ready|listening}"
 REQUIRES_SERVER="${REQUIRES_SERVER:-false}"
 MULTI_CONFIG="${MULTI_CONFIG:-}"
+BUILD_ONLY="${BUILD_ONLY:-false}"
 
 TIMEOUT_BIN=""
 if command -v timeout >/dev/null 2>&1; then
@@ -62,12 +63,26 @@ cd "$EXAMPLE_DIR"
 # Pin Resonate SDK to the resolved version. The Go SDK currently only
 # publishes pseudo-versions (v0.0.0-<date>-<hash>) — switch this to a
 # real tag once one ships. `go get` accepts pseudo-versions verbatim.
-go get "github.com/resonatehq/resonate-sdk-go@${SDK_VERSION}" 2>>install.err || exit 0
-go mod tidy 2>>install.err || exit 0
+# build_only rows skip pinning: compile against go.sum as-is.
+if [ "$BUILD_ONLY" != "true" ]; then
+  go get "github.com/resonatehq/resonate-sdk-go@${SDK_VERSION}" 2>>install.err || exit 0
+  go mod tidy 2>>install.err || exit 0
+fi
 
 STATUS="compile_failed"
 if ! go build ./... 2>>build.err; then
   STDERR_TAIL=$(tail_meaningful build.err)
+  exit 0
+fi
+
+if ! go vet ./... 2>>build.err; then
+  STDERR_TAIL=$(tail_meaningful build.err)
+  exit 0
+fi
+
+# build_only: compile + vet is the full check; no server, no runtime.
+if [ "$BUILD_ONLY" = "true" ]; then
+  STATUS="passing"
   exit 0
 fi
 

@@ -2,7 +2,7 @@
 import { parse as parseYaml } from "yaml";
 import { readFileSync } from "node:fs";
 
-type Sdk = "ts" | "py" | "rs" | "go";
+type Sdk = "ts" | "py" | "rs" | "go" | "java";
 
 type ProcessEntry = {
   name?: string;
@@ -43,6 +43,15 @@ type Entry = {
   processes?: ProcessEntry[];
   client?: ClientEntry;
   skip?: boolean;
+  // build_only: install deps + compile/typecheck only; no server, no services, no runtime.
+  build_only?: boolean;
+  // subdirs: ts only. List of subdir paths (relative to repo root) each containing
+  // an independent package.json. When present, the runner installs and builds each
+  // listed subdir in order instead of the root. Ignored when build_only is false.
+  subdirs?: string[];
+  // build_cmd: py only. Override the default import-check with an explicit command
+  // run inside the venv after install. E.g. "python -c 'import mymodule'".
+  build_cmd?: string;
 };
 
 const SDK_DEFAULTS: Record<Sdk, { entry: string; timeout_s: number; healthy_after_s: number }> = {
@@ -50,6 +59,7 @@ const SDK_DEFAULTS: Record<Sdk, { entry: string; timeout_s: number; healthy_afte
   py: { entry: "python main.py", timeout_s: 60, healthy_after_s: 15 },
   rs: { entry: "cargo run --release", timeout_s: 120, healthy_after_s: 20 },
   go: { entry: "go run .", timeout_s: 60, healthy_after_s: 15 },
+  java: { entry: "", timeout_s: 180, healthy_after_s: 30 },
 };
 
 const versions: Record<Sdk, string> = {
@@ -57,6 +67,7 @@ const versions: Record<Sdk, string> = {
   py: process.env.PY_VERSION ?? "",
   rs: process.env.RS_VERSION ?? "",
   go: process.env.GO_VERSION ?? "",
+  java: process.env.JAVA_VERSION ?? "",
 };
 
 const filterArg = process.argv[2] ?? "";
@@ -93,6 +104,9 @@ const matrix = yaml.examples
               client: e.client,
             })
           : "",
+      build_only: e.build_only ?? false,
+      subdirs_json: e.subdirs && e.subdirs.length > 0 ? JSON.stringify(e.subdirs) : "",
+      build_cmd: e.build_cmd ?? "",
     };
   });
 

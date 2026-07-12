@@ -11,6 +11,8 @@ HEALTHY_AFTER_S="${HEALTHY_AFTER_S:-15}"
 HEALTH_REGEX="${HEALTH_REGEX:-registered|ready|listening}"
 REQUIRES_SERVER="${REQUIRES_SERVER:-false}"
 MULTI_CONFIG="${MULTI_CONFIG:-}"
+BUILD_ONLY="${BUILD_ONLY:-false}"
+BUILD_CMD="${BUILD_CMD:-}"
 
 TIMEOUT_BIN=""
 if command -v timeout >/dev/null 2>&1; then
@@ -64,6 +66,40 @@ cd "$EXAMPLE_DIR"
 # Event().wait() never flush — multi.sh's ready_regex never matches.
 # Unbuffered mode makes prints flush per-line. Cheap globally; required here.
 export PYTHONUNBUFFERED=1
+
+# build_only: install from lockfile (uv or pip), run build_cmd check, done.
+# No SDK version pin, no server, no runtime.
+if [ "$BUILD_ONLY" = "true" ]; then
+  STATUS="compile_failed"
+
+  if [ -f uv.lock ]; then
+    # uv project: frozen install from lockfile
+    pip install uv 2>>build.err || true
+    uv sync --frozen 2>>build.err || { STDERR_TAIL=$(tail_meaningful build.err); exit 0; }
+    if [ -n "$BUILD_CMD" ]; then
+      uv run bash -c "$BUILD_CMD" 2>>build.err || { STDERR_TAIL=$(tail_meaningful build.err); exit 0; }
+    fi
+  else
+    python -m venv .venv 2>>build.err || { STDERR_TAIL=$(tail_meaningful build.err); exit 0; }
+    . .venv/bin/activate
+    if [ -f pyproject.toml ]; then
+      (pip install -e . 2>>build.err || pip install . 2>>build.err) \
+        || { STDERR_TAIL=$(tail_meaningful build.err); exit 0; }
+    elif [ -f requirements.txt ]; then
+      pip install -r requirements.txt 2>>build.err \
+        || { STDERR_TAIL=$(tail_meaningful build.err); exit 0; }
+    else
+      echo "build_only: no pyproject.toml, uv.lock, or requirements.txt" >> build.err
+      exit 0
+    fi
+    if [ -n "$BUILD_CMD" ]; then
+      bash -c "$BUILD_CMD" 2>>build.err || { STDERR_TAIL=$(tail_meaningful build.err); exit 0; }
+    fi
+  fi
+
+  STATUS="passing"
+  exit 0
+fi
 
 python -m venv .venv 2>>install.err || exit 0
 . .venv/bin/activate

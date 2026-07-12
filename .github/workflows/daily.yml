@@ -27,6 +27,7 @@ jobs:
       py_version: ${{ steps.versions.outputs.py }}
       rs_version: ${{ steps.versions.outputs.rs }}
       go_version: ${{ steps.versions.outputs.go }}
+      java_version: ${{ steps.versions.outputs.java }}
       run_date: ${{ steps.date.outputs.value }}
     steps:
       - uses: actions/checkout@v4
@@ -43,6 +44,10 @@ jobs:
           # the module proxy and use it verbatim with `go get`. When a real
           # tag ships, this still works — proxy reports the latest tag.
           GO=$(curl -sf https://proxy.golang.org/github.com/resonatehq/resonate-sdk-go/@latest | jq -r '.Version')
+          # Java SDK: best-effort from Maven Central. Empty string is fine —
+          # build_only java rows compile against their committed build.gradle.
+          JAVA=$(curl -sf "https://search.maven.org/solrsearch/select?q=g:io.resonatehq+AND+a:resonate-sdk-java&rows=1&wt=json" \
+            | jq -r '.response.docs[0].latestVersion // ""' || echo "")
           [ -z "$TS" ] && { echo "ts version resolution failed"; exit 1; }
           [ -z "$PY" ] && { echo "py version resolution failed"; exit 1; }
           [ -z "$RS" ] && { echo "rs version resolution failed"; exit 1; }
@@ -51,17 +56,33 @@ jobs:
           echo "py=$PY" >> "$GITHUB_OUTPUT"
           echo "rs=$RS" >> "$GITHUB_OUTPUT"
           echo "go=$GO" >> "$GITHUB_OUTPUT"
-          echo "Resolved: ts=$TS py=$PY rs=$RS go=$GO"
+          echo "java=$JAVA" >> "$GITHUB_OUTPUT"
+          echo "Resolved: ts=$TS py=$PY rs=$RS go=$GO java=${JAVA:-unknown}"
       - id: matrix
         env:
           TS_VERSION: ${{ steps.versions.outputs.ts }}
           PY_VERSION: ${{ steps.versions.outputs.py }}
           RS_VERSION: ${{ steps.versions.outputs.rs }}
           GO_VERSION: ${{ steps.versions.outputs.go }}
+          JAVA_VERSION: ${{ steps.versions.outputs.java }}
         run: |
           MATRIX=$(bun run scripts/build-matrix.ts "${{ inputs.examples }}")
           echo "Matrix size: $(echo "$MATRIX" | jq 'length')"
           echo "value=$MATRIX" >> "$GITHUB_OUTPUT"
+
+  coverage-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install
+      - name: Coverage check
+        # Verifies every non-archived example-* repo in resonatehq-examples has
+        # a manifest row (run, build_only, or skip). Fail = repo was added to the
+        # org without a corresponding manifest entry, so CI was silently blind to it.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bun run scripts/coverage-check.ts
 
   run:
     needs: resolve
@@ -111,6 +132,11 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.22"
+      - if: matrix.sdk == 'java'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
       - name: Run example
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}
@@ -126,6 +152,9 @@ jobs:
           SERVER_KIND: ${{ matrix.server_kind }}
           SERVICES_JSON: ${{ matrix.services_json }}
           MULTI_CONFIG: ${{ matrix.multi_config }}
+          BUILD_ONLY: ${{ matrix.build_only }}
+          SUBDIRS_JSON: ${{ matrix.subdirs_json }}
+          BUILD_CMD: ${{ matrix.build_cmd }}
           # Lifts the anonymous 60/hr rate limit on the release-tag lookup
           # in runners/lib/server.sh — see comment there.
           GITHUB_TOKEN: ${{ github.token }}
@@ -173,7 +202,7 @@ jobs:
           if-no-files-found: ignore
 
   aggregate:
-    needs: [resolve, run]
+    needs: [resolve, run, coverage-check]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -191,6 +220,7 @@ jobs:
           PY_VERSION: ${{ needs.resolve.outputs.py_version }}
           RS_VERSION: ${{ needs.resolve.outputs.rs_version }}
           GO_VERSION: ${{ needs.resolve.outputs.go_version }}
+          JAVA_VERSION: ${{ needs.resolve.outputs.java_version }}
         run: bun run scripts/aggregate.ts
       - uses: actions/upload-artifact@v4
         with:
@@ -239,20 +269,26 @@ jobs:
           echo "Echo notification succeeded"
       # Visibility gate: fail the workflow when any examples are failing so
       # the daily run (and subset validation dispatches) go red in the GitHub
-      # UI. Runs after the publish + Echo steps so the dashboard still updates
+      # UI. Also fails if the coverage check detected an unregistered repo.
+      # Runs after the publish + Echo steps so the dashboard still updates
       # on failure. Skipped on pull_request events (no summary.json available).
-      # For full runs (cron / no-arg dispatch) all results are evaluated.
-      # For subset dispatch runs (inputs.examples != '') only the subset
-      # results land in summary.json, so any failure in that subset turns red.
       - name: Fail if any examples are failing
         if: github.event_name != 'pull_request'
+        env:
+          COVERAGE_RESULT: ${{ needs.coverage-check.result }}
         run: |
           set -euo pipefail
           FAILING=$(jq '.totals.failing' summary.json)
           TOTAL=$(jq '.totals.total' summary.json)
+          GATE_FAILED=0
           if [ "$FAILING" -gt 0 ]; then
             echo "::error::${FAILING}/${TOTAL} examples are failing:"
             jq -r '.results[] | select(.status != "passing") | "  - \(.repo): \(.status)"' summary.json
-            exit 1
+            GATE_FAILED=1
           fi
-          echo "All ${TOTAL} examples passing."
+          if [ "$COVERAGE_RESULT" = "failure" ]; then
+            echo "::error::manifest coverage check failed — one or more repos in resonatehq-examples are missing from manifests/examples.yaml"
+            GATE_FAILED=1
+          fi
+          if [ "$GATE_FAILED" = "1" ]; then exit 1; fi
+          echo "All ${TOTAL} examples passing and manifest coverage is complete."
