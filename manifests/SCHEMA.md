@@ -9,9 +9,9 @@ Each entry:
 | field | type | default | meaning |
 |---|---|---|---|
 | `repo` | string | required | GitHub repo name under `resonatehq-examples`. |
-| `sdk` | `ts` / `py` / `rs` | required | Which Resonate SDK to pin to latest published. |
+| `sdk` | `ts` / `py` / `rs` / `go` / `java` | required | Which Resonate SDK to pin to latest published. (`java` compiles against the version committed in each repo's `build.gradle.kts` — Gradle has no runner-side pin.) |
 | `kind` | `worker` / `script` | required | `worker` runs indefinitely; `script` exits on its own. |
-| `entry` | string | per-SDK default | Override the run command. Defaults: ts=`npm start`, py=`python main.py`, rs=`cargo run --release`. |
+| `entry` | string | per-SDK default | Override the run command. Defaults: ts=`npm start`, py=`python main.py`, rs=`cargo run --release`, go=`go run .`. `java` has no default — runtime rows must set `entry:` (or `processes:`/`client:`); the runner always runs `./gradlew build` first, so entries reuse the build outputs. |
 | `timeout_s` | int | `60` (ts/py), `120` (rs) | Maximum wall time. For `worker` kind, this is unused — the worker is killed shortly after the liveness probe completes. |
 | `healthy_after_s` | int | `15` (ts/py), `20` (rs) | `worker` only. Seconds to wait before running the liveness probe. |
 | `health_regex` | string | `registered\|ready\|listening` | `worker` only. Regex matched against stdout+stderr; must match for the worker to be considered passing. |
