@@ -3,7 +3,9 @@ set -uo pipefail
 
 EXAMPLE_DIR="${EXAMPLE_DIR:?required}"
 EXAMPLE_NAME="${EXAMPLE_NAME:?required}"
-SDK_VERSION="${SDK_VERSION:?required}"
+# Report-only for java: the examples pin the SDK in their committed
+# build.gradle.kts, so an empty resolved version must not fail the row.
+SDK_VERSION="${SDK_VERSION:-}"
 BUILD_ONLY="${BUILD_ONLY:-false}"
 KIND="${KIND:-script}"
 ENTRY="${ENTRY:-}"
