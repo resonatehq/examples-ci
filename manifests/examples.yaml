@@ -1472,23 +1472,61 @@ examples:
 
   # ---- New build_only rows: previously unlisted repos ----
 
-  # Java examples: all use Gradle + io.resonatehq:resonate-sdk-java 0.1.1.
-  # Runtime requires a Resonate server; build coverage via ./gradlew build.
+  # Java examples: all use Gradle + io.resonatehq:resonate-sdk-java, pinned in
+  # each repo's committed build.gradle.kts (no runner-side pinning — Gradle
+  # compiles against the committed version). Upgraded from build_only to full
+  # runtime rows: the runner compiles with `./gradlew build` first, and the
+  # runtime entries reuse that build's outputs. All five verified locally
+  # against `resonate dev`.
   - repo: example-hello-world-java
     sdk: java
-    build_only: true
+    kind: script
+    requires_server: true
+    entry: "./gradlew run --no-daemon -q"
+    timeout_s: 300
+
   - repo: example-quickstart-java
     sdk: java
-    build_only: true
+    requires_server: true
+    # Mirrors quickstart-go/-ts/-py: a worker that blocks on CLI-invoked work
+    # plus a CLI client. The worker logs a ready line once registered.
+    processes:
+      - name: worker
+        entry: "./gradlew run --no-daemon -q"
+        ready_regex: "registered 'countdown'"
+        healthy_after_s: 60
+    client:
+      entry: "/tmp/resonate invoke countdown.1 --func countdown --arg 5 --arg 1"
+      timeout_s: 60
+
   - repo: example-countdown-java
     sdk: java
-    build_only: true
+    kind: script
+    # default args: 3 ticks, notifications logged to stdout — no ntfy.sh
+    # dependency (unlike countdown-py/-ts).
+    requires_server: true
+    entry: "./gradlew run --no-daemon -q"
+    timeout_s: 300
+
   - repo: example-fan-out-fan-in-java
     sdk: java
-    build_only: true
+    kind: script
+    requires_server: true
+    entry: "./gradlew run --no-daemon -q"
+    timeout_s: 300
+
   - repo: example-recursive-factorial-java
     sdk: java
-    build_only: true
+    requires_server: true
+    # Mirrors recursive-factorial-go: background worker + foreground client.
+    processes:
+      - name: worker
+        entry: "./gradlew runWorker --no-daemon -q"
+        ready_regex: "registered 'factorial'"
+        healthy_after_s: 60
+    client:
+      entry: "./gradlew runClient -Pn=6 --no-daemon -q"
+      timeout_s: 120
 
   # countdown-aws-ts: AWS Lambda deploy wrapper; runtime needs live AWS creds.
   # Build coverage catches TypeScript regressions.
