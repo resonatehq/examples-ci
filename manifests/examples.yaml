@@ -395,16 +395,19 @@ examples:
       entry: "curl -sSf -X POST 'http://127.0.0.1:8000/begin?id=ci-task-001' -H 'Content-Type: application/json' -d '{}'"
       timeout_s: 30
 
-  # example-schedule-py: one observation of the cron tick is the test;
-  # healthy_after_s budget covers up-to-60s tick latency plus margin
-  # (verified locally: first tick at 55s on a fresh server).
+  # example-schedule-py: one observation of the cron tick is the test.
+  # healthy_after_s budget covers worst-case cron latency: up to 60s to the
+  # minute boundary + server cron-poll cadence + report execution (verified
+  # locally: first tick at 55s on a fresh server) — 90s leaves real margin.
   # Needs resonate-sdk >= 0.7.4 — the first release whose schedule fires
   # carry the resonate:target routing tag (the daily matrix installs the
   # pinned latest PyPI version, so run rows get it automatically).
   # schedule.py carries a one-line startup yield until the HttpNetwork
-  # startup-race fix (resonatehq/resonate-sdk-py#444) is released; that
-  # yield is what keeps setup green, so this row requires
-  # resonatehq-examples/example-schedule-py#5 to be merged first.
+  # startup race (resonatehq/resonate-sdk-py#443; fix PR #444 open) is
+  # fixed; that yield is what keeps setup green, so this row requires
+  # resonatehq-examples/example-schedule-py#5 to be merged FIRST. Merging
+  # this row before that PR produces setup_failed on every daily run (the
+  # workflow goes red; no issue is auto-filed) until it lands.
   - repo: example-schedule-py
     sdk: py
     requires_server: true
@@ -414,7 +417,7 @@ examples:
       - name: worker
         entry: "python worker.py"
         ready_regex: "Report for user"
-        healthy_after_s: 75
+        healthy_after_s: 90
 
   # ---- Phase 1.5 wave 4 (durable-sleep + fan-out-fan-in-rs) ----
 
