@@ -110,6 +110,14 @@ examples:
     entry: bun start
     timeout_s: 30
 
+  - repo: example-fan-out-fan-in-async-ts
+    sdk: ts
+    kind: script
+    # Async engine: embedded LocalNetwork by default (no requires_server).
+    # ctx.run() is eager — fan-out via Promise.all(). bun start exits cleanly.
+    entry: bun start
+    timeout_s: 30
+
   - repo: example-batch-processor-ts
     sdk: ts
     kind: script
