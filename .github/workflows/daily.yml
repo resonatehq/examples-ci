@@ -44,10 +44,12 @@ jobs:
           # the module proxy and use it verbatim with `go get`. When a real
           # tag ships, this still works — proxy reports the latest tag.
           GO=$(curl -sf https://proxy.golang.org/github.com/resonatehq/resonate-sdk-go/@latest | jq -r '.Version')
-          # Java SDK: best-effort from Maven Central. Empty string is fine —
-          # build_only java rows compile against their committed build.gradle.
-          JAVA=$(curl -sf "https://search.maven.org/solrsearch/select?q=g:io.resonatehq+AND+a:resonate-sdk-java&rows=1&wt=json" \
-            | jq -r '.response.docs[0].latestVersion // ""' || echo "")
+          # Java SDK: best-effort from Maven Central's repo metadata (the
+          # search API stopped returning latestVersion and lags new releases).
+          # Empty string is fine — java rows compile and run against the SDK
+          # pinned in their committed build.gradle.kts; this value is report-only.
+          JAVA=$(curl -sf "https://repo1.maven.org/maven2/io/resonatehq/resonate-sdk-java/maven-metadata.xml" \
+            | sed -n 's:.*<latest>\(.*\)</latest>.*:\1:p' || echo "")
           [ -z "$TS" ] && { echo "ts version resolution failed"; exit 1; }
           [ -z "$PY" ] && { echo "py version resolution failed"; exit 1; }
           [ -z "$RS" ] && { echo "rs version resolution failed"; exit 1; }
