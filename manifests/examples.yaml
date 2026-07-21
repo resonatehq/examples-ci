@@ -110,7 +110,6 @@ examples:
     entry: bun start
     timeout_s: 30
 
-  # main is a stub until example-fan-out-fan-in-async-ts#1 lands; flip to a live run row after
   - repo: example-fan-out-fan-in-async-ts
     sdk: ts
     kind: script
@@ -118,7 +117,6 @@ examples:
     # index.ts awaits resonate.stop() so the entry exits cleanly.
     entry: bun start
     timeout_s: 30
-    skip: true
 
   - repo: example-batch-processor-ts
     sdk: ts
