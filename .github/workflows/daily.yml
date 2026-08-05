@@ -86,6 +86,21 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: bun run scripts/coverage-check.ts
 
+  readme-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install
+      - name: README snippet drift
+        # For every manifest repo that carries a sottovoce.json, verifies the
+        # README's code fences still match the source files they quote. The
+        # matrix proves an example RUNS; this proves its README shows the code
+        # that runs. Repos without a sottovoce.json are skipped.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bun run scripts/readme-drift.ts
+
   run:
     needs: resolve
     strategy:
@@ -204,7 +219,7 @@ jobs:
           if-no-files-found: ignore
 
   aggregate:
-    needs: [resolve, run, coverage-check]
+    needs: [resolve, run, coverage-check, readme-drift]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -278,6 +293,7 @@ jobs:
         if: github.event_name != 'pull_request'
         env:
           COVERAGE_RESULT: ${{ needs.coverage-check.result }}
+          DRIFT_RESULT: ${{ needs.readme-drift.result }}
         run: |
           set -euo pipefail
           FAILING=$(jq '.totals.failing' summary.json)
@@ -290,6 +306,10 @@ jobs:
           fi
           if [ "$COVERAGE_RESULT" = "failure" ]; then
             echo "::error::manifest coverage check failed — one or more repos in resonatehq-examples are missing from manifests/examples.yaml"
+            GATE_FAILED=1
+          fi
+          if [ "$DRIFT_RESULT" = "failure" ]; then
+            echo "::error::README snippet drift — one or more example READMEs show code that no longer matches the source file it quotes (see the readme-drift job)"
             GATE_FAILED=1
           fi
           if [ "$GATE_FAILED" = "1" ]; then exit 1; fi
