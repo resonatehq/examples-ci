@@ -23,9 +23,17 @@ import { join } from "node:path";
 const ORG = "resonatehq-examples";
 const SOTTOVOCE = join(process.cwd(), "node_modules", ".bin", "sottovoce");
 // Concurrency for the opt-in probe. 114 sequential API calls take minutes;
-// this keeps the whole discovery pass under ~10s and stays far below the
-// 5000/hr authenticated rate limit.
+// this keeps the whole discovery pass under ~10s. The 5000/hr primary rate
+// limit is not the binding constraint at this size — the SECONDARY limit on
+// concurrent requests is, and it answers 403 or 429 rather than 404. Those
+// are retried below rather than treated as drift.
 const PROBE_CONCURRENCY = 10;
+const PROBE_TIMEOUT_MS = 15_000;
+const PROBE_ATTEMPTS = 4;
+// git clone + sottovoce check are bounded so a hung network call fails the
+// job in minutes instead of stalling to the Actions 6h default.
+const CLONE_TIMEOUT_MS = 120_000;
+const CHECK_TIMEOUT_MS = 120_000;
 
 const yaml = parseYaml(readFileSync("manifests/examples.yaml", "utf8")) as {
   examples: Array<{ repo: string }>;
@@ -34,36 +42,90 @@ const repos = yaml.examples.map((e) => e.repo);
 
 // `gh api` would be the house style, but one subprocess per repo costs ~100s
 // across the manifest. Same endpoint, fetched directly.
-const token =
-  process.env.GH_TOKEN ||
-  process.env.GITHUB_TOKEN ||
-  execFileSync("gh", ["auth", "token"], { encoding: "utf8" }).trim();
-
-/** True when the repo has a sottovoce.json at its root on the default branch. */
-async function optedIn(repo: string): Promise<boolean> {
-  const res = await fetch(
-    `https://api.github.com/repos/${ORG}/${repo}/contents/sottovoce.json`,
-    {
-      method: "HEAD",
-      headers: {
-        authorization: `Bearer ${token}`,
-        accept: "application/vnd.github+json",
-        "user-agent": "examples-ci readme-drift",
-      },
-    }
-  );
-  if (res.status === 200) return true;
-  // 404 is the common case (repo hasn't opted in) — but it is also what a
-  // deleted/renamed repo returns, and a rate limit returns 403. Treating any
-  // non-200 as "not opted in" is how a check quietly stops checking, so
-  // anything other than a clean 404 is a hard failure.
-  if (res.status !== 404) {
+function resolveToken(): string {
+  const fromEnv = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+  if (fromEnv) return fromEnv;
+  // Local runs fall back to the gh CLI. In CI the env var is always set, so
+  // reaching here means someone is running the script by hand.
+  try {
+    return execFileSync("gh", ["auth", "token"], {
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    }).trim();
+  } catch {
     console.error(
-      `readme-drift: ${ORG}/${repo} probe returned ${res.status} ${res.statusText} — refusing to guess.`
+      "readme-drift: no GitHub token. Set GH_TOKEN, or run `gh auth login` and retry."
     );
     process.exit(1);
   }
-  return false;
+}
+
+const token = resolveToken();
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Seconds to wait before retrying, honouring GitHub's own backoff headers. */
+function retryDelayMs(res: Response, attempt: number): number {
+  const retryAfter = Number(res.headers.get("retry-after"));
+  if (Number.isFinite(retryAfter) && retryAfter > 0) return retryAfter * 1000;
+  // Primary-limit exhaustion: wait until the window resets, capped so a
+  // misread header can't park the job for an hour.
+  if (res.headers.get("x-ratelimit-remaining") === "0") {
+    const reset = Number(res.headers.get("x-ratelimit-reset"));
+    if (Number.isFinite(reset)) {
+      const wait = reset * 1000 - Date.now();
+      if (wait > 0) return Math.min(wait, 60_000);
+    }
+  }
+  return Math.min(1000 * 2 ** attempt, 30_000); // 1s, 2s, 4s
+}
+
+/**
+ * True when the repo has a sottovoce.json at its root on the default branch.
+ *
+ * 404 is the common case (repo hasn't opted in). Anything else is ambiguous,
+ * so it is retried and only then treated as fatal — a check that silently
+ * stops checking is worse than no check, but so is one that reddens the
+ * dashboard over a transient 5xx.
+ */
+async function optedIn(repo: string): Promise<boolean> {
+  let last = "";
+  for (let attempt = 0; attempt < PROBE_ATTEMPTS; attempt++) {
+    let res: Response;
+    try {
+      res = await fetch(
+        `https://api.github.com/repos/${ORG}/${repo}/contents/sottovoce.json`,
+        {
+          method: "HEAD",
+          headers: {
+            authorization: `Bearer ${token}`,
+            accept: "application/vnd.github+json",
+            "user-agent": "examples-ci readme-drift",
+          },
+          signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+        }
+      );
+    } catch (err: any) {
+      // Network error or timeout — same treatment as a 5xx.
+      last = err?.name === "TimeoutError" ? "request timed out" : String(err);
+      if (attempt < PROBE_ATTEMPTS - 1) await sleep(Math.min(1000 * 2 ** attempt, 30_000));
+      continue;
+    }
+
+    if (res.status === 200) return true;
+    if (res.status === 404) return false;
+
+    last = `${res.status} ${res.statusText}`;
+    // 403/429 = rate limited (usually the secondary concurrency limit),
+    // 5xx = transient. Both are worth another go.
+    const retryable = res.status === 403 || res.status === 429 || res.status >= 500;
+    if (!retryable || attempt === PROBE_ATTEMPTS - 1) break;
+    await sleep(retryDelayMs(res, attempt));
+  }
+
+  throw new Error(
+    `${ORG}/${repo} probe failed after ${PROBE_ATTEMPTS} attempts (${last}) — refusing to guess whether it is enrolled.`
+  );
 }
 
 async function mapLimit<T, R>(
@@ -84,13 +146,36 @@ async function mapLimit<T, R>(
   return out;
 }
 
-const flags = await mapLimit(repos, PROBE_CONCURRENCY, optedIn);
-const enrolled = repos.filter((_, i) => flags[i]);
+// Probe every repo before failing on any, so one bad response doesn't hide
+// the other 113. A rejected probe is reported with its repo name.
+const probes = await mapLimit(repos, PROBE_CONCURRENCY, (repo) =>
+  optedIn(repo).then(
+    (ok) => ({ repo, ok, err: null as string | null }),
+    (err) => ({ repo, ok: false, err: err?.message ?? String(err) })
+  )
+);
+
+const failed = probes.filter((p) => p.err);
+if (failed.length > 0) {
+  for (const p of failed) console.error(`::error::readme-drift: ${p.err}`);
+  console.error(
+    `readme-drift: ${failed.length} of ${repos.length} enrollment probes could not be resolved. ` +
+      `This is an API problem, not README drift — re-run the job.`
+  );
+  process.exit(1);
+}
+
+const enrolled = probes.filter((p) => p.ok).map((p) => p.repo);
+
+// A repo that goes private (or is renamed) answers 404 exactly like one that
+// never enrolled, so the enrolled set can shrink silently. Record it: a drop
+// that isn't explained by a deliberate opt-out is worth a human look.
+console.log(
+  `readme-drift: ${enrolled.length} of ${repos.length} manifest repos are enrolled (carry a sottovoce.json).`
+);
 
 if (enrolled.length === 0) {
-  console.log(
-    `readme-drift: none of the ${repos.length} manifest repos carry a sottovoce.json — nothing to check.`
-  );
+  console.log("readme-drift: nothing enrolled — nothing to check.");
   process.exit(0);
 }
 
@@ -103,7 +188,7 @@ try {
     execFileSync(
       "git",
       ["clone", "--depth", "1", "--quiet", `https://github.com/${ORG}/${repo}.git`, dir],
-      { stdio: ["pipe", "ignore", "inherit"] }
+      { stdio: ["pipe", "ignore", "inherit"], timeout: CLONE_TIMEOUT_MS }
     );
     try {
       // --diff so a failure explains itself in the log: `-` is what the README
@@ -112,6 +197,7 @@ try {
         cwd: dir,
         encoding: "utf8",
         stdio: ["pipe", "pipe", "pipe"],
+        timeout: CHECK_TIMEOUT_MS,
       });
       console.log(`  ok   ${repo}: ${out.trim()}`);
     } catch (err: any) {
@@ -131,7 +217,21 @@ if (drifted.length > 0) {
     `\n::error::readme-drift: ${drifted.length} of ${enrolled.length} checked repo(s) have README snippets that no longer match their source: ${drifted.join(", ")}`
   );
   console.error(
-    "Fix in the example repo: run `npx sottovoce sync` there and commit, or correct the source if the README was right."
+    "\nWhat this means: the README shows code that is no longer what the repo contains.\n" +
+      "The fix happens in the example repo, not here:\n"
+  );
+  for (const repo of drifted) {
+    console.error(`  https://github.com/${ORG}/${repo}`);
+  }
+  console.error(
+    "\n  git clone the repo, then:\n" +
+      "    npx sottovoce sync    # re-render the README from the source files\n" +
+      "    git commit -am 'README: re-sync snippets from source'\n" +
+      "\n" +
+      "  If the README was the one telling the truth, fix the source file instead.\n" +
+      "  Background: the README's code fences are generated from the repo's own\n" +
+      "  source files, so they cannot drift. See the readme-drift section of this\n" +
+      "  repo's README."
   );
   process.exit(1);
 }
