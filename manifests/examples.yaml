@@ -1551,3 +1551,19 @@ examples:
   - repo: example-deep-research-outreach-agent-py
     sdk: py
     build_only: true
+
+  # sam-lambda: meta-repo (hello-world/fibonacci/pipeline/pydantic-ai/etc.,
+  # one AWS SAM function per sub-directory, each its own requirements.txt).
+  # No single root install target — same shape as example-webservers-py
+  # above. Runtime also needs a deployed AWS SAM stack.
+  - repo: example-sam-lambda
+    sdk: py
+    skip: true
+
+  # durable-agent-supabase-ts: no package.json anywhere in the repo — index.ts
+  # is a Supabase Edge Function (Deno runtime), not an npm/bun project, so
+  # there is no install/build target for build_only. Runtime needs a live
+  # Supabase project + ANTHROPIC_API_KEY.
+  - repo: example-durable-agent-supabase-ts
+    sdk: ts
+    skip: true
