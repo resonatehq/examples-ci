@@ -580,16 +580,11 @@ examples:
         timeout_s: 60
 
   # ---- Phase 1.5 wave 7 (sibling enrollments) ----
-  # schedule-rs: the Rust SDK's .schedule() wrapper calls Schedules.create()
-  # with promise_tags=HashMap::new(). Without resonate:invoke in the tags
-  # the server has no dispatch target and the fired promise sits pending.
-  # Tracked: https://github.com/resonatehq/resonate-sdk-rs/issues/25
-  # PR #26 (2026-05-23) was closed without merging; the fix is still pending
-  # in the SDK. Build coverage is now active via build_only; runtime remains
-  # blocked until resonatehq/resonate-sdk-rs#25 is resolved.
+  # schedule-rs: full runtime coverage. The schedule dispatch fix
+  # (resonate:target injected into the schedule's promise tags — resonatehq/resonate-sdk-rs#25)
+  # shipped in resonate-sdk 0.6.0, so the fired schedule now routes to a worker.
   - repo: example-schedule-rs
     sdk: rs
-    build_only: true
     requires_server: true
     setup:
       - "cargo run --release --bin schedule"
